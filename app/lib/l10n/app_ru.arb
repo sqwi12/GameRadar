@@ -1,0 +1,76 @@
+{
+  "@@locale": "ru",
+  "appTitle": "GameRadar",
+  "@appTitle": {
+    "description": "Название приложения"
+  },
+  "tabTop": "Топ",
+  "@tabTop": {
+    "description": "Вкладка «Топ по онлайну»"
+  },
+  "tabDiscounts": "Скидки",
+  "tabSearch": "Поиск",
+  "tabWatchlist": "Отслеживаю",
+  "topTitle": "Топ по онлайну",
+  "discountsTitle": "Скидки сейчас",
+  "searchTitle": "Поиск игр",
+  "watchlistTitle": "Отслеживаемые",
+  "gameTitle": "Игра",
+  "settingsTitle": "Настройки",
+  "comingSoon": "Этот экран появится на следующем этапе",
+  "settingsAppearance": "Оформление",
+  "settingsTheme": "Тема",
+  "themeSystem": "Системная",
+  "themeLight": "Светлая",
+  "themeDark": "Тёмная",
+  "settingsLanguage": "Язык",
+  "languageSystem": "Системный",
+  "languageRussian": "Русский",
+  "languageEnglish": "English",
+  "settingsRegion": "Регион цен",
+  "regionKazakhstan": "Казахстан, ₸",
+  "settingsAccount": "Аккаунт",
+  "accountAnonymous": "Анонимный аккаунт",
+  "accountConnected": "Подключено к серверу",
+  "accountConnecting": "Подключение…",
+  "settingsAbout": "О приложении",
+  "aboutVersion": "Версия {version}",
+  "@aboutVersion": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "aboutDataSource": "Цены и онлайн собирает наш сервер из публичных данных Steam",
+  "aboutDisclaimer": "Не связано с Valve Corporation. Steam — товарный знак Valve Corporation.",
+  "@aboutDisclaimer": {
+    "description": "Обязательная пометка в настройках"
+  },
+  "retry": "Повторить",
+  "errorNetwork": "Нет связи с сервером. Проверьте интернет.",
+  "errorServer": "Сервер временно недоступен. Попробуйте позже.",
+  "errorNotFound": "Ничего не найдено",
+  "errorUnauthorized": "Не удалось войти. Попробуйте ещё раз.",
+  "errorValidation": "Неверные данные запроса",
+  "errorUnknown": "Что-то пошло не так",
+  "updatedJustNow": "Обновлено только что",
+  "updatedMinutesAgo": "Обновлено {minutes} мин назад",
+  "@updatedMinutesAgo": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "updatedAt": "Обновлено {time}",
+  "@updatedAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "refreshTooOften": "Обновлять можно не чаще раза в минуту",
+  "showingCachedData": "Показаны сохранённые данные"
+}

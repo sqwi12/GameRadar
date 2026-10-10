@@ -1,6 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Приложение работает только с нашим API. -->
+    <uses-permission android:name="android.permission.INTERNET"/>
     <application
-        android:label="gameradar_app"
+        android:label="GameRadar"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

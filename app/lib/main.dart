@@ -1,17 +1,40 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
 
-void main() {
-  runApp(const MainApp());
-}
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_ui/material_ui.dart';
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+import 'app.dart';
+import 'core/database/app_database.dart';
+import 'core/providers.dart';
 
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      title: 'GameRadar',
-      home: Scaffold(body: Center(child: Text('Hello World!'))),
-    );
-  }
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Локальные настройки читаем до первого кадра, чтобы тема и язык
+  // сразу были правильными.
+  final db = AppDatabase();
+  final preferences = await db.readPreferences();
+
+  final container = ProviderContainer(
+    overrides: [
+      appDatabaseProvider.overrideWithValue(db),
+      initialPreferencesProvider.overrideWithValue(preferences),
+    ],
+  );
+
+  // Анонимный вход заранее, в фоне: к открытию первого экрана токен скорее
+  // всего уже будет. Ошибка не мешает запуску — запросы повторят вход сами.
+  unawaited(
+    container
+        .read(sessionManagerProvider)
+        .validToken()
+        .then((_) {}, onError: (_) {}),
+  );
+
+  runApp(
+    UncontrolledProviderScope(
+      container: container,
+      child: const GameRadarApp(),
+    ),
+  );
 }
