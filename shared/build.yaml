@@ -1,0 +1,11 @@
+targets:
+  $default:
+    builders:
+      json_serializable:
+        options:
+          # В JSON API поля в snake_case, как в БД.
+          field_rename: snake
+          # Вложенные модели сериализуются через их toJson().
+          explicit_to_json: true
+          # Ключи с null не отправляем, отсутствующий ключ читается как null.
+          include_if_null: false

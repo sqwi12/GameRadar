@@ -1,0 +1,12 @@
+# Корень pub workspace: одна общая резолюция зависимостей для всех пакетов монорепо.
+name: gameradar_workspace
+publish_to: none
+
+environment:
+  sdk: ^3.13.0
+
+workspace:
+  - app
+  - shared
+  - server
+  - worker

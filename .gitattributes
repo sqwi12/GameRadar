@@ -1,0 +1,5 @@
+# Единые LF-переводы строк для всех текстовых файлов (SQL и YAML читаются в Linux-контейнерах).
+* text=auto eol=lf
+*.bat text eol=crlf
+*.png binary
+*.jar binary

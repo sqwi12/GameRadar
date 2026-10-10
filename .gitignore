@@ -1,0 +1,26 @@
+# Dart / Flutter
+.dart_tool/
+.packages
+build/
+*.iml
+.idea/
+.vscode/
+.flutter-plugins
+.flutter-plugins-dependencies
+coverage/
+
+# Dart Frog
+server/.dart_frog/
+
+# Секреты
+.env
+secrets/
+*.jks
+*.keystore
+app/android/key.properties
+app/android/app/google-services.json
+app/ios/Runner/GoogleService-Info.plist
+
+# ОС
+.DS_Store
+Thumbs.db
