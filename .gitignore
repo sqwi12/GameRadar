@@ -11,6 +11,7 @@ coverage/
 
 # Dart Frog
 server/.dart_frog/
+server/build/
 
 # Секреты
 .env

@@ -1,1 +1,11 @@
 include: ../analysis_options.yaml
+
+linter:
+  rules:
+    # Dart Frog задаёт динамические сегменты пути именами файлов вида [id].dart.
+    file_names: false
+
+analyzer:
+  exclude:
+    - .dart_frog/**
+    - build/**

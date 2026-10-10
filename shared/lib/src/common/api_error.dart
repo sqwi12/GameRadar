@@ -10,6 +10,7 @@ abstract final class ApiErrorCode {
   static const unauthorized = 'unauthorized';
   static const notFound = 'not_found';
   static const rateLimited = 'rate_limited';
+  static const limitExceeded = 'limit_exceeded';
   static const internal = 'internal_error';
 }
 

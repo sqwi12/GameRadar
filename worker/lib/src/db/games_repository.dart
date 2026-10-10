@@ -25,7 +25,8 @@ final class GamesRepository {
 
   // ---------------------------------------------------------------- цены
 
-  /// Отслеживаемые игры и топ, цену которых пора обновить (правило 5):
+  /// Отслеживаемые, недавно открытые и игры из топа, цену которых пора
+  /// обновить (правило 5):
   /// сначала с большим числом подписчиков, затем давно не проверявшиеся.
   Future<List<DueGame>> duePrices({
     required String region,
@@ -37,7 +38,8 @@ final class GamesRepository {
         SELECT g.app_id, p.checked_at, g.watchers_count
         FROM games g
         LEFT JOIN game_prices p ON p.app_id = g.app_id AND p.region = @region:text
-        WHERE (g.watchers_count > 0 OR g.top_rank IS NOT NULL)
+        WHERE (g.watchers_count > 0 OR g.top_rank IS NOT NULL
+               OR g.viewed_at > now() - interval '1 day')
           AND (p.checked_at IS NULL OR p.checked_at < now() - @min_age:int4 * interval '1 second')
         ORDER BY g.watchers_count DESC, p.checked_at ASC NULLS FIRST
         LIMIT @limit:int4
@@ -142,7 +144,7 @@ final class GamesRepository {
     ),
   );
 
-  /// Отслеживаемые игры вне топа, онлайн которых пора обновить.
+  /// Отслеживаемые и недавно открытые игры вне топа, онлайн которых пора обновить.
   Future<List<DueGame>> dueWatchedPlayers({
     required int threshold,
     required Duration minAge,
@@ -152,7 +154,7 @@ final class GamesRepository {
       Sql.named('''
         SELECT app_id, players_checked_at, watchers_count
         FROM games
-        WHERE watchers_count > 0
+        WHERE (watchers_count > 0 OR viewed_at > now() - interval '1 day')
           AND top_rank IS NULL
           AND NOT (peak_24h > 0 AND peak_24h >= @threshold:int4)
           AND (players_checked_at IS NULL
@@ -271,7 +273,8 @@ final class GamesRepository {
 
   // ------------------------------------------------- описания и отзывы
 
-  /// Отслеживаемые игры и топ, у которых пора обновить описание или отзывы.
+  /// Отслеживаемые, недавно открытые и игры из топа, у которых пора обновить
+  /// описание или отзывы.
   Future<List<DueGame>> dueDetails({
     required Duration minAge,
     required int limit,
@@ -292,7 +295,8 @@ final class GamesRepository {
       Sql.named('''
             SELECT app_id, $column, watchers_count
             FROM games
-            WHERE (watchers_count > 0 OR top_rank IS NOT NULL)
+            WHERE (watchers_count > 0 OR top_rank IS NOT NULL
+                   OR viewed_at > now() - interval '1 day')
               AND ($column IS NULL OR $column < now() - @min_age:int4 * interval '1 second')
             ORDER BY watchers_count DESC, $column ASC NULLS FIRST
             LIMIT @limit:int4

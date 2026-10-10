@@ -1,6 +1,6 @@
 import 'package:gameradar_shared/gameradar_shared.dart';
 
-import 'dotenv.dart';
+import 'package:gameradar_shared/dotenv.dart';
 
 /// Частоты обновления данных (правило 6). Нижняя граница — когда задачу
 /// можно ставить в очередь, верхняя — желаемый крайний срок: очередь

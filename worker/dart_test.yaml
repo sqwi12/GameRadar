@@ -1,4 +1,5 @@
-# Интеграционные тесты запускаются явно: dart test -t db / -t redis.
+# Интеграционные тесты помечены тегами db/redis. Без TEST_DATABASE_URL /
+# TEST_REDIS_URL они пропускаются; запуск только их: dart test -t db
 tags:
   db:
   redis:

@@ -63,38 +63,38 @@ GameRadar/
 
 ## Быстрый старт
 
-Нужны Docker и Flutter с Dart 3.13+.
+### Без Docker (локальный PostgreSQL и Memurai/Redis)
 
 ```bash
-cp .env.example .env          # заполните POSTGRES_PASSWORD, JWT_SECRET, STEAM_API_KEY
-docker compose up -d          # PostgreSQL :5433, Redis :6379 и миграции
-flutter pub get               # зависимости всех пакетов workspace
+cp .env.example .env                      # заполните DATABASE_URL, JWT_SECRET, STEAM_API_KEY
+flutter pub get                           # зависимости всех пакетов workspace
+cd worker && dart run tool/migrate.dart   # применить миграции
+dart run bin/worker.dart                  # worker: собирает данные из Steam
+cd ../server && dart_frog dev             # API на http://localhost:8080
 ```
 
-Server и worker запускаются профилем `full` (после этапов 3–4):
+Проверить связь со Steam без БД и Redis: `cd worker && dart run tool/steam_smoke.dart`.
+
+### В Docker
 
 ```bash
-docker compose --profile full up -d --build
+cp .env.example .env
+docker compose up -d                          # PostgreSQL :5433, Redis :6379 и миграции
+docker compose --profile full up -d --build   # плюс server и worker
 ```
 
 ### Миграции
 
-Миграции применяются контейнером `migrate` ([dbmate](https://github.com/amacneil/dbmate)) при каждом `docker compose up`. Каждый файл содержит секции `-- migrate:up` и `-- migrate:down`.
+Файлы в `migrations/` в формате [dbmate](https://github.com/amacneil/dbmate): секции `-- migrate:up` и `-- migrate:down`. Без Docker их применяет `worker/tool/migrate.dart`, в Docker — контейнер `migrate`. Оба используют одну таблицу `schema_migrations`, поэтому их можно чередовать.
 
-```bash
-docker compose run --rm migrate new add_something   # новая миграция
-docker compose run --rm migrate up                  # применить
-docker compose run --rm migrate rollback            # откатить последнюю
-```
-
-PostgreSQL на хосте слушает порт **5433**, чтобы не конфликтовать с локально установленным сервером.
+PostgreSQL в Docker слушает на хосте порт **5433**, чтобы не конфликтовать с локально установленным сервером.
 
 ## Этапы разработки
 
 1. ✅ Структура монорепо, docker-compose, SQL-миграции
 2. ✅ Пакет `shared` с моделями
 3. ✅ Worker: Steam-клиент, очередь, rate limiter, задачи цен и онлайна (подробности в [worker/README.md](worker/README.md))
-4. ⬜ Сервер: эндпоинты games, top, watchlist, devices, auth/anonymous
+4. ✅ Сервер: эндпоинты games, top, watchlist, devices, auth/anonymous (подробности в [server/README.md](server/README.md))
 5. ⬜ Приложение: навигация, тема, api-клиент, кэш drift
 6. ⬜ Экраны поиска, игры, топа, скидок, списка отслеживания
 7. ⬜ Push-уведомления
