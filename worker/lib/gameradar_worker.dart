@@ -5,6 +5,7 @@ library;
 export 'src/clock.dart';
 export 'src/config.dart';
 export 'src/db/games_repository.dart';
+export 'src/dotenv.dart';
 export 'src/db/watchlist_repository.dart';
 export 'src/notifications/notification_policy.dart';
 export 'src/notifications/notification_service.dart';

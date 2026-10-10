@@ -1,6 +1,6 @@
-import 'dart:io';
-
 import 'package:gameradar_shared/gameradar_shared.dart';
+
+import 'dotenv.dart';
 
 /// Частоты обновления данных (правило 6). Нижняя граница — когда задачу
 /// можно ставить в очередь, верхняя — желаемый крайний срок: очередь
@@ -65,7 +65,7 @@ final class WorkerConfig {
   });
 
   factory WorkerConfig.fromEnvironment([Map<String, String>? env]) {
-    final e = env ?? Platform.environment;
+    final e = env ?? loadEnvironment();
     String required(String name) {
       final value = e[name];
       if (value == null || value.isEmpty) {
