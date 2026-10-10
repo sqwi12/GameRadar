@@ -1,0 +1,4 @@
+# Интеграционные тесты запускаются явно: dart test -t db / -t redis.
+tags:
+  db:
+  redis:

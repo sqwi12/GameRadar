@@ -1,0 +1,32 @@
+{
+  "response": {
+    "apps": [
+      {
+        "appid": 10,
+        "name": "Counter-Strike",
+        "last_modified": 1745368572,
+        "price_change_number": 28370779
+      },
+      {
+        "appid": 20,
+        "name": "Team Fortress Classic",
+        "last_modified": 1745368569,
+        "price_change_number": 28370779
+      },
+      {
+        "appid": 30,
+        "name": "",
+        "last_modified": 1,
+        "price_change_number": 1
+      },
+      {
+        "appid": 40,
+        "name": "Deathmatch Classic &amp; Co",
+        "last_modified": 1,
+        "price_change_number": 1
+      }
+    ],
+    "have_more_results": true,
+    "last_appid": 40
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "730": {
+    "success": true,
+    "data": []
+  },
+  "1091500": {
+    "success": true,
+    "data": {
+      "price_overview": {
+        "currency": "KZT",
+        "initial": 1799000,
+        "final": 899500,
+        "discount_percent": 50,
+        "initial_formatted": "17990,00₸",
+        "final_formatted": "8995,00₸"
+      }
+    }
+  },
+  "292030": {
+    "success": true,
+    "data": {
+      "price_overview": {
+        "currency": "KZT",
+        "initial": 599900,
+        "final": 599900,
+        "discount_percent": 0,
+        "initial_formatted": "",
+        "final_formatted": "5999,00₸"
+      }
+    }
+  },
+  "999999999": {
+    "success": false
+  }
+}
