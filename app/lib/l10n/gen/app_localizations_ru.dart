@@ -620,4 +620,38 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get regionIn => 'Индия';
+
+  @override
+  String get saleSpring => 'Весенняя распродажа Steam';
+
+  @override
+  String get saleSummer => 'Летняя распродажа Steam';
+
+  @override
+  String get saleAutumn => 'Осенняя распродажа Steam';
+
+  @override
+  String get saleWinter => 'Зимняя распродажа Steam';
+
+  @override
+  String saleActive(String name, String date) {
+    return '$name идёт сейчас — до $date';
+  }
+
+  @override
+  String saleTomorrow(String name) {
+    return '$name начинается завтра';
+  }
+
+  @override
+  String saleIn(String name, int days, String dates) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days дней',
+      few: '$days дня',
+      one: '$days день',
+    );
+    return '$name через $_temp0 · $dates';
+  }
 }

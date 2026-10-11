@@ -14,6 +14,7 @@ export 'src/common/region.dart';
 export 'src/common/validation.dart';
 export 'src/games/game_details.dart';
 export 'src/games/regional_price.dart';
+export 'src/games/steam_sales.dart';
 export 'src/games/store_low.dart';
 export 'src/games/game_price.dart';
 export 'src/games/game_queries.dart';

@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:gameradar_shared/gameradar_shared.dart';
 import 'package:logging/logging.dart';
 
 import '../clock.dart';
@@ -73,7 +74,8 @@ final class Scheduler {
 
   Future<void> run() async {
     _log.info(
-      'Запущен, регион ${_config.region}, распродажа: ${_config.saleMode}',
+      'Запущен, регион ${_config.region}, распродажа: '
+      '${_config.saleMode ? 'SALE_MODE' : SteamSales.activeAt(_clock.now())?.kind.name ?? 'нет'}',
     );
     while (!_stopped) {
       try {
@@ -172,7 +174,7 @@ final class Scheduler {
     // Пока предыдущие пакеты цен не обработаны, новые не формируем:
     // так одна игра не окажется в двух пакетах сразу.
     if (await _queue.countKind(TaskKind.prices) > 0) return;
-    final window = _config.priceWindow;
+    final window = _config.priceWindowAt(now);
     final due = await _games.duePrices(
       region: _config.region,
       minAge: window.min,

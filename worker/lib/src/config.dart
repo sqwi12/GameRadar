@@ -148,6 +148,10 @@ final class WorkerConfig {
   static String? _nonEmpty(String? v) =>
       v == null || v.trim().isEmpty ? null : v.trim();
 
-  RefreshWindow get priceWindow =>
-      saleMode ? schedule.pricesDuringSale : schedule.prices;
+  /// Интервал цен: во время распродажи (по календарю Steam или
+  /// SALE_MODE=true) — частые проверки.
+  RefreshWindow priceWindowAt(DateTime now) =>
+      saleMode || SteamSales.activeAt(now) != null
+      ? schedule.pricesDuringSale
+      : schedule.prices;
 }

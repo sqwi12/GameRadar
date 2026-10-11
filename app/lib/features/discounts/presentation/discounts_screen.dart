@@ -10,6 +10,7 @@ import '../../../core/widgets/settings_button.dart';
 import '../../../core/widgets/state_views.dart';
 import 'discounts_providers.dart';
 import '../../../core/widgets/app_controls.dart';
+import 'sale_banner.dart';
 
 /// «Скидки сейчас»: сортировка, минимальная скидка и максимальная цена.
 class DiscountsScreen extends ConsumerWidget {
@@ -42,6 +43,7 @@ class DiscountsScreen extends ConsumerWidget {
           message: l10n.discountsEmpty,
         ),
         header: [
+          const SaleBanner(),
           AppSegmentedControl(
             labels: [l10n.sortDiscount, l10n.sortPrice, l10n.sortPlayers],
             selectedIndex: _sorts.indexOf(filter.sort),

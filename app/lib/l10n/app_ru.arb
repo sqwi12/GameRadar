@@ -345,5 +345,42 @@
   "regionTr": "Турция",
   "regionAr": "Аргентина",
   "regionRu": "Россия",
-  "regionIn": "Индия"
+  "regionIn": "Индия",
+  "saleSpring": "Весенняя распродажа Steam",
+  "saleSummer": "Летняя распродажа Steam",
+  "saleAutumn": "Осенняя распродажа Steam",
+  "saleWinter": "Зимняя распродажа Steam",
+  "saleActive": "{name} идёт сейчас — до {date}",
+  "saleTomorrow": "{name} начинается завтра",
+  "saleIn": "{name} через {days, plural, one{{days} день} few{{days} дня} other{{days} дней}} · {dates}",
+  "@saleActive": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "@saleTomorrow": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@saleIn": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      },
+      "dates": {
+        "type": "String"
+      }
+    }
+  }
 }

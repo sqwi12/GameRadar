@@ -177,5 +177,12 @@
   "regionTr": "Turkey",
   "regionAr": "Argentina",
   "regionRu": "Russia",
-  "regionIn": "India"
+  "regionIn": "India",
+  "saleSpring": "Steam Spring Sale",
+  "saleSummer": "Steam Summer Sale",
+  "saleAutumn": "Steam Autumn Sale",
+  "saleWinter": "Steam Winter Sale",
+  "saleActive": "{name} is on now — until {date}",
+  "saleTomorrow": "{name} starts tomorrow",
+  "saleIn": "{name} in {days, plural, one{{days} day} other{{days} days}} · {dates}"
 }

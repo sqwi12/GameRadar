@@ -620,4 +620,37 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get regionIn => 'India';
+
+  @override
+  String get saleSpring => 'Steam Spring Sale';
+
+  @override
+  String get saleSummer => 'Steam Summer Sale';
+
+  @override
+  String get saleAutumn => 'Steam Autumn Sale';
+
+  @override
+  String get saleWinter => 'Steam Winter Sale';
+
+  @override
+  String saleActive(String name, String date) {
+    return '$name is on now — until $date';
+  }
+
+  @override
+  String saleTomorrow(String name) {
+    return '$name starts tomorrow';
+  }
+
+  @override
+  String saleIn(String name, int days, String dates) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days days',
+      one: '$days day',
+    );
+    return '$name in $_temp0 · $dates';
+  }
 }

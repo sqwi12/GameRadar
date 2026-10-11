@@ -1165,6 +1165,48 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Индия'**
   String get regionIn;
+
+  /// No description provided for @saleSpring.
+  ///
+  /// In ru, this message translates to:
+  /// **'Весенняя распродажа Steam'**
+  String get saleSpring;
+
+  /// No description provided for @saleSummer.
+  ///
+  /// In ru, this message translates to:
+  /// **'Летняя распродажа Steam'**
+  String get saleSummer;
+
+  /// No description provided for @saleAutumn.
+  ///
+  /// In ru, this message translates to:
+  /// **'Осенняя распродажа Steam'**
+  String get saleAutumn;
+
+  /// No description provided for @saleWinter.
+  ///
+  /// In ru, this message translates to:
+  /// **'Зимняя распродажа Steam'**
+  String get saleWinter;
+
+  /// No description provided for @saleActive.
+  ///
+  /// In ru, this message translates to:
+  /// **'{name} идёт сейчас — до {date}'**
+  String saleActive(String name, String date);
+
+  /// No description provided for @saleTomorrow.
+  ///
+  /// In ru, this message translates to:
+  /// **'{name} начинается завтра'**
+  String saleTomorrow(String name);
+
+  /// No description provided for @saleIn.
+  ///
+  /// In ru, this message translates to:
+  /// **'{name} через {days, plural, one{{days} день} few{{days} дня} other{{days} дней}} · {dates}'**
+  String saleIn(String name, int days, String dates);
 }
 
 class _AppLocalizationsDelegate
