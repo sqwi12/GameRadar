@@ -16,7 +16,7 @@ class PlayersChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final locale = Localizations.localeOf(context).toLanguageTag();
-    final color = AppColors.online.resolveFrom(context);
+    final color = AppColors.accent.resolveFrom(context);
     final muted = AppText.secondary(context).copyWith(fontSize: 11);
     final spots = [
       for (final p in points)

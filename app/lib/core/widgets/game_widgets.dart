@@ -26,8 +26,11 @@ class AppSurface extends StatelessWidget {
       decoration: ShapeDecoration(
         color: AppColors.card.resolveFrom(context),
         shape: RoundedSuperellipseBorder(
-          borderRadius: BorderRadius.circular(22),
-          side: BorderSide(color: AppColors.cardBorder.resolveFrom(context)),
+          borderRadius: BorderRadius.circular(20),
+          side: BorderSide(
+            color: AppColors.cardBorder.resolveFrom(context),
+            width: 0.5,
+          ),
         ),
       ),
       child: Padding(padding: padding, child: child),
@@ -123,22 +126,23 @@ class DiscountBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) => DecoratedBox(
     decoration: ShapeDecoration(
-      color: AppColors.discount.resolveFrom(context),
+      color: AppColors.discountTint.resolveFrom(context),
       shape: RoundedSuperellipseBorder(
-        borderRadius: BorderRadius.circular(large ? 10 : 7),
+        borderRadius: BorderRadius.circular(large ? 9 : 6),
       ),
     ),
     child: Padding(
       padding: EdgeInsets.symmetric(
-        horizontal: large ? 10 : 6,
-        vertical: large ? 4 : 2,
+        horizontal: large ? 9 : 6,
+        vertical: large ? 3 : 1.5,
       ),
       child: Text(
         context.l10n.discountBadge(percent),
         style: TextStyle(
-          color: CupertinoColors.white,
-          fontSize: large ? 17 : 13,
+          color: AppColors.discount.resolveFrom(context),
+          fontSize: large ? 16 : 12.5,
           fontWeight: FontWeight.w700,
+          fontFeatures: AppText.tabular,
         ),
       ),
     ),
@@ -151,6 +155,7 @@ class PriceTag extends StatelessWidget {
     required this.price,
     this.isFree = false,
     this.large = false,
+    this.alignEnd = false,
     super.key,
   });
 
@@ -158,30 +163,75 @@ class PriceTag extends StatelessWidget {
   final bool isFree;
   final bool large;
 
+  /// Прижать к правому краю (в строке списка).
+  final bool alignEnd;
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final locale = Localizations.localeOf(context).toLanguageTag();
     final p = price;
-    final main = AppText.title(context).copyWith(fontSize: large ? 26 : 16);
+    final main = AppText.title(context).copyWith(
+      fontSize: large ? 26 : 15,
+      fontWeight: large ? FontWeight.w700 : FontWeight.w600,
+      letterSpacing: large ? -0.6 : -0.2,
+      fontFeatures: AppText.tabular,
+    );
     final muted = AppText.secondary(context)
-        .copyWith(fontSize: large ? 15 : 13);
+        .copyWith(fontSize: large ? 15 : 12.5, fontFeatures: AppText.tabular);
 
     if (p == null) {
       return Text(
         isFree ? l10n.priceFree : l10n.priceUnknown,
         style: isFree ? main : muted,
+        textAlign: alignEnd ? TextAlign.end : null,
       );
     }
     if (!p.isAvailable || p.finalPrice == null || p.currency == null) {
       return Text(
         isFree ? l10n.priceFree : l10n.priceUnavailable,
         style: isFree ? main : muted,
+        textAlign: alignEnd ? TextAlign.end : null,
       );
     }
     final current = formatPrice(p.finalPrice!, p.currency!, locale);
+    final currentText = Text(
+      current,
+      style: main.copyWith(
+        color: p.isDiscounted ? AppColors.discount.resolveFrom(context) : null,
+      ),
+    );
+    if (alignEnd) {
+      // В строке списка — всегда одинаково: скидка и старая цена сверху,
+      // итоговая цена под ними, всё по правому краю.
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          if (p.isDiscounted) ...[
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (p.initialPrice != null) ...[
+                  Text(
+                    formatPrice(p.initialPrice!, p.currency!, locale),
+                    style: muted.copyWith(
+                      decoration: TextDecoration.lineThrough,
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                ],
+                DiscountBadge(percent: p.discountPct),
+              ],
+            ),
+            const SizedBox(height: 3),
+          ],
+          currentText,
+        ],
+      );
+    }
     return Wrap(
-      spacing: 8,
+      spacing: large ? 10 : 6,
       runSpacing: 4,
       crossAxisAlignment: WrapCrossAlignment.center,
       children: [
@@ -191,14 +241,7 @@ class PriceTag extends StatelessWidget {
             formatPrice(p.initialPrice!, p.currency!, locale),
             style: muted.copyWith(decoration: TextDecoration.lineThrough),
           ),
-        Text(
-          current,
-          style: main.copyWith(
-            color: p.isDiscounted
-                ? AppColors.discount.resolveFrom(context)
-                : null,
-          ),
-        ),
+        currentText,
       ],
     );
   }
@@ -216,22 +259,26 @@ class PlayersLabel extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(CupertinoIcons.person_2_fill, size: 15, color: color),
+        Icon(CupertinoIcons.person_2_fill, size: 13, color: color),
         const SizedBox(width: 4),
         Text(
           formatPlayers(
             players,
             Localizations.localeOf(context).toLanguageTag(),
           ),
-          style: AppText.secondary(context)
-              .copyWith(color: color, fontWeight: FontWeight.w600),
+          style: AppText.secondary(context).copyWith(
+            color: color,
+            fontSize: 13,
+            fontWeight: FontWeight.w500,
+            fontFeatures: AppText.tabular,
+          ),
         ),
       ],
     );
   }
 }
 
-/// Строка списка игр: обложка, название, онлайн, цена.
+/// Строка списка игр: обложка (с местом в топе), название, онлайн и цена.
 class GameTile extends StatelessWidget {
   const GameTile({
     required this.game,
@@ -244,73 +291,124 @@ class GameTile extends StatelessWidget {
   final GameSummary game;
   final VoidCallback onTap;
 
-  /// Справа от названия, например место в топе.
+  /// Плашка в углу обложки, например место в топе.
   final Widget? trailing;
 
-  /// Под ценой, например пороги отслеживания.
+  /// Под строкой с ценой, например пороги отслеживания.
   final Widget? footer;
 
+  static const _imageWidth = 120.0;
+
   @override
-  Widget build(BuildContext context) => AppSurface(
-    onTap: onTap,
-    padding: const EdgeInsets.all(10),
-    child: Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        GameImage(url: game.headerImageUrl, width: 128),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
+  Widget build(BuildContext context) {
+    // Цены ещё нет (игру никто не открывал) — не пишем «загружается».
+    final hasPrice = game.price != null || game.isFree;
+    final hasMeta = hasPrice || game.currentPlayers != null;
+    return AppSurface(
+      onTap: onTap,
+      padding: const EdgeInsets.all(10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              Stack(
                 children: [
-                  Expanded(
-                    child: Text(
-                      game.name,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppText.title(context).copyWith(fontSize: 15),
-                    ),
+                  GameImage(
+                    url: game.headerImageUrl,
+                    width: _imageWidth,
+                    radius: 10,
                   ),
-                  if (trailing != null) ...[
-                    const SizedBox(width: 6),
-                    trailing!,
-                  ],
+                  if (trailing != null)
+                    Positioned(left: 5, top: 5, child: trailing!),
                 ],
               ),
-              const SizedBox(height: 6),
-              if (game.currentPlayers != null) ...[
-                PlayersLabel(players: game.currentPlayers!),
-                const SizedBox(height: 6),
-              ],
-              // Цены ещё нет (игру никто не открывал) — не пишем «загружается».
-              if (game.price != null || game.isFree)
-                PriceTag(price: game.price, isFree: game.isFree),
-              if (footer != null) ...[const SizedBox(height: 6), footer!],
+              const SizedBox(width: 12),
+              Expanded(
+                child: ConstrainedBox(
+                  // Не ниже обложки: название сверху, онлайн и цена снизу.
+                  constraints: const BoxConstraints(
+                    minHeight: _imageWidth * 215 / 460,
+                  ),
+                  child: IntrinsicHeight(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          game.name,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: AppText.title(context)
+                              .copyWith(fontSize: 15.5, height: 1.2),
+                        ),
+                        if (hasMeta) ...[
+                          const Spacer(),
+                          const SizedBox(height: 4),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              if (game.currentPlayers != null)
+                                PlayersLabel(players: game.currentPlayers!),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: hasPrice
+                                    ? PriceTag(
+                                        price: game.price,
+                                        isFree: game.isFree,
+                                        alignEnd: true,
+                                      )
+                                    : const SizedBox.shrink(),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
-        ),
-      ],
-    ),
-  );
+          if (footer != null) ...[
+            const SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 2),
+              child: footer!,
+            ),
+          ],
+        ],
+      ),
+    );
+  }
 }
 
-/// Место в топе: «#1».
+/// Место в топе: плашка «#1» в углу обложки, у первой тройки — акцентная.
 class RankLabel extends StatelessWidget {
   const RankLabel({required this.rank, super.key});
 
   final int rank;
 
   @override
-  Widget build(BuildContext context) => Text(
-    '#$rank',
-    style: AppText.title(context).copyWith(
-      fontSize: 15,
-      color: rank <= 3
-          ? AppColors.accent.resolveFrom(context)
-          : AppColors.textSecondary.resolveFrom(context),
+  Widget build(BuildContext context) => DecoratedBox(
+    decoration: ShapeDecoration(
+      color: AppColors.overlayChip,
+      shape: RoundedSuperellipseBorder(borderRadius: BorderRadius.circular(7)),
+    ),
+    child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      child: Text(
+        '#$rank',
+        style: TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w700,
+          fontFeatures: AppText.tabular,
+          // Обложка тёмная в любой теме — цвета из тёмной палитры.
+          color: rank <= 3
+              ? AppColors.accent.darkColor
+              : const Color(0xFFF2F5FA),
+        ),
+      ),
     ),
   );
 }

@@ -41,8 +41,21 @@ dev_dependencies:
   riverpod_generator: ^4.0.9
   build_runner: ^2.16.1
   drift_dev: ^2.35.1
+  flutter_launcher_icons: ^0.14.4
 
 flutter:
   uses-material-design: true
   # Локализации из lib/l10n/*.arb генерируются в lib/l10n/gen.
   generate: true
+
+# Иконка приложения: исходники рисует tool/make_icon.py,
+# пересборка — dart run flutter_launcher_icons.
+flutter_launcher_icons:
+  android: true
+  ios: true
+  remove_alpha_ios: true
+  image_path: assets/icon/icon.png
+  adaptive_icon_background: assets/icon/background.png
+  adaptive_icon_foreground: assets/icon/foreground.png
+  adaptive_icon_monochrome: assets/icon/foreground.png
+  min_sdk_android: 21

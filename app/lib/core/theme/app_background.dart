@@ -2,8 +2,9 @@ import 'package:flutter/cupertino.dart';
 
 import 'app_theme.dart';
 
-/// Фон под стеклом: градиент, мягкие световые пятна и едва заметные
-/// круги «радара». Стеклу нужен насыщенный фон — на плоском оно не видно.
+/// Фон под стеклом: глубокий градиент и два мягких свечения. Стеклу нужен
+/// неоднородный фон — на плоском оно не видно, — но фон не должен спорить
+/// с контентом, поэтому без узоров и ярких пятен.
 class AppBackground extends StatelessWidget {
   const AppBackground({super.key});
 
@@ -22,21 +23,15 @@ class AppBackground extends StatelessWidget {
         fit: StackFit.expand,
         children: [
           _Glow(
-            alignment: const Alignment(-1.1, -0.9),
+            alignment: const Alignment(0.2, -1.25),
             color: c(AppColors.glowA),
-            size: 1.1,
+            size: 1.6,
           ),
           _Glow(
-            alignment: const Alignment(1.2, -0.1),
+            alignment: const Alignment(1.3, 1.1),
             color: c(AppColors.glowB),
-            size: 0.9,
+            size: 1.2,
           ),
-          _Glow(
-            alignment: const Alignment(-0.6, 1.1),
-            color: c(AppColors.glowC),
-            size: 0.8,
-          ),
-          CustomPaint(painter: _RadarRings(c(AppColors.radarRing))),
         ],
       ),
     );
@@ -66,32 +61,17 @@ class _Glow extends StatelessWidget {
         child: DecoratedBox(
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            gradient: RadialGradient(colors: [color, color.withAlpha(0)]),
+            gradient: RadialGradient(
+              colors: [
+                color,
+                color.withValues(alpha: color.a / 3),
+                color.withAlpha(0),
+              ],
+              stops: const [0, 0.45, 1],
+            ),
           ),
         ),
       ),
     ),
   );
-}
-
-/// Концентрические круги — намёк на «радар» в названии.
-class _RadarRings extends CustomPainter {
-  const _RadarRings(this.color);
-
-  final Color color;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width * 0.85, size.height * 0.18);
-    final paint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1
-      ..color = color;
-    for (var r = 60.0; r < size.longestSide; r += 70) {
-      canvas.drawCircle(center, r, paint);
-    }
-  }
-
-  @override
-  bool shouldRepaint(_RadarRings old) => old.color != color;
 }

@@ -35,7 +35,22 @@ class GlassScreen extends StatelessWidget {
       title: Text(title, style: AppText.title(context)),
       actions: actions,
     ),
-    body: body,
+    body: Stack(
+      children: [
+        body,
+        // Край прокрутки, как в iOS: контент под шапкой плавно уходит
+        // в фон, а не просвечивает сквозь заголовок.
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          // Отступ берётся снаружи: внутри GlassScaffold он уже обнулён.
+          child: IgnorePointer(
+            child: _ScrollEdge(topInset: MediaQuery.paddingOf(context).top),
+          ),
+        ),
+      ],
+    ),
   );
 
   /// Отступы для прокручиваемого контента: под шапкой и над панелью вкладок.
@@ -49,6 +64,30 @@ class GlassScreen extends StatelessWidget {
       padding.top + 44 + 12,
       16,
       padding.bottom + (insideTabs ? kTabBarExtent : 0) + 24,
+    );
+  }
+}
+
+class _ScrollEdge extends StatelessWidget {
+  const _ScrollEdge({required this.topInset});
+
+  final double topInset;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = AppColors.backgroundTop.resolveFrom(context);
+    return SizedBox(
+      height: topInset + 84,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [color, color.withAlpha(0xF2), color.withAlpha(0)],
+            stops: const [0, 0.62, 1],
+          ),
+        ),
+      ),
     );
   }
 }

@@ -17,73 +17,77 @@ enum ThemePreference {
 /// Палитра GameRadar. Стекло (панели, кнопки) рисует liquid_glass_widgets,
 /// здесь — фон под стеклом, акценты и цвета текста.
 abstract final class AppColors {
-  /// Фирменный «радарный» бирюзовый.
+  /// Фирменный «радарный» бирюзовый. Единственный яркий цвет интерфейса:
+  /// кроме него цветом выделяются только скидки.
   static const accent = CupertinoDynamicColor.withBrightness(
-    color: Color(0xFF0E9FB0),
-    darkColor: Color(0xFF3FD8E6),
+    color: Color(0xFF0A8F9E),
+    darkColor: Color(0xFF4FD6E3),
   );
 
   /// Скидки и снижение цены.
   static const discount = CupertinoDynamicColor.withBrightness(
-    color: Color(0xFF1FA84F),
-    darkColor: Color(0xFF4CE08A),
+    color: Color(0xFF138A43),
+    darkColor: Color(0xFF5BE39A),
   );
 
-  /// Онлайн игроков.
+  /// Подложка бейджа скидки: тот же зелёный, приглушённый.
+  static const discountTint = CupertinoDynamicColor.withBrightness(
+    color: Color(0x1F138A43),
+    darkColor: Color(0x295BE39A),
+  );
+
+  /// Онлайн игроков: спокойный нейтральный, чтобы не спорить с ценой.
   static const online = CupertinoDynamicColor.withBrightness(
-    color: Color(0xFF5B4CF0),
-    darkColor: Color(0xFFA79BFF),
+    color: Color(0xFF4F5B70),
+    darkColor: Color(0xFFAAB6CC),
   );
 
   static const textPrimary = CupertinoDynamicColor.withBrightness(
-    color: Color(0xFF0B1424),
-    darkColor: Color(0xFFF4F7FB),
+    color: Color(0xFF0C1322),
+    darkColor: Color(0xFFF2F5FA),
   );
 
   static const textSecondary = CupertinoDynamicColor.withBrightness(
-    color: Color(0x990B1424),
-    darkColor: Color(0x99F4F7FB),
+    color: Color(0x8C0C1322),
+    darkColor: Color(0x8CF2F5FA),
   );
 
   /// Подложка карточек контента. По правилам Liquid Glass контент не стеклянный:
   /// плотная полупрозрачная поверхность читается на любом фоне.
   static const card = CupertinoDynamicColor.withBrightness(
-    color: Color(0xD9FFFFFF),
-    darkColor: Color(0xCC111A2E),
-  );
-  static const cardBorder = CupertinoDynamicColor.withBrightness(
-    color: Color(0x14000000),
-    darkColor: Color(0x1FFFFFFF),
-  );
-  static const imagePlaceholder = CupertinoDynamicColor.withBrightness(
-    color: Color(0xFFDCE6EC),
-    darkColor: Color(0xFF1B2640),
+    color: Color(0xEBFFFFFF),
+    darkColor: Color(0xB8141C2C),
   );
 
-  // Фон: глубокий градиент и мягкие световые пятна.
+  /// Тонкая кромка карточки: в тёмной теме — светлый блик, в светлой — тень.
+  static const cardBorder = CupertinoDynamicColor.withBrightness(
+    color: Color(0x0F0C1322),
+    darkColor: Color(0x12FFFFFF),
+  );
+  static const imagePlaceholder = CupertinoDynamicColor.withBrightness(
+    color: Color(0xFFE3E8EF),
+    darkColor: Color(0xFF1A2336),
+  );
+
+  /// Плашка поверх обложки (место в топе).
+  static const overlayChip = Color(0xB3070B14);
+
+  // Фон: почти чёрный синий с одним мягким бирюзовым свечением сверху.
   static const backgroundTop = CupertinoDynamicColor.withBrightness(
-    color: Color(0xFFE6F3F7),
-    darkColor: Color(0xFF070B18),
+    color: Color(0xFFF3F6F9),
+    darkColor: Color(0xFF0A101C),
   );
   static const backgroundBottom = CupertinoDynamicColor.withBrightness(
-    color: Color(0xFFF2EEFF),
-    darkColor: Color(0xFF0C1A2E),
+    color: Color(0xFFE9EDF3),
+    darkColor: Color(0xFF05070D),
   );
   static const glowA = CupertinoDynamicColor.withBrightness(
-    color: Color(0x6633C6D6),
-    darkColor: Color(0x5513A3B4),
+    color: Color(0x3326B5C4),
+    darkColor: Color(0x3313A3B4),
   );
   static const glowB = CupertinoDynamicColor.withBrightness(
-    color: Color(0x557B6CFF),
-    darkColor: Color(0x554C3BD9),
-  );
-  static const glowC = CupertinoDynamicColor.withBrightness(
-    color: Color(0x44FF9EC4),
-    darkColor: Color(0x33B13A8B),
-  );
-  static const radarRing = CupertinoDynamicColor.withBrightness(
-    color: Color(0x140B1424),
-    darkColor: Color(0x12FFFFFF),
+    color: Color(0x1F6C7BFF),
+    darkColor: Color(0x1F3B4BD9),
   );
 }
 
@@ -118,9 +122,10 @@ abstract final class AppTheme {
 /// Типографика экранов в стиле iOS.
 abstract final class AppText {
   static TextStyle largeTitle(BuildContext context) => TextStyle(
-    fontSize: 32,
+    fontSize: 30,
     fontWeight: FontWeight.w700,
-    letterSpacing: 0.3,
+    letterSpacing: -0.6,
+    height: 1.15,
     color: AppColors.textPrimary.resolveFrom(context),
   );
 
@@ -144,9 +149,12 @@ abstract final class AppText {
   );
 
   static TextStyle sectionHeader(BuildContext context) => TextStyle(
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: FontWeight.w600,
-    letterSpacing: 0.4,
+    letterSpacing: 0.8,
     color: AppColors.textSecondary.resolveFrom(context),
   );
+
+  /// Цифры (цены, онлайн): одинаковой ширины, чтобы колонки не «прыгали».
+  static const tabular = [FontFeature.tabularFigures()];
 }

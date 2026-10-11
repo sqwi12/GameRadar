@@ -283,7 +283,7 @@ class _Stat extends StatelessWidget {
         value,
         style: AppText.title(context).copyWith(
           fontSize: 22,
-          color: accent ? AppColors.online.resolveFrom(context) : null,
+          color: accent ? AppColors.accent.resolveFrom(context) : null,
         ),
       ),
       const SizedBox(height: 2),
