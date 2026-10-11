@@ -571,4 +571,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get priceNowAtLow => 'Now — all-time low';
+
+  @override
+  String get recordLowAlertsTitle => 'Record low prices';
+
+  @override
+  String get recordLowAlertsSubtitle =>
+      'When a watched game is cheaper than ever on Steam';
 }

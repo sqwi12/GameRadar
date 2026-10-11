@@ -1,5 +1,7 @@
 import 'package:logging/logging.dart';
 
+import 'notification_policy.dart';
+
 /// Данные для push-уведомления о цене.
 typedef PriceAlert = ({
   String userId,
@@ -10,6 +12,12 @@ typedef PriceAlert = ({
   int? initialPrice,
   int discountPct,
   String currency,
+
+  /// Не null — уведомление о рекордно низкой цене (см. [RecordLowKind]).
+  RecordLowKind? recordLow,
+
+  /// Для [RecordLowKind.tracked]: сколько дней отслеживаем.
+  int? trackedDays,
 });
 
 /// Отправка уведомлений пользователю на все его устройства.

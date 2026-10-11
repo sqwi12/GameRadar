@@ -162,5 +162,7 @@
   "allTimeLowSource": "All-time low on {date} · IsThereAnyDeal",
   "allTimeLowShort": "all-time low",
   "allTimeLowLabel": "All-time low, {discount}",
-  "priceNowAtLow": "Now — all-time low"
+  "priceNowAtLow": "Now — all-time low",
+  "recordLowAlertsTitle": "Record low prices",
+  "recordLowAlertsSubtitle": "When a watched game is cheaper than ever on Steam"
 }

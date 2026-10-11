@@ -134,6 +134,65 @@ NotificationDecision decideNotification({
   return NotifyNow(finalPrice);
 }
 
+/// Откуда известно, что цена рекордная.
+enum RecordLowKind {
+  /// Не выше минимума за всю историю Steam (IsThereAnyDeal).
+  allTime,
+
+  /// Ниже нашего минимума за время отслеживания (без данных ITAD).
+  tracked,
+}
+
+/// Цена и известные минимумы для проверки «рекордно низкая ли цена».
+typedef RecordLowInput = ({
+  int finalPrice,
+  int discountPct,
+  String currency,
+
+  /// Минимум за всю историю (ITAD) и его валюта.
+  int? allTimeLow,
+  String? allTimeLowCurrency,
+
+  /// Наш минимум до текущего изменения цены и начало отслеживания.
+  int? trackedLow,
+  DateTime? trackedSince,
+});
+
+/// Своей истории должно быть не меньше, иначе любое первое снижение
+/// оказалось бы «рекордом».
+const minTrackedHistory = Duration(days: 30);
+
+/// Рекордно ли низкая цена. Только со скидкой: у игры, которая никогда
+/// не дешевела, обычная цена совпадает с минимумом, но это не новость.
+/// - есть минимум ITAD в той же валюте — цена не выше него;
+/// - иначе — ниже нашего минимума, если отслеживаем дольше 30 дней.
+/// null — не рекорд.
+({RecordLowKind kind, int? trackedDays})? recordLowOf(
+  RecordLowInput input, {
+  required DateTime nowUtc,
+}) {
+  if (input.discountPct <= 0) return null;
+  final allTime = input.allTimeLow;
+  if (allTime != null && input.allTimeLowCurrency == input.currency) {
+    return input.finalPrice <= allTime
+        ? (kind: RecordLowKind.allTime, trackedDays: null)
+        : null;
+  }
+  final tracked = input.trackedLow;
+  final since = input.trackedSince;
+  if (tracked == null || since == null) return null;
+  final age = nowUtc.difference(since);
+  if (age < minTrackedHistory || input.finalPrice >= tracked) return null;
+  return (kind: RecordLowKind.tracked, trackedDays: age.inDays);
+}
+
+/// Идут ли сейчас тихие часы пользователя.
+bool inQuietHours(QuietHours? quiet, String timezone, DateTime nowUtc) {
+  if (quiet == null) return false;
+  final local = tz.TZDateTime.from(nowUtc, resolveLocation(timezone));
+  return quiet.contains(ClockTime(local.hour, local.minute));
+}
+
 /// Ближайший конец тихих часов после локального момента [local], в UTC.
 DateTime quietHoursEnd(QuietHours quiet, tz.TZDateTime local) {
   var end = tz.TZDateTime(

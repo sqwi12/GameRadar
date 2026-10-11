@@ -232,6 +232,7 @@ void main() {
                 const UserSettings(
                   locale: AppLocale.en,
                   notificationsEnabled: false,
+                  notifyRecordLow: false,
                 ).toJson(),
               ),
             ),
@@ -243,6 +244,7 @@ void main() {
         final profile = UserProfile.fromJson(obj(body));
         expect(profile.settings.quietHours, isNull);
         expect(profile.settings.notificationsEnabled, isFalse);
+        expect(profile.settings.notifyRecordLow, isFalse);
       },
     );
 

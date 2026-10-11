@@ -13,6 +13,24 @@ typedef WatchRow = ({
   GamePrice? price,
 });
 
+/// Подписка для проверки рекордно низкой цены.
+typedef RecordLowRow = ({
+  String userId,
+  int appId,
+  String gameName,
+  String locale,
+  String timezone,
+  QuietHours? quietHours,
+  int? initialPrice,
+  RecordLowInput input,
+
+  /// О какой цене уже уведомили как о рекорде.
+  int? notifiedPrice,
+
+  /// О какой цене уведомили по порогам (чтобы не слать второе уведомление).
+  int? lastNotifiedPrice,
+});
+
 /// Доступ worker'а к watchlist для уведомлений.
 final class WatchlistRepository {
   WatchlistRepository(this._db);
@@ -119,6 +137,77 @@ final class WatchlistRepository {
     );
     return result.affectedRows == 1;
   }
+
+  /// Подписки на игры [appIds] для проверки рекордно низкой цены: все
+  /// (а не только с порогами), у пользователей с включённой настройкой,
+  /// если игра сейчас продаётся со скидкой.
+  Future<List<RecordLowRow>> recordLowRows(
+    List<int> appIds,
+    String region,
+  ) async {
+    if (appIds.isEmpty) return const [];
+    final rows = await _db.execute(
+      Sql.named('''
+        SELECT w.user_id::text, w.app_id, g.name, u.locale, u.timezone,
+               to_char(u.quiet_hours_start, 'HH24:MI'), to_char(u.quiet_hours_end, 'HH24:MI'),
+               p.final_price, p.initial_price, p.discount_pct, p.currency::text,
+               l.low_price, l.currency::text,
+               (SELECT min(h.final_price) FROM price_history h
+                WHERE h.app_id = w.app_id AND h.region = w.region
+                  AND h.is_available AND h.recorded_at < p.changed_at),
+               (SELECT min(h.recorded_at) FROM price_history h
+                WHERE h.app_id = w.app_id AND h.region = w.region),
+               w.record_low_notified_price, w.last_notified_price
+        FROM watchlist w
+        JOIN users u ON u.id = w.user_id
+        JOIN games g ON g.app_id = w.app_id
+        JOIN game_prices p ON p.app_id = w.app_id AND p.region = w.region
+        LEFT JOIN game_store_lows l ON l.app_id = w.app_id AND l.region = w.region
+        WHERE w.app_id = ANY(@ids:_int4) AND w.region = @region:text
+          AND u.notify_record_low AND u.notifications_enabled
+          AND p.is_available
+      '''),
+      parameters: {'ids': appIds, 'region': region},
+    );
+    return [
+      for (final r in rows)
+        (
+          userId: r[0]! as String,
+          appId: r[1]! as int,
+          gameName: r[2]! as String,
+          locale: r[3]! as String,
+          timezone: r[4]! as String,
+          quietHours: r[5] != null && r[6] != null
+              ? QuietHours(
+                  start: ClockTime.parse(r[5]! as String),
+                  end: ClockTime.parse(r[6]! as String),
+                )
+              : null,
+          initialPrice: r[8] as int?,
+          input: (
+            finalPrice: r[7]! as int,
+            discountPct: r[9]! as int,
+            currency: (r[10]! as String).trim(),
+            allTimeLow: r[11] as int?,
+            allTimeLowCurrency: (r[12] as String?)?.trim(),
+            trackedLow: r[13] as int?,
+            trackedSince: r[14] as DateTime?,
+          ),
+          notifiedPrice: r[15] as int?,
+          lastNotifiedPrice: r[16] as int?,
+        ),
+    ];
+  }
+
+  /// Отметка уведомления о рекорде; null — сброс (цена больше не рекордная).
+  Future<void> markRecordLowNotified(String userId, int appId, int? price) =>
+      _db.execute(
+        Sql.named('''
+          UPDATE watchlist SET record_low_notified_price = @price:int8
+          WHERE user_id = CAST(@user:text AS uuid) AND app_id = @app:int4
+        '''),
+        parameters: {'user': userId, 'app': appId, 'price': price},
+      );
 
   Future<void> resetNotified(String userId, int appId) => _db.execute(
     Sql.named('''

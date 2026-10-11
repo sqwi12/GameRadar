@@ -196,4 +196,60 @@ void main() {
       );
     });
   });
+
+  group('рекордно низкая цена', () {
+    final now = DateTime.utc(2026, 10, 12, 12);
+    RecordLowInput input({
+      int price = 1000,
+      int discount = 50,
+      int? allTime,
+      String allTimeCurrency = 'KZT',
+      int? tracked,
+      DateTime? since,
+    }) => (
+      finalPrice: price,
+      discountPct: discount,
+      currency: 'KZT',
+      allTimeLow: allTime,
+      allTimeLowCurrency: allTime == null ? null : allTimeCurrency,
+      trackedLow: tracked,
+      trackedSince: since,
+    );
+
+    test('ITAD: не выше минимума за всё время — рекорд', () {
+      expect(
+        recordLowOf(input(allTime: 1000), nowUtc: now)?.kind,
+        RecordLowKind.allTime,
+      );
+      expect(recordLowOf(input(allTime: 999), nowUtc: now), isNull);
+    });
+
+    test('без скидки и в другой валюте — не рекорд по ITAD', () {
+      expect(
+        recordLowOf(input(allTime: 2000, discount: 0), nowUtc: now),
+        isNull,
+      );
+      expect(
+        recordLowOf(input(allTime: 2000, allTimeCurrency: 'USD'), nowUtc: now),
+        isNull,
+      );
+    });
+
+    test('своя история: только строго ниже и только за 30+ дней', () {
+      final old = now.subtract(const Duration(days: 45));
+      final fresh = now.subtract(const Duration(days: 10));
+      expect(recordLowOf(input(tracked: 1001, since: old), nowUtc: now), (
+        kind: RecordLowKind.tracked,
+        trackedDays: 45,
+      ));
+      expect(
+        recordLowOf(input(tracked: 1000, since: old), nowUtc: now),
+        isNull,
+      );
+      expect(
+        recordLowOf(input(tracked: 5000, since: fresh), nowUtc: now),
+        isNull,
+      );
+    });
+  });
 }

@@ -208,6 +208,154 @@ void main() {
     );
   });
 
+  group('рекордно низкая цена', () {
+    late RecordingNotifier notifier;
+    late NotificationService service;
+
+    Future<void> price(int appId, int finalPrice, int discount) =>
+        games.savePrices('kz', [
+          SteamPriceOverview(
+            appId: appId,
+            success: true,
+            currency: 'KZT',
+            initialPrice: 500000,
+            finalPrice: finalPrice,
+            discountPct: discount,
+          ),
+        ]);
+
+    Future<void> game(int appId) => db.execute(
+      Sql.named(
+        // Онлайн «уже проверялся»: иначе игра попадёт в разведку других тестов.
+        'INSERT INTO games (app_id, name, players_checked_at) '
+        "VALUES (@id:int4, 'Game ' || @id:int4, now()) "
+        'ON CONFLICT DO NOTHING',
+      ),
+      parameters: {'id': appId},
+    );
+
+    Future<void> watch(String user, int appId, {int? target}) => db.execute(
+      Sql.named(
+        'INSERT INTO watchlist (user_id, app_id, target_price) '
+        'VALUES (CAST(@u:text AS uuid), @app:int4, @target:int8)',
+      ),
+      parameters: {'u': user, 'app': appId, 'target': target},
+    );
+
+    Future<void> itadLow(int appId, int low) => db.execute(
+      Sql.named(
+        'INSERT INTO game_store_lows '
+        '(app_id, region, currency, low_price, regular_price, cut, low_at) '
+        "VALUES (@app:int4, 'kz', 'KZT', @low:int8, 500000, 70, "
+        "now() - interval '1 year')",
+      ),
+      parameters: {'app': appId, 'low': low},
+    );
+
+    setUp(() {
+      notifier = RecordingNotifier();
+      final clock = FakeClock(DateTime.now().toUtc());
+      service = NotificationService(
+        watchlist: watchlist,
+        notifier: notifier,
+        queue: InMemoryTaskQueue(clock),
+        clock: clock,
+      );
+    });
+
+    test('по минимуму ITAD: один раз на рекорд, сброс, новый рекорд', () async {
+      final user = await createUser();
+      await game(4000);
+      await watch(user, 4000); // без порогов
+      await itadLow(4000, 150000);
+
+      await price(4000, 150000, 70); // равна минимуму за всё время
+      await service.evaluateApps([4000], 'kz');
+      final alert = notifier.sent.single;
+      expect(alert.recordLow, RecordLowKind.allTime);
+      expect(priceAlertText(alert).title, contains('рекордно низкая цена'));
+
+      await service.evaluateApps([4000], 'kz');
+      expect(
+        notifier.sent,
+        hasLength(1),
+        reason: 'тот же рекорд — без повтора',
+      );
+
+      await price(4000, 400000, 20);
+      await service.evaluateApps([4000], 'kz');
+      expect(
+        await scalar(
+          'SELECT record_low_notified_price FROM watchlist WHERE app_id = 4000',
+        ),
+        isNull,
+      );
+
+      await price(4000, 140000, 72);
+      await service.evaluateApps([4000], 'kz');
+      expect(notifier.sent, hasLength(2));
+      expect(notifier.sent.last.finalPrice, 140000);
+    });
+
+    test(
+      'без ITAD — по своей истории, только если она дольше 30 дней',
+      () async {
+        final user = await createUser();
+        await game(4001);
+        await watch(user, 4001);
+        await price(4001, 300000, 40);
+        // История короче 30 дней — не рекорд, даже если цена ниже.
+        await price(4001, 250000, 50);
+        await service.evaluateApps([4001], 'kz');
+        expect(notifier.sent, isEmpty);
+
+        await db.execute(
+          "UPDATE price_history SET recorded_at = recorded_at - interval '40 days' "
+          'WHERE app_id = 4001',
+        );
+        await price(4001, 200000, 60);
+        await service.evaluateApps([4001], 'kz');
+        final alert = notifier.sent.single;
+        expect(alert.recordLow, RecordLowKind.tracked);
+        expect(alert.trackedDays, greaterThanOrEqualTo(39));
+      },
+    );
+
+    test('порог и рекорд одновременно — одно уведомление; настройка выключена', () async {
+      final user = await createUser();
+      await game(4002);
+      await watch(user, 4002, target: 999999);
+      await itadLow(4002, 150000);
+      await price(4002, 150000, 70);
+      await service.evaluateApps([4002], 'kz');
+      expect(
+        notifier.sent.single.recordLow,
+        isNull,
+        reason: 'пришло по порогу',
+      );
+      expect(
+        await scalar(
+          'SELECT record_low_notified_price FROM watchlist WHERE app_id = 4002',
+        ),
+        150000,
+      );
+
+      final off = await createUser();
+      await db.execute(
+        Sql.named(
+          'UPDATE users SET notify_record_low = false WHERE id = CAST(@u:text AS uuid)',
+        ),
+        parameters: {'u': off},
+      );
+      await game(4003);
+      await watch(off, 4003);
+      await itadLow(4003, 150000);
+      await price(4003, 100000, 80);
+      await service.evaluateApps([4003], 'kz');
+      expect(notifier.sent, hasLength(1));
+    });
+  });
+
   test(
     'тихие часы: строка подписки читается и уведомление откладывается',
     () async {

@@ -17,7 +17,8 @@ T _$identity<T>(T value) => value;
 mixin _$UserSettings {
 
  AppLocale get locale; String get region;/// Часовой пояс IANA, например `Asia/Almaty`.
- String get timezone; bool get notificationsEnabled;/// null — тихих часов нет.
+ String get timezone; bool get notificationsEnabled;/// Уведомлять о рекордно низкой цене отслеживаемых игр.
+ bool get notifyRecordLow;/// null — тихих часов нет.
  QuietHours? get quietHours;
 /// Create a copy of UserSettings
 /// with the given fields replaced by the non-null parameter values.
@@ -32,20 +33,20 @@ $UserSettingsCopyWith<UserSettings> get copyWith => _$UserSettingsCopyWithImpl<U
 @override
 bool operator ==(Object other) {
   final _this = this as UserSettings;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserSettings&&(identical(other.locale, _this.locale) || other.locale == _this.locale)&&(identical(other.region, _this.region) || other.region == _this.region)&&(identical(other.timezone, _this.timezone) || other.timezone == _this.timezone)&&(identical(other.notificationsEnabled, _this.notificationsEnabled) || other.notificationsEnabled == _this.notificationsEnabled)&&(identical(other.quietHours, _this.quietHours) || other.quietHours == _this.quietHours));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserSettings&&(identical(other.locale, _this.locale) || other.locale == _this.locale)&&(identical(other.region, _this.region) || other.region == _this.region)&&(identical(other.timezone, _this.timezone) || other.timezone == _this.timezone)&&(identical(other.notificationsEnabled, _this.notificationsEnabled) || other.notificationsEnabled == _this.notificationsEnabled)&&(identical(other.notifyRecordLow, _this.notifyRecordLow) || other.notifyRecordLow == _this.notifyRecordLow)&&(identical(other.quietHours, _this.quietHours) || other.quietHours == _this.quietHours));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
   final _this = this as UserSettings;
-  return Object.hash(runtimeType,_this.locale,_this.region,_this.timezone,_this.notificationsEnabled,_this.quietHours);
+  return Object.hash(runtimeType,_this.locale,_this.region,_this.timezone,_this.notificationsEnabled,_this.notifyRecordLow,_this.quietHours);
 }
 
 @override
 String toString() {
   final _this = this as UserSettings;
-  return 'UserSettings(locale: ${_this.locale}, region: ${_this.region}, timezone: ${_this.timezone}, notificationsEnabled: ${_this.notificationsEnabled}, quietHours: ${_this.quietHours})';
+  return 'UserSettings(locale: ${_this.locale}, region: ${_this.region}, timezone: ${_this.timezone}, notificationsEnabled: ${_this.notificationsEnabled}, notifyRecordLow: ${_this.notifyRecordLow}, quietHours: ${_this.quietHours})';
 }
 
 
@@ -56,7 +57,7 @@ abstract mixin class $UserSettingsCopyWith<$Res>  {
   factory $UserSettingsCopyWith(UserSettings value, $Res Function(UserSettings) _then) = _$UserSettingsCopyWithImpl;
 @useResult
 $Res call({
- AppLocale locale, String region, String timezone, bool notificationsEnabled, QuietHours? quietHours
+ AppLocale locale, String region, String timezone, bool notificationsEnabled, bool notifyRecordLow, QuietHours? quietHours
 });
 
 
@@ -73,12 +74,13 @@ class _$UserSettingsCopyWithImpl<$Res>
 
 /// Create a copy of UserSettings
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? locale = null,Object? region = null,Object? timezone = null,Object? notificationsEnabled = null,Object? quietHours = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? locale = null,Object? region = null,Object? timezone = null,Object? notificationsEnabled = null,Object? notifyRecordLow = null,Object? quietHours = freezed,}) {
   return _then(UserSettings(
 locale: null == locale ? _self.locale : locale // ignore: cast_nullable_to_non_nullable
 as AppLocale,region: null == region ? _self.region : region // ignore: cast_nullable_to_non_nullable
 as String,timezone: null == timezone ? _self.timezone : timezone // ignore: cast_nullable_to_non_nullable
 as String,notificationsEnabled: null == notificationsEnabled ? _self.notificationsEnabled : notificationsEnabled // ignore: cast_nullable_to_non_nullable
+as bool,notifyRecordLow: null == notifyRecordLow ? _self.notifyRecordLow : notifyRecordLow // ignore: cast_nullable_to_non_nullable
 as bool,quietHours: freezed == quietHours ? _self.quietHours : quietHours // ignore: cast_nullable_to_non_nullable
 as QuietHours?,
   ));
@@ -177,10 +179,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( AppLocale locale,  String region,  String timezone,  bool notificationsEnabled,  QuietHours? quietHours)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( AppLocale locale,  String region,  String timezone,  bool notificationsEnabled,  bool notifyRecordLow,  QuietHours? quietHours)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _UserSettings() when $default != null:
-return $default(_that.locale,_that.region,_that.timezone,_that.notificationsEnabled,_that.quietHours);case _:
+return $default(_that.locale,_that.region,_that.timezone,_that.notificationsEnabled,_that.notifyRecordLow,_that.quietHours);case _:
   return orElse();
 
 }
@@ -198,10 +200,10 @@ return $default(_that.locale,_that.region,_that.timezone,_that.notificationsEnab
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( AppLocale locale,  String region,  String timezone,  bool notificationsEnabled,  QuietHours? quietHours)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( AppLocale locale,  String region,  String timezone,  bool notificationsEnabled,  bool notifyRecordLow,  QuietHours? quietHours)  $default,) {final _that = this;
 switch (_that) {
 case _UserSettings():
-return $default(_that.locale,_that.region,_that.timezone,_that.notificationsEnabled,_that.quietHours);case _:
+return $default(_that.locale,_that.region,_that.timezone,_that.notificationsEnabled,_that.notifyRecordLow,_that.quietHours);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -218,10 +220,10 @@ return $default(_that.locale,_that.region,_that.timezone,_that.notificationsEnab
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( AppLocale locale,  String region,  String timezone,  bool notificationsEnabled,  QuietHours? quietHours)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( AppLocale locale,  String region,  String timezone,  bool notificationsEnabled,  bool notifyRecordLow,  QuietHours? quietHours)?  $default,) {final _that = this;
 switch (_that) {
 case _UserSettings() when $default != null:
-return $default(_that.locale,_that.region,_that.timezone,_that.notificationsEnabled,_that.quietHours);case _:
+return $default(_that.locale,_that.region,_that.timezone,_that.notificationsEnabled,_that.notifyRecordLow,_that.quietHours);case _:
   return null;
 
 }
@@ -233,7 +235,7 @@ return $default(_that.locale,_that.region,_that.timezone,_that.notificationsEnab
 @JsonSerializable()
 
 class _UserSettings extends UserSettings {
-  const _UserSettings({this.locale = AppLocale.ru, this.region = Regions.defaultRegion, this.timezone = UserSettings.defaultTimezone, this.notificationsEnabled = true, this.quietHours}): super._();
+  const _UserSettings({this.locale = AppLocale.ru, this.region = Regions.defaultRegion, this.timezone = UserSettings.defaultTimezone, this.notificationsEnabled = true, this.notifyRecordLow = true, this.quietHours}): super._();
   factory _UserSettings.fromJson(Map<String, dynamic> json) => _$UserSettingsFromJson(json);
 
 @override@JsonKey() final  AppLocale locale;
@@ -241,6 +243,8 @@ class _UserSettings extends UserSettings {
 /// Часовой пояс IANA, например `Asia/Almaty`.
 @override@JsonKey() final  String timezone;
 @override@JsonKey() final  bool notificationsEnabled;
+/// Уведомлять о рекордно низкой цене отслеживаемых игр.
+@override@JsonKey() final  bool notifyRecordLow;
 /// null — тихих часов нет.
 @override final  QuietHours? quietHours;
 
@@ -257,18 +261,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserSettings&&(identical(other.locale, locale) || other.locale == locale)&&(identical(other.region, region) || other.region == region)&&(identical(other.timezone, timezone) || other.timezone == timezone)&&(identical(other.notificationsEnabled, notificationsEnabled) || other.notificationsEnabled == notificationsEnabled)&&(identical(other.quietHours, quietHours) || other.quietHours == quietHours));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserSettings&&(identical(other.locale, locale) || other.locale == locale)&&(identical(other.region, region) || other.region == region)&&(identical(other.timezone, timezone) || other.timezone == timezone)&&(identical(other.notificationsEnabled, notificationsEnabled) || other.notificationsEnabled == notificationsEnabled)&&(identical(other.notifyRecordLow, notifyRecordLow) || other.notifyRecordLow == notifyRecordLow)&&(identical(other.quietHours, quietHours) || other.quietHours == quietHours));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
-    return Object.hash(runtimeType,locale,region,timezone,notificationsEnabled,quietHours);
+    return Object.hash(runtimeType,locale,region,timezone,notificationsEnabled,notifyRecordLow,quietHours);
 }
 
 @override
 String toString() {
-    return 'UserSettings(locale: $locale, region: $region, timezone: $timezone, notificationsEnabled: $notificationsEnabled, quietHours: $quietHours)';
+    return 'UserSettings(locale: $locale, region: $region, timezone: $timezone, notificationsEnabled: $notificationsEnabled, notifyRecordLow: $notifyRecordLow, quietHours: $quietHours)';
 }
 
 
@@ -279,7 +283,7 @@ abstract mixin class _$UserSettingsCopyWith<$Res> implements $UserSettingsCopyWi
   factory _$UserSettingsCopyWith(_UserSettings value, $Res Function(_UserSettings) _then) = __$UserSettingsCopyWithImpl;
 @override @useResult
 $Res call({
- AppLocale locale, String region, String timezone, bool notificationsEnabled, QuietHours? quietHours
+ AppLocale locale, String region, String timezone, bool notificationsEnabled, bool notifyRecordLow, QuietHours? quietHours
 });
 
 
@@ -296,12 +300,13 @@ class __$UserSettingsCopyWithImpl<$Res>
 
 /// Create a copy of UserSettings
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? locale = null,Object? region = null,Object? timezone = null,Object? notificationsEnabled = null,Object? quietHours = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? locale = null,Object? region = null,Object? timezone = null,Object? notificationsEnabled = null,Object? notifyRecordLow = null,Object? quietHours = freezed,}) {
   return _then(_UserSettings(
 locale: null == locale ? _self.locale : locale // ignore: cast_nullable_to_non_nullable
 as AppLocale,region: null == region ? _self.region : region // ignore: cast_nullable_to_non_nullable
 as String,timezone: null == timezone ? _self.timezone : timezone // ignore: cast_nullable_to_non_nullable
 as String,notificationsEnabled: null == notificationsEnabled ? _self.notificationsEnabled : notificationsEnabled // ignore: cast_nullable_to_non_nullable
+as bool,notifyRecordLow: null == notifyRecordLow ? _self.notifyRecordLow : notifyRecordLow // ignore: cast_nullable_to_non_nullable
 as bool,quietHours: freezed == quietHours ? _self.quietHours : quietHours // ignore: cast_nullable_to_non_nullable
 as QuietHours?,
   ));

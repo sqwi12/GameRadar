@@ -26,6 +26,9 @@ abstract class UserSettings with _$UserSettings {
     @Default(UserSettings.defaultTimezone) String timezone,
     @Default(true) bool notificationsEnabled,
 
+    /// Уведомлять о рекордно низкой цене отслеживаемых игр.
+    @Default(true) bool notifyRecordLow,
+
     /// null — тихих часов нет.
     QuietHours? quietHours,
   }) = _UserSettings;

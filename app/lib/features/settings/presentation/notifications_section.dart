@@ -52,6 +52,22 @@ class NotificationsSection extends ConsumerWidget {
           ),
         ),
         AppListTile(
+          leading: const Icon(CupertinoIcons.flame),
+          title: Text(l10n.recordLowAlertsTitle),
+          subtitle: Text(l10n.recordLowAlertsSubtitle),
+          trailing: CupertinoSwitch(
+            value: settings?.notifyRecordLow ?? true,
+            activeTrackColor: AppColors.accent.resolveFrom(context),
+            onChanged: settings == null || !settings.notificationsEnabled
+                ? null
+                : (on) => _save(
+                    context,
+                    ref,
+                    (s) => s.copyWith(notifyRecordLow: on),
+                  ),
+          ),
+        ),
+        AppListTile(
           leading: const Icon(CupertinoIcons.moon),
           title: Text(l10n.quietHoursTitle),
           subtitle: Text(switch (settings?.quietHours) {

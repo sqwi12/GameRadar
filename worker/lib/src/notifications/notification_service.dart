@@ -28,6 +28,51 @@ final class NotificationService {
     for (final row in await _watchlist.forApps(appIds, region)) {
       await _apply(row);
     }
+    await _evaluateRecordLows(appIds, region);
+  }
+
+  /// Рекордно низкие цены: уведомление один раз на каждую новую рекордную
+  /// цену. Если по порогам об этой цене уже уведомили — второе не шлём.
+  /// В тихие часы ничего не отмечаем: после них следующая проверка цены
+  /// найдёт рекорд снова и уведомит.
+  Future<void> _evaluateRecordLows(List<int> appIds, String region) async {
+    final now = _clock.now();
+    for (final row in await _watchlist.recordLowRows(appIds, region)) {
+      final price = row.input.finalPrice;
+      final record = recordLowOf(row.input, nowUtc: now);
+      if (record == null) {
+        if (row.notifiedPrice != null) {
+          await _watchlist.markRecordLowNotified(row.userId, row.appId, null);
+        }
+        continue;
+      }
+      final notified = row.notifiedPrice;
+      if (notified != null && price >= notified) continue;
+      if (row.lastNotifiedPrice == price) {
+        // Уведомление по порогу уже пришло — второго о той же цене не нужно.
+        await _watchlist.markRecordLowNotified(row.userId, row.appId, price);
+        continue;
+      }
+      if (inQuietHours(row.quietHours, row.timezone, now)) continue;
+      final sent = await _notifier.sendPriceAlert((
+        userId: row.userId,
+        appId: row.appId,
+        gameName: row.gameName,
+        locale: row.locale,
+        finalPrice: price,
+        initialPrice: row.initialPrice,
+        discountPct: row.input.discountPct,
+        currency: row.input.currency,
+        recordLow: record.kind,
+        trackedDays: record.trackedDays,
+      ));
+      if (sent) {
+        await _watchlist.markRecordLowNotified(row.userId, row.appId, price);
+        _log.info(
+          'Рекорд: ${row.userId}/${row.appId} $price (${record.kind.name})',
+        );
+      }
+    }
   }
 
   /// Повторная проверка одной подписки (после тихих часов).
@@ -55,6 +100,8 @@ final class NotificationService {
           initialPrice: p.initialPrice,
           discountPct: p.discountPct,
           currency: p.currency!,
+          recordLow: null,
+          trackedDays: null,
         ));
         if (sent) {
           await _watchlist.markNotified(

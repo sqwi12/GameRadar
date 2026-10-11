@@ -32,6 +32,8 @@ PriceAlert alert({
   initialPrice: initial,
   discountPct: discount,
   currency: 'KZT',
+  recordLow: null,
+  trackedDays: null,
 );
 
 String fcmError(
@@ -207,5 +209,28 @@ void main() {
     );
     expect(FcmNotifier.isInvalidTokenResponse(500, '{}'), isFalse);
     expect(FcmNotifier.isInvalidTokenResponse(404, 'не JSON'), isFalse);
+  });
+
+  test('тексты: рекордно низкая цена', () {
+    PriceAlert record(String locale, RecordLowKind kind, int? days) => (
+      userId: 'user-1',
+      appId: 1091500,
+      gameName: 'Cyberpunk 2077',
+      locale: locale,
+      finalPrice: 899900,
+      initialPrice: 1799900,
+      discountPct: 70,
+      currency: 'KZT',
+      recordLow: kind,
+      trackedDays: days,
+    );
+    expect(priceAlertText(record('ru', RecordLowKind.allTime, null)), (
+      title: 'Cyberpunk 2077 — рекордно низкая цена',
+      body: '${formatMoney(899900, 'KZT')} (−70%): дешевле в Steam не было',
+    ));
+    expect(
+      priceAlertText(record('en', RecordLowKind.tracked, 45)).body,
+      '${formatMoney(899900, 'KZT')} (70% off): cheapest in 45 days',
+    );
   });
 }

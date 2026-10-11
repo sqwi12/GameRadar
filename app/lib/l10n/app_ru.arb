@@ -330,5 +330,7 @@
         "type": "String"
       }
     }
-  }
+  },
+  "recordLowAlertsTitle": "Рекордно низкие цены",
+  "recordLowAlertsSubtitle": "Когда отслеживаемая игра дешевле, чем когда-либо в Steam"
 }

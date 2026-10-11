@@ -14,6 +14,7 @@ _UserSettings _$UserSettingsFromJson(Map<String, dynamic> json) =>
       region: json['region'] as String? ?? Regions.defaultRegion,
       timezone: json['timezone'] as String? ?? UserSettings.defaultTimezone,
       notificationsEnabled: json['notifications_enabled'] as bool? ?? true,
+      notifyRecordLow: json['notify_record_low'] as bool? ?? true,
       quietHours: json['quiet_hours'] == null
           ? null
           : QuietHours.fromJson(json['quiet_hours'] as Map<String, dynamic>),
@@ -25,6 +26,7 @@ Map<String, dynamic> _$UserSettingsToJson(_UserSettings instance) =>
       'region': instance.region,
       'timezone': instance.timezone,
       'notifications_enabled': instance.notificationsEnabled,
+      'notify_record_low': instance.notifyRecordLow,
       'quiet_hours': ?instance.quietHours?.toJson(),
     };
 

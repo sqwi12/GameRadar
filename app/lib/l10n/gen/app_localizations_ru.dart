@@ -571,4 +571,11 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get priceNowAtLow => 'Сейчас — минимум';
+
+  @override
+  String get recordLowAlertsTitle => 'Рекордно низкие цены';
+
+  @override
+  String get recordLowAlertsSubtitle =>
+      'Когда отслеживаемая игра дешевле, чем когда-либо в Steam';
 }

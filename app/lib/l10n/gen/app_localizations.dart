@@ -1075,6 +1075,18 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Сейчас — минимум'**
   String get priceNowAtLow;
+
+  /// No description provided for @recordLowAlertsTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Рекордно низкие цены'**
+  String get recordLowAlertsTitle;
+
+  /// No description provided for @recordLowAlertsSubtitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Когда отслеживаемая игра дешевле, чем когда-либо в Steam'**
+  String get recordLowAlertsSubtitle;
 }
 
 class _AppLocalizationsDelegate

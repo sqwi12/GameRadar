@@ -52,6 +52,8 @@ Future<void> main(List<String> args) async {
       initialPrice: 1799900,
       discountPct: 50,
       currency: 'KZT',
+      recordLow: null,
+      trackedDays: null,
     ));
     stdout.writeln(sent ? 'Отправлено' : 'Не доставлено (см. журнал выше)');
     exit(sent ? 0 : 1);

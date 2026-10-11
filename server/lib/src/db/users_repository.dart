@@ -10,7 +10,7 @@ final class UsersRepository {
   static const _columns = '''
     id::text, locale, region::text, timezone, notifications_enabled,
     to_char(quiet_hours_start, 'HH24:MI'), to_char(quiet_hours_end, 'HH24:MI'),
-    created_at''';
+    created_at, notify_record_low''';
 
   static UserProfile _read(ResultRow r) {
     final start = r[5] as String?;
@@ -22,6 +22,7 @@ final class UsersRepository {
         region: (r[2]! as String).trim(),
         timezone: r[3]! as String,
         notificationsEnabled: r[4]! as bool,
+        notifyRecordLow: r[8]! as bool,
         quietHours: start != null && end != null
             ? QuietHours(
                 start: ClockTime.parse(start),
@@ -38,6 +39,7 @@ final class UsersRepository {
     'region': s.region,
     'timezone': s.timezone,
     'notifications': s.notificationsEnabled,
+    'record_low': s.notifyRecordLow,
     'quiet_start': s.quietHours?.start.toString(),
     'quiet_end': s.quietHours?.end.toString(),
   };
@@ -48,8 +50,9 @@ final class UsersRepository {
     final rows = await _db.execute(
       Sql.named('''
         INSERT INTO users (device_id_hash, locale, region, timezone, notifications_enabled,
-                           quiet_hours_start, quiet_hours_end)
+                           notify_record_low, quiet_hours_start, quiet_hours_end)
         VALUES (@hash:text, @locale:text, @region:text, @timezone:text, @notifications:boolean,
+                @record_low:boolean,
                 CAST(@quiet_start:text AS time), CAST(@quiet_end:text AS time))
         ON CONFLICT (device_id_hash) DO UPDATE SET last_seen_at = now()
         RETURNING $_columns
@@ -81,6 +84,7 @@ final class UsersRepository {
           region = @region:text,
           timezone = @timezone:text,
           notifications_enabled = @notifications:boolean,
+          notify_record_low = @record_low:boolean,
           quiet_hours_start = CAST(@quiet_start:text AS time),
           quiet_hours_end = CAST(@quiet_end:text AS time)
         WHERE id = CAST(@id:text AS uuid)
