@@ -72,9 +72,10 @@ Future<void> main() async {
       ? null
       : ItadClient(
           httpClient: httpClient,
+          // Лимит ключа ITAD — 100 запросов за 5 минут: не чаще раза в 3,5 с.
           rateLimiter: RedisRateLimiter(
             redis,
-            interval: config.requestInterval,
+            interval: const Duration(milliseconds: 3500),
           ),
           apiKey: itadKey,
           clock: clock,
