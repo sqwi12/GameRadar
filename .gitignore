@@ -25,3 +25,6 @@ app/ios/Runner/GoogleService-Info.plist
 # ОС
 .DS_Store
 Thumbs.db
+
+# Собранные APK для GitHub Releases (в git не хранятся)
+dist/
