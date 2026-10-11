@@ -11,6 +11,7 @@ import '../../features/top/presentation/top_screen.dart';
 import '../../features/watchlist/presentation/watchlist_screen.dart';
 import '../theme/app_background.dart';
 import '../theme/app_theme.dart';
+import '../widgets/app_tab_bar.dart';
 import '../widgets/l10n.dart';
 import 'routes.dart';
 
@@ -76,7 +77,8 @@ class _Backdrop extends StatelessWidget {
       Stack(fit: StackFit.expand, children: [const AppBackground(), child]);
 }
 
-/// Каркас вкладок: общий фон и плавающая стеклянная панель вкладок.
+/// Каркас вкладок: общий фон, экраны и плавающая панель вкладок
+/// в стиле Telegram (AppTabBar).
 class HomeShell extends StatelessWidget {
   const HomeShell({required this.shell, super.key});
 
@@ -85,36 +87,53 @@ class HomeShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final selected = AppColors.accent.resolveFrom(context);
-    final unselected = AppColors.textSecondary.resolveFrom(context);
+    final bottomInset = MediaQuery.paddingOf(context).bottom;
+    final fade = AppColors.backgroundBottom.resolveFrom(context);
     return GlassScaffold(
       background: const AppBackground(),
-      body: shell,
-      bottomBar: GlassTabBar.bottom(
-        selectedIndex: shell.currentIndex,
-        // Повторное нажатие на активную вкладку возвращает к её началу.
-        onTabSelected: (index) =>
-            shell.goBranch(index, initialLocation: index == shell.currentIndex),
-        selectedIconColor: selected,
-        selectedLabelColor: selected,
-        unselectedIconColor: unselected,
-        unselectedLabelColor: unselected,
-        tabs: [
-          GlassTab(
-            icon: const Icon(CupertinoIcons.chart_bar_alt_fill),
-            label: l10n.tabTop,
+      body: Stack(
+        children: [
+          Positioned.fill(child: shell),
+          // Затемнение под панелью (как в Telegram, 60 dp): список
+          // плавно уходит под панель, а не обрывается.
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            height: bottomInset + 60,
+            child: IgnorePointer(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [fade.withAlpha(0), fade.withAlpha(0xD9)],
+                  ),
+                ),
+              ),
+            ),
           ),
-          GlassTab(
-            icon: const Icon(CupertinoIcons.tag_fill),
-            label: l10n.tabDiscounts,
-          ),
-          GlassTab(
-            icon: const Icon(CupertinoIcons.search),
-            label: l10n.tabSearch,
-          ),
-          GlassTab(
-            icon: const Icon(CupertinoIcons.scope),
-            label: l10n.tabWatchlist,
+          Positioned(
+            left: AppTabBar.margin,
+            right: AppTabBar.margin,
+            bottom: bottomInset + AppTabBar.margin,
+            child: AppTabBar(
+              selectedIndex: shell.currentIndex,
+              // Повторное нажатие на активную вкладку возвращает к её началу.
+              onSelected: (index) => shell.goBranch(
+                index,
+                initialLocation: index == shell.currentIndex,
+              ),
+              tabs: [
+                AppTab(
+                  icon: CupertinoIcons.chart_bar_alt_fill,
+                  label: l10n.tabTop,
+                ),
+                AppTab(icon: CupertinoIcons.tag_fill, label: l10n.tabDiscounts),
+                AppTab(icon: CupertinoIcons.search, label: l10n.tabSearch),
+                AppTab(icon: CupertinoIcons.scope, label: l10n.tabWatchlist),
+              ],
+            ),
           ),
         ],
       ),

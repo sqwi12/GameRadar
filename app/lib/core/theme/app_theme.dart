@@ -69,6 +69,13 @@ abstract final class AppColors {
     darkColor: Color(0xFF1A2336),
   );
 
+  /// Нижняя панель вкладок: цвет фона с прозрачностью 85%, как в Telegram,
+  /// поверх размытия того, что под панелью.
+  static const tabBar = CupertinoDynamicColor.withBrightness(
+    color: Color(0xD9F7F9FC),
+    darkColor: Color(0xE01B2436),
+  );
+
   /// Плашка поверх обложки (место в топе).
   static const overlayChip = Color(0xB3070B14);
 

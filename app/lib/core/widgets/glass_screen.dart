@@ -2,9 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 import '../theme/app_theme.dart';
+import 'app_tab_bar.dart';
 
-/// Высота плавающей панели вкладок (GlassTabBar.bottom) вместе с отступами.
-const kTabBarExtent = 64.0 + 20.0;
+/// Высота плавающей панели вкладок (AppTabBar) вместе с отступами.
+const kTabBarExtent = AppTabBar.extent;
 
 /// Экран со стеклянной шапкой. Фон (AppBackground) лежит ниже, в каркасе
 /// приложения, поэтому сам экран прозрачный: стекло шапки и панели вкладок
@@ -61,7 +62,7 @@ class GlassScreen extends StatelessWidget {
     final padding = MediaQuery.paddingOf(context);
     return EdgeInsets.fromLTRB(
       16,
-      padding.top + 44 + 12,
+      padding.top + 44 + 24,
       16,
       padding.bottom + (insideTabs ? kTabBarExtent : 0) + 24,
     );
@@ -77,14 +78,14 @@ class _ScrollEdge extends StatelessWidget {
   Widget build(BuildContext context) {
     final color = AppColors.backgroundTop.resolveFrom(context);
     return SizedBox(
-      height: topInset + 84,
+      height: topInset + 60,
       child: DecoratedBox(
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [color, color.withAlpha(0xF2), color.withAlpha(0)],
-            stops: const [0, 0.62, 1],
+            stops: const [0, 0.7, 1],
           ),
         ),
       ),
