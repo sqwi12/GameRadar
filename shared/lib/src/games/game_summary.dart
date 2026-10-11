@@ -13,6 +13,9 @@ abstract class GameSummary with _$GameSummary {
     required String name,
     String? headerImageUrl,
 
+    /// Бесплатная игра: у неё нет цены в магазине.
+    @Default(false) bool isFree,
+
     /// Цена в регионе запроса; null — цена ещё не загружалась.
     GamePrice? price,
     int? currentPlayers,

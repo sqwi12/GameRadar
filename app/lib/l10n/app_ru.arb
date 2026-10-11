@@ -74,5 +74,121 @@
   "refreshTooOften": "Обновлять можно не чаще раза в минуту",
   "showingCachedData": "Показаны сохранённые данные",
   "back": "Назад",
-  "aboutDataSourceTitle": "Источник данных"
+  "aboutDataSourceTitle": "Источник данных",
+  "discountBadge": "−{percent}%",
+  "@discountBadge": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "priceFree": "Бесплатно",
+  "priceUnavailable": "Нет в продаже в регионе",
+  "priceUnknown": "Цена загружается…",
+  "topSortCurrent": "Сейчас",
+  "topSortPeak": "Пик за 24 ч",
+  "filterDiscounted": "Со скидкой",
+  "topEmpty": "Топ ещё собирается: сервер замеряет онлайн игр",
+  "sortDiscount": "Скидка",
+  "sortPrice": "Цена",
+  "sortPlayers": "Онлайн",
+  "minDiscountChip": "от {percent}%",
+  "@minDiscountChip": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "maxPriceChip": "до {price}",
+  "@maxPriceChip": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "discountsEmpty": "Скидок по этим фильтрам нет",
+  "searchPlaceholder": "Название игры",
+  "searchHint": "Найдите игру, чтобы следить за её ценой и онлайном",
+  "searchTooShort": "Введите хотя бы 2 символа",
+  "searchNoResults": "Ничего не найдено по запросу «{query}»",
+  "@searchNoResults": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "cancel": "Отмена",
+  "playersNow": "Сейчас играют",
+  "peak24h": "Пик за 24 ч",
+  "peak7d": "Пик за 7 дней",
+  "players7d": "Онлайн за 7 дней",
+  "chartNoData": "Пока мало замеров для графика",
+  "gameDataPending": "Собираем данные об игре — обновите экран через минуту",
+  "reviewsSummary": "{percent}% положительных · {total}",
+  "@reviewsSummary": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "releaseDate": "Дата выхода",
+  "developer": "Разработчик",
+  "genres": "Жанры",
+  "topRank": "#{rank} по онлайну",
+  "@topRank": {
+    "placeholders": {
+      "rank": {
+        "type": "int"
+      }
+    }
+  },
+  "watchAdd": "Отслеживать цену",
+  "watchEdit": "Отслеживается",
+  "watchSheetTitle": "Уведомить, когда…",
+  "watchCurrentPrice": "Сейчас: {price}",
+  "@watchCurrentPrice": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "targetPriceLabel": "Цена станет не выше",
+  "targetPricePlaceholder": "Любая",
+  "minDiscountLabel": "Скидка станет не меньше",
+  "minDiscountOff": "не важна",
+  "watchNoThresholds": "Без условий игра просто будет в списке, без уведомлений",
+  "save": "Сохранить",
+  "removeFromWatchlist": "Перестать отслеживать",
+  "watchSaved": "Игра в отслеживаемых",
+  "watchRemoved": "Больше не отслеживается",
+  "watchLimit": "В списке уже максимум игр",
+  "watchlistEmpty": "Здесь появятся игры, за ценой которых вы следите. Найдите игру через поиск.",
+  "targetReached": "Цель достигнута",
+  "thresholdPrice": "цена ≤ {price}",
+  "@thresholdPrice": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "thresholdDiscount": "скидка ≥ {percent}%",
+  "@thresholdDiscount": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "noThresholds": "без уведомлений",
+  "loadingMore": "Загрузка…"
 }

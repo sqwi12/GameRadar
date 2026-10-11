@@ -83,6 +83,9 @@ class CachedResource<T> {
     return RefreshResult.refreshed;
   }
 
+  /// Принудительное обновление (например, после изменения данных на сервере).
+  Future<void> refreshNow() => _refresh();
+
   /// Одновременные вызовы делят один запрос к серверу.
   Future<void> _refresh() => _inFlight ??= () async {
     try {

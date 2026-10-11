@@ -16,7 +16,8 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$GameSummary {
 
- int get appId; String get name; String? get headerImageUrl;/// Цена в регионе запроса; null — цена ещё не загружалась.
+ int get appId; String get name; String? get headerImageUrl;/// Бесплатная игра: у неё нет цены в магазине.
+ bool get isFree;/// Цена в регионе запроса; null — цена ещё не загружалась.
  GamePrice? get price; int? get currentPlayers;@JsonKey(name: 'peak_24h') int? get peak24h;/// Место в топ-1000 по онлайну.
  int? get topRank;
 /// Create a copy of GameSummary
@@ -32,20 +33,20 @@ $GameSummaryCopyWith<GameSummary> get copyWith => _$GameSummaryCopyWithImpl<Game
 @override
 bool operator ==(Object other) {
   final _this = this as GameSummary;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is GameSummary&&(identical(other.appId, _this.appId) || other.appId == _this.appId)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.headerImageUrl, _this.headerImageUrl) || other.headerImageUrl == _this.headerImageUrl)&&(identical(other.price, _this.price) || other.price == _this.price)&&(identical(other.currentPlayers, _this.currentPlayers) || other.currentPlayers == _this.currentPlayers)&&(identical(other.peak24h, _this.peak24h) || other.peak24h == _this.peak24h)&&(identical(other.topRank, _this.topRank) || other.topRank == _this.topRank));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is GameSummary&&(identical(other.appId, _this.appId) || other.appId == _this.appId)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.headerImageUrl, _this.headerImageUrl) || other.headerImageUrl == _this.headerImageUrl)&&(identical(other.isFree, _this.isFree) || other.isFree == _this.isFree)&&(identical(other.price, _this.price) || other.price == _this.price)&&(identical(other.currentPlayers, _this.currentPlayers) || other.currentPlayers == _this.currentPlayers)&&(identical(other.peak24h, _this.peak24h) || other.peak24h == _this.peak24h)&&(identical(other.topRank, _this.topRank) || other.topRank == _this.topRank));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
   final _this = this as GameSummary;
-  return Object.hash(runtimeType,_this.appId,_this.name,_this.headerImageUrl,_this.price,_this.currentPlayers,_this.peak24h,_this.topRank);
+  return Object.hash(runtimeType,_this.appId,_this.name,_this.headerImageUrl,_this.isFree,_this.price,_this.currentPlayers,_this.peak24h,_this.topRank);
 }
 
 @override
 String toString() {
   final _this = this as GameSummary;
-  return 'GameSummary(appId: ${_this.appId}, name: ${_this.name}, headerImageUrl: ${_this.headerImageUrl}, price: ${_this.price}, currentPlayers: ${_this.currentPlayers}, peak24h: ${_this.peak24h}, topRank: ${_this.topRank})';
+  return 'GameSummary(appId: ${_this.appId}, name: ${_this.name}, headerImageUrl: ${_this.headerImageUrl}, isFree: ${_this.isFree}, price: ${_this.price}, currentPlayers: ${_this.currentPlayers}, peak24h: ${_this.peak24h}, topRank: ${_this.topRank})';
 }
 
 
@@ -56,7 +57,7 @@ abstract mixin class $GameSummaryCopyWith<$Res>  {
   factory $GameSummaryCopyWith(GameSummary value, $Res Function(GameSummary) _then) = _$GameSummaryCopyWithImpl;
 @useResult
 $Res call({
- int appId, String name, String? headerImageUrl, GamePrice? price, int? currentPlayers,@JsonKey(name: 'peak_24h') int? peak24h, int? topRank
+ int appId, String name, String? headerImageUrl, bool isFree, GamePrice? price, int? currentPlayers,@JsonKey(name: 'peak_24h') int? peak24h, int? topRank
 });
 
 
@@ -73,12 +74,13 @@ class _$GameSummaryCopyWithImpl<$Res>
 
 /// Create a copy of GameSummary
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? appId = null,Object? name = null,Object? headerImageUrl = freezed,Object? price = freezed,Object? currentPlayers = freezed,Object? peak24h = freezed,Object? topRank = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? appId = null,Object? name = null,Object? headerImageUrl = freezed,Object? isFree = null,Object? price = freezed,Object? currentPlayers = freezed,Object? peak24h = freezed,Object? topRank = freezed,}) {
   return _then(GameSummary(
 appId: null == appId ? _self.appId : appId // ignore: cast_nullable_to_non_nullable
 as int,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,headerImageUrl: freezed == headerImageUrl ? _self.headerImageUrl : headerImageUrl // ignore: cast_nullable_to_non_nullable
-as String?,price: freezed == price ? _self.price : price // ignore: cast_nullable_to_non_nullable
+as String?,isFree: null == isFree ? _self.isFree : isFree // ignore: cast_nullable_to_non_nullable
+as bool,price: freezed == price ? _self.price : price // ignore: cast_nullable_to_non_nullable
 as GamePrice?,currentPlayers: freezed == currentPlayers ? _self.currentPlayers : currentPlayers // ignore: cast_nullable_to_non_nullable
 as int?,peak24h: freezed == peak24h ? _self.peak24h : peak24h // ignore: cast_nullable_to_non_nullable
 as int?,topRank: freezed == topRank ? _self.topRank : topRank // ignore: cast_nullable_to_non_nullable
@@ -179,10 +181,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int appId,  String name,  String? headerImageUrl,  GamePrice? price,  int? currentPlayers, @JsonKey(name: 'peak_24h')  int? peak24h,  int? topRank)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int appId,  String name,  String? headerImageUrl,  bool isFree,  GamePrice? price,  int? currentPlayers, @JsonKey(name: 'peak_24h')  int? peak24h,  int? topRank)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _GameSummary() when $default != null:
-return $default(_that.appId,_that.name,_that.headerImageUrl,_that.price,_that.currentPlayers,_that.peak24h,_that.topRank);case _:
+return $default(_that.appId,_that.name,_that.headerImageUrl,_that.isFree,_that.price,_that.currentPlayers,_that.peak24h,_that.topRank);case _:
   return orElse();
 
 }
@@ -200,10 +202,10 @@ return $default(_that.appId,_that.name,_that.headerImageUrl,_that.price,_that.cu
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int appId,  String name,  String? headerImageUrl,  GamePrice? price,  int? currentPlayers, @JsonKey(name: 'peak_24h')  int? peak24h,  int? topRank)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int appId,  String name,  String? headerImageUrl,  bool isFree,  GamePrice? price,  int? currentPlayers, @JsonKey(name: 'peak_24h')  int? peak24h,  int? topRank)  $default,) {final _that = this;
 switch (_that) {
 case _GameSummary():
-return $default(_that.appId,_that.name,_that.headerImageUrl,_that.price,_that.currentPlayers,_that.peak24h,_that.topRank);case _:
+return $default(_that.appId,_that.name,_that.headerImageUrl,_that.isFree,_that.price,_that.currentPlayers,_that.peak24h,_that.topRank);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -220,10 +222,10 @@ return $default(_that.appId,_that.name,_that.headerImageUrl,_that.price,_that.cu
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int appId,  String name,  String? headerImageUrl,  GamePrice? price,  int? currentPlayers, @JsonKey(name: 'peak_24h')  int? peak24h,  int? topRank)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int appId,  String name,  String? headerImageUrl,  bool isFree,  GamePrice? price,  int? currentPlayers, @JsonKey(name: 'peak_24h')  int? peak24h,  int? topRank)?  $default,) {final _that = this;
 switch (_that) {
 case _GameSummary() when $default != null:
-return $default(_that.appId,_that.name,_that.headerImageUrl,_that.price,_that.currentPlayers,_that.peak24h,_that.topRank);case _:
+return $default(_that.appId,_that.name,_that.headerImageUrl,_that.isFree,_that.price,_that.currentPlayers,_that.peak24h,_that.topRank);case _:
   return null;
 
 }
@@ -235,12 +237,14 @@ return $default(_that.appId,_that.name,_that.headerImageUrl,_that.price,_that.cu
 @JsonSerializable()
 
 class _GameSummary implements GameSummary {
-  const _GameSummary({required this.appId, required this.name, this.headerImageUrl, this.price, this.currentPlayers, @JsonKey(name: 'peak_24h') this.peak24h, this.topRank});
+  const _GameSummary({required this.appId, required this.name, this.headerImageUrl, this.isFree = false, this.price, this.currentPlayers, @JsonKey(name: 'peak_24h') this.peak24h, this.topRank});
   factory _GameSummary.fromJson(Map<String, dynamic> json) => _$GameSummaryFromJson(json);
 
 @override final  int appId;
 @override final  String name;
 @override final  String? headerImageUrl;
+/// Бесплатная игра: у неё нет цены в магазине.
+@override@JsonKey() final  bool isFree;
 /// Цена в регионе запроса; null — цена ещё не загружалась.
 @override final  GamePrice? price;
 @override final  int? currentPlayers;
@@ -261,18 +265,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _GameSummary&&(identical(other.appId, appId) || other.appId == appId)&&(identical(other.name, name) || other.name == name)&&(identical(other.headerImageUrl, headerImageUrl) || other.headerImageUrl == headerImageUrl)&&(identical(other.price, price) || other.price == price)&&(identical(other.currentPlayers, currentPlayers) || other.currentPlayers == currentPlayers)&&(identical(other.peak24h, peak24h) || other.peak24h == peak24h)&&(identical(other.topRank, topRank) || other.topRank == topRank));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _GameSummary&&(identical(other.appId, appId) || other.appId == appId)&&(identical(other.name, name) || other.name == name)&&(identical(other.headerImageUrl, headerImageUrl) || other.headerImageUrl == headerImageUrl)&&(identical(other.isFree, isFree) || other.isFree == isFree)&&(identical(other.price, price) || other.price == price)&&(identical(other.currentPlayers, currentPlayers) || other.currentPlayers == currentPlayers)&&(identical(other.peak24h, peak24h) || other.peak24h == peak24h)&&(identical(other.topRank, topRank) || other.topRank == topRank));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
-    return Object.hash(runtimeType,appId,name,headerImageUrl,price,currentPlayers,peak24h,topRank);
+    return Object.hash(runtimeType,appId,name,headerImageUrl,isFree,price,currentPlayers,peak24h,topRank);
 }
 
 @override
 String toString() {
-    return 'GameSummary(appId: $appId, name: $name, headerImageUrl: $headerImageUrl, price: $price, currentPlayers: $currentPlayers, peak24h: $peak24h, topRank: $topRank)';
+    return 'GameSummary(appId: $appId, name: $name, headerImageUrl: $headerImageUrl, isFree: $isFree, price: $price, currentPlayers: $currentPlayers, peak24h: $peak24h, topRank: $topRank)';
 }
 
 
@@ -283,7 +287,7 @@ abstract mixin class _$GameSummaryCopyWith<$Res> implements $GameSummaryCopyWith
   factory _$GameSummaryCopyWith(_GameSummary value, $Res Function(_GameSummary) _then) = __$GameSummaryCopyWithImpl;
 @override @useResult
 $Res call({
- int appId, String name, String? headerImageUrl, GamePrice? price, int? currentPlayers,@JsonKey(name: 'peak_24h') int? peak24h, int? topRank
+ int appId, String name, String? headerImageUrl, bool isFree, GamePrice? price, int? currentPlayers,@JsonKey(name: 'peak_24h') int? peak24h, int? topRank
 });
 
 
@@ -300,12 +304,13 @@ class __$GameSummaryCopyWithImpl<$Res>
 
 /// Create a copy of GameSummary
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? appId = null,Object? name = null,Object? headerImageUrl = freezed,Object? price = freezed,Object? currentPlayers = freezed,Object? peak24h = freezed,Object? topRank = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? appId = null,Object? name = null,Object? headerImageUrl = freezed,Object? isFree = null,Object? price = freezed,Object? currentPlayers = freezed,Object? peak24h = freezed,Object? topRank = freezed,}) {
   return _then(_GameSummary(
 appId: null == appId ? _self.appId : appId // ignore: cast_nullable_to_non_nullable
 as int,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,headerImageUrl: freezed == headerImageUrl ? _self.headerImageUrl : headerImageUrl // ignore: cast_nullable_to_non_nullable
-as String?,price: freezed == price ? _self.price : price // ignore: cast_nullable_to_non_nullable
+as String?,isFree: null == isFree ? _self.isFree : isFree // ignore: cast_nullable_to_non_nullable
+as bool,price: freezed == price ? _self.price : price // ignore: cast_nullable_to_non_nullable
 as GamePrice?,currentPlayers: freezed == currentPlayers ? _self.currentPlayers : currentPlayers // ignore: cast_nullable_to_non_nullable
 as int?,peak24h: freezed == peak24h ? _self.peak24h : peak24h // ignore: cast_nullable_to_non_nullable
 as int?,topRank: freezed == topRank ? _self.topRank : topRank // ignore: cast_nullable_to_non_nullable

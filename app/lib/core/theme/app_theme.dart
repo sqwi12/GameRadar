@@ -45,6 +45,21 @@ abstract final class AppColors {
     darkColor: Color(0x99F4F7FB),
   );
 
+  /// Подложка карточек контента. По правилам Liquid Glass контент не стеклянный:
+  /// плотная полупрозрачная поверхность читается на любом фоне.
+  static const card = CupertinoDynamicColor.withBrightness(
+    color: Color(0xD9FFFFFF),
+    darkColor: Color(0xCC111A2E),
+  );
+  static const cardBorder = CupertinoDynamicColor.withBrightness(
+    color: Color(0x14000000),
+    darkColor: Color(0x1FFFFFFF),
+  );
+  static const imagePlaceholder = CupertinoDynamicColor.withBrightness(
+    color: Color(0xFFDCE6EC),
+    darkColor: Color(0xFF1B2640),
+  );
+
   // Фон: глубокий градиент и мягкие световые пятна.
   static const backgroundTop = CupertinoDynamicColor.withBrightness(
     color: Color(0xFFE6F3F7),

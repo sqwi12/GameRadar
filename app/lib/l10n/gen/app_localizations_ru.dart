@@ -151,4 +151,175 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get aboutDataSourceTitle => 'Источник данных';
+
+  @override
+  String discountBadge(int percent) {
+    return '−$percent%';
+  }
+
+  @override
+  String get priceFree => 'Бесплатно';
+
+  @override
+  String get priceUnavailable => 'Нет в продаже в регионе';
+
+  @override
+  String get priceUnknown => 'Цена загружается…';
+
+  @override
+  String get topSortCurrent => 'Сейчас';
+
+  @override
+  String get topSortPeak => 'Пик за 24 ч';
+
+  @override
+  String get filterDiscounted => 'Со скидкой';
+
+  @override
+  String get topEmpty => 'Топ ещё собирается: сервер замеряет онлайн игр';
+
+  @override
+  String get sortDiscount => 'Скидка';
+
+  @override
+  String get sortPrice => 'Цена';
+
+  @override
+  String get sortPlayers => 'Онлайн';
+
+  @override
+  String minDiscountChip(int percent) {
+    return 'от $percent%';
+  }
+
+  @override
+  String maxPriceChip(String price) {
+    return 'до $price';
+  }
+
+  @override
+  String get discountsEmpty => 'Скидок по этим фильтрам нет';
+
+  @override
+  String get searchPlaceholder => 'Название игры';
+
+  @override
+  String get searchHint => 'Найдите игру, чтобы следить за её ценой и онлайном';
+
+  @override
+  String get searchTooShort => 'Введите хотя бы 2 символа';
+
+  @override
+  String searchNoResults(String query) {
+    return 'Ничего не найдено по запросу «$query»';
+  }
+
+  @override
+  String get cancel => 'Отмена';
+
+  @override
+  String get playersNow => 'Сейчас играют';
+
+  @override
+  String get peak24h => 'Пик за 24 ч';
+
+  @override
+  String get peak7d => 'Пик за 7 дней';
+
+  @override
+  String get players7d => 'Онлайн за 7 дней';
+
+  @override
+  String get chartNoData => 'Пока мало замеров для графика';
+
+  @override
+  String get gameDataPending =>
+      'Собираем данные об игре — обновите экран через минуту';
+
+  @override
+  String reviewsSummary(int percent, String total) {
+    return '$percent% положительных · $total';
+  }
+
+  @override
+  String get releaseDate => 'Дата выхода';
+
+  @override
+  String get developer => 'Разработчик';
+
+  @override
+  String get genres => 'Жанры';
+
+  @override
+  String topRank(int rank) {
+    return '#$rank по онлайну';
+  }
+
+  @override
+  String get watchAdd => 'Отслеживать цену';
+
+  @override
+  String get watchEdit => 'Отслеживается';
+
+  @override
+  String get watchSheetTitle => 'Уведомить, когда…';
+
+  @override
+  String watchCurrentPrice(String price) {
+    return 'Сейчас: $price';
+  }
+
+  @override
+  String get targetPriceLabel => 'Цена станет не выше';
+
+  @override
+  String get targetPricePlaceholder => 'Любая';
+
+  @override
+  String get minDiscountLabel => 'Скидка станет не меньше';
+
+  @override
+  String get minDiscountOff => 'не важна';
+
+  @override
+  String get watchNoThresholds =>
+      'Без условий игра просто будет в списке, без уведомлений';
+
+  @override
+  String get save => 'Сохранить';
+
+  @override
+  String get removeFromWatchlist => 'Перестать отслеживать';
+
+  @override
+  String get watchSaved => 'Игра в отслеживаемых';
+
+  @override
+  String get watchRemoved => 'Больше не отслеживается';
+
+  @override
+  String get watchLimit => 'В списке уже максимум игр';
+
+  @override
+  String get watchlistEmpty =>
+      'Здесь появятся игры, за ценой которых вы следите. Найдите игру через поиск.';
+
+  @override
+  String get targetReached => 'Цель достигнута';
+
+  @override
+  String thresholdPrice(String price) {
+    return 'цена ≤ $price';
+  }
+
+  @override
+  String thresholdDiscount(int percent) {
+    return 'скидка ≥ $percent%';
+  }
+
+  @override
+  String get noThresholds => 'без уведомлений';
+
+  @override
+  String get loadingMore => 'Загрузка…';
 }

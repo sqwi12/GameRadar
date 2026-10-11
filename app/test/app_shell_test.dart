@@ -2,11 +2,62 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gameradar_app/app.dart';
+import 'package:gameradar_app/core/cache/resource_state.dart';
 import 'package:gameradar_app/core/network/app_exception.dart';
 import 'package:gameradar_app/core/providers.dart';
 import 'package:gameradar_app/core/storage/preferences_store.dart';
+import 'package:gameradar_app/features/discounts/presentation/discounts_providers.dart';
 import 'package:gameradar_app/features/settings/presentation/settings_providers.dart';
+import 'package:gameradar_app/features/top/presentation/top_providers.dart';
+import 'package:gameradar_app/features/watchlist/presentation/watchlist_providers.dart';
 import 'package:gameradar_shared/gameradar_shared.dart';
+
+final _fetchedAt = DateTime.now();
+
+PagedView<GameSummary> _page(List<GameSummary> games) => PagedView(
+  first: ResourceView(
+    cached: (
+      data: Paginated(items: games, offset: 0, limit: 50, total: games.length),
+      fetchedAt: _fetchedAt,
+    ),
+    cacheLoaded: true,
+  ),
+);
+
+// Подмена списков: без сети и без drift (нативный SQLite в виджет-тестах
+// изредка роняет flutter_tester).
+class _FakeTop extends TopList {
+  @override
+  PagedView<GameSummary> build() => _page(const [
+    GameSummary(
+      appId: 730,
+      name: 'Counter-Strike 2',
+      isFree: true,
+      currentPlayers: 913000,
+      topRank: 1,
+    ),
+    GameSummary(
+      appId: 570,
+      name: 'Dota 2',
+      isFree: true,
+      currentPlayers: 746000,
+      topRank: 2,
+    ),
+  ]);
+}
+
+class _FakeDiscounts extends DiscountsList {
+  @override
+  PagedView<GameSummary> build() => _page(const []);
+}
+
+class _FakeWatchlist extends Watchlist {
+  @override
+  ResourceView<List<WatchlistItem>> build() => ResourceView(
+    cached: (data: const [], fetchedAt: _fetchedAt),
+    cacheLoaded: true,
+  );
+}
 
 void main() {
   // Без drift: нативный SQLite внутри виджет-тестов изредка роняет
@@ -33,6 +84,9 @@ void main() {
       ProviderScope(
         overrides: [
           preferencesStoreProvider.overrideWithValue(preferencesStore),
+          topListProvider.overrideWith(_FakeTop.new),
+          discountsListProvider.overrideWith(_FakeDiscounts.new),
+          watchlistProvider.overrideWith(_FakeWatchlist.new),
           initialPreferencesProvider.overrideWithValue(preferences),
           currentProfileProvider.overrideWith(
             (ref) =>
@@ -56,14 +110,19 @@ void main() {
   testWidgets('вкладки переключаются, у каждой свой экран', (tester) async {
     await pumpApp(tester);
     expect(find.text('Топ по онлайну'), findsOneWidget);
+    expect(find.text('Counter-Strike 2'), findsOneWidget);
+    expect(find.text('#1'), findsOneWidget);
+    expect(find.text('Бесплатно'), findsWidgets);
 
     await tester.tap(find.text('Скидки').first);
     await settle(tester);
     expect(find.text('Скидки сейчас'), findsOneWidget);
+    expect(find.text('Скидок по этим фильтрам нет'), findsOneWidget);
 
     await tester.tap(find.text('Отслеживаю').first);
     await settle(tester);
     expect(find.text('Отслеживаемые'), findsOneWidget);
+    expect(find.textContaining('Найдите игру через поиск'), findsOneWidget);
   });
 
   testWidgets('настройки: пометка о Valve и статус аккаунта', (tester) async {

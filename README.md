@@ -96,5 +96,5 @@ PostgreSQL в Docker слушает на хосте порт **5433**, чтоб�
 3. ✅ Worker: Steam-клиент, очередь, rate limiter, задачи цен и онлайна (подробности в [worker/README.md](worker/README.md))
 4. ✅ Сервер: эндпоинты games, top, watchlist, devices, auth/anonymous (подробности в [server/README.md](server/README.md))
 5. ✅ Приложение: навигация, тема, api-клиент, кэш drift (подробности в [app/README.md](app/README.md))
-6. ⬜ Экраны поиска, игры, топа, скидок, списка отслеживания
+6. ✅ Экраны поиска, игры, топа, скидок, списка отслеживания
 7. ⬜ Push-уведомления

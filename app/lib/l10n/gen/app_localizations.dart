@@ -367,6 +367,306 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Источник данных'**
   String get aboutDataSourceTitle;
+
+  /// No description provided for @discountBadge.
+  ///
+  /// In ru, this message translates to:
+  /// **'−{percent}%'**
+  String discountBadge(int percent);
+
+  /// No description provided for @priceFree.
+  ///
+  /// In ru, this message translates to:
+  /// **'Бесплатно'**
+  String get priceFree;
+
+  /// No description provided for @priceUnavailable.
+  ///
+  /// In ru, this message translates to:
+  /// **'Нет в продаже в регионе'**
+  String get priceUnavailable;
+
+  /// No description provided for @priceUnknown.
+  ///
+  /// In ru, this message translates to:
+  /// **'Цена загружается…'**
+  String get priceUnknown;
+
+  /// No description provided for @topSortCurrent.
+  ///
+  /// In ru, this message translates to:
+  /// **'Сейчас'**
+  String get topSortCurrent;
+
+  /// No description provided for @topSortPeak.
+  ///
+  /// In ru, this message translates to:
+  /// **'Пик за 24 ч'**
+  String get topSortPeak;
+
+  /// No description provided for @filterDiscounted.
+  ///
+  /// In ru, this message translates to:
+  /// **'Со скидкой'**
+  String get filterDiscounted;
+
+  /// No description provided for @topEmpty.
+  ///
+  /// In ru, this message translates to:
+  /// **'Топ ещё собирается: сервер замеряет онлайн игр'**
+  String get topEmpty;
+
+  /// No description provided for @sortDiscount.
+  ///
+  /// In ru, this message translates to:
+  /// **'Скидка'**
+  String get sortDiscount;
+
+  /// No description provided for @sortPrice.
+  ///
+  /// In ru, this message translates to:
+  /// **'Цена'**
+  String get sortPrice;
+
+  /// No description provided for @sortPlayers.
+  ///
+  /// In ru, this message translates to:
+  /// **'Онлайн'**
+  String get sortPlayers;
+
+  /// No description provided for @minDiscountChip.
+  ///
+  /// In ru, this message translates to:
+  /// **'от {percent}%'**
+  String minDiscountChip(int percent);
+
+  /// No description provided for @maxPriceChip.
+  ///
+  /// In ru, this message translates to:
+  /// **'до {price}'**
+  String maxPriceChip(String price);
+
+  /// No description provided for @discountsEmpty.
+  ///
+  /// In ru, this message translates to:
+  /// **'Скидок по этим фильтрам нет'**
+  String get discountsEmpty;
+
+  /// No description provided for @searchPlaceholder.
+  ///
+  /// In ru, this message translates to:
+  /// **'Название игры'**
+  String get searchPlaceholder;
+
+  /// No description provided for @searchHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'Найдите игру, чтобы следить за её ценой и онлайном'**
+  String get searchHint;
+
+  /// No description provided for @searchTooShort.
+  ///
+  /// In ru, this message translates to:
+  /// **'Введите хотя бы 2 символа'**
+  String get searchTooShort;
+
+  /// No description provided for @searchNoResults.
+  ///
+  /// In ru, this message translates to:
+  /// **'Ничего не найдено по запросу «{query}»'**
+  String searchNoResults(String query);
+
+  /// No description provided for @cancel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Отмена'**
+  String get cancel;
+
+  /// No description provided for @playersNow.
+  ///
+  /// In ru, this message translates to:
+  /// **'Сейчас играют'**
+  String get playersNow;
+
+  /// No description provided for @peak24h.
+  ///
+  /// In ru, this message translates to:
+  /// **'Пик за 24 ч'**
+  String get peak24h;
+
+  /// No description provided for @peak7d.
+  ///
+  /// In ru, this message translates to:
+  /// **'Пик за 7 дней'**
+  String get peak7d;
+
+  /// No description provided for @players7d.
+  ///
+  /// In ru, this message translates to:
+  /// **'Онлайн за 7 дней'**
+  String get players7d;
+
+  /// No description provided for @chartNoData.
+  ///
+  /// In ru, this message translates to:
+  /// **'Пока мало замеров для графика'**
+  String get chartNoData;
+
+  /// No description provided for @gameDataPending.
+  ///
+  /// In ru, this message translates to:
+  /// **'Собираем данные об игре — обновите экран через минуту'**
+  String get gameDataPending;
+
+  /// No description provided for @reviewsSummary.
+  ///
+  /// In ru, this message translates to:
+  /// **'{percent}% положительных · {total}'**
+  String reviewsSummary(int percent, String total);
+
+  /// No description provided for @releaseDate.
+  ///
+  /// In ru, this message translates to:
+  /// **'Дата выхода'**
+  String get releaseDate;
+
+  /// No description provided for @developer.
+  ///
+  /// In ru, this message translates to:
+  /// **'Разработчик'**
+  String get developer;
+
+  /// No description provided for @genres.
+  ///
+  /// In ru, this message translates to:
+  /// **'Жанры'**
+  String get genres;
+
+  /// No description provided for @topRank.
+  ///
+  /// In ru, this message translates to:
+  /// **'#{rank} по онлайну'**
+  String topRank(int rank);
+
+  /// No description provided for @watchAdd.
+  ///
+  /// In ru, this message translates to:
+  /// **'Отслеживать цену'**
+  String get watchAdd;
+
+  /// No description provided for @watchEdit.
+  ///
+  /// In ru, this message translates to:
+  /// **'Отслеживается'**
+  String get watchEdit;
+
+  /// No description provided for @watchSheetTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Уведомить, когда…'**
+  String get watchSheetTitle;
+
+  /// No description provided for @watchCurrentPrice.
+  ///
+  /// In ru, this message translates to:
+  /// **'Сейчас: {price}'**
+  String watchCurrentPrice(String price);
+
+  /// No description provided for @targetPriceLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Цена станет не выше'**
+  String get targetPriceLabel;
+
+  /// No description provided for @targetPricePlaceholder.
+  ///
+  /// In ru, this message translates to:
+  /// **'Любая'**
+  String get targetPricePlaceholder;
+
+  /// No description provided for @minDiscountLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Скидка станет не меньше'**
+  String get minDiscountLabel;
+
+  /// No description provided for @minDiscountOff.
+  ///
+  /// In ru, this message translates to:
+  /// **'не важна'**
+  String get minDiscountOff;
+
+  /// No description provided for @watchNoThresholds.
+  ///
+  /// In ru, this message translates to:
+  /// **'Без условий игра просто будет в списке, без уведомлений'**
+  String get watchNoThresholds;
+
+  /// No description provided for @save.
+  ///
+  /// In ru, this message translates to:
+  /// **'Сохранить'**
+  String get save;
+
+  /// No description provided for @removeFromWatchlist.
+  ///
+  /// In ru, this message translates to:
+  /// **'Перестать отслеживать'**
+  String get removeFromWatchlist;
+
+  /// No description provided for @watchSaved.
+  ///
+  /// In ru, this message translates to:
+  /// **'Игра в отслеживаемых'**
+  String get watchSaved;
+
+  /// No description provided for @watchRemoved.
+  ///
+  /// In ru, this message translates to:
+  /// **'Больше не отслеживается'**
+  String get watchRemoved;
+
+  /// No description provided for @watchLimit.
+  ///
+  /// In ru, this message translates to:
+  /// **'В списке уже максимум игр'**
+  String get watchLimit;
+
+  /// No description provided for @watchlistEmpty.
+  ///
+  /// In ru, this message translates to:
+  /// **'Здесь появятся игры, за ценой которых вы следите. Найдите игру через поиск.'**
+  String get watchlistEmpty;
+
+  /// No description provided for @targetReached.
+  ///
+  /// In ru, this message translates to:
+  /// **'Цель достигнута'**
+  String get targetReached;
+
+  /// No description provided for @thresholdPrice.
+  ///
+  /// In ru, this message translates to:
+  /// **'цена ≤ {price}'**
+  String thresholdPrice(String price);
+
+  /// No description provided for @thresholdDiscount.
+  ///
+  /// In ru, this message translates to:
+  /// **'скидка ≥ {percent}%'**
+  String thresholdDiscount(int percent);
+
+  /// No description provided for @noThresholds.
+  ///
+  /// In ru, this message translates to:
+  /// **'без уведомлений'**
+  String get noThresholds;
+
+  /// No description provided for @loadingMore.
+  ///
+  /// In ru, this message translates to:
+  /// **'Загрузка…'**
+  String get loadingMore;
 }
 
 class _AppLocalizationsDelegate

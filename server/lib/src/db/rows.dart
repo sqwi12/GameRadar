@@ -11,10 +11,11 @@ const priceColumns = '''
 /// Колонки краткой карточки (`g` — games) + цена. Порядок важен для [readSummary].
 const summaryColumns = '''
   g.app_id, g.name, g.header_image_url, g.current_players, g.peak_24h, g.top_rank,
+  g.is_free,
 $priceColumns''';
 
 /// Число колонок, которые занимает [summaryColumns].
-const summaryColumnCount = 14;
+const summaryColumnCount = 15;
 
 /// Цена из 8 колонок начиная с [at] или null, если строки game_prices нет.
 GamePrice? readPrice(ResultRow row, int at) {
@@ -40,7 +41,8 @@ GameSummary readSummary(ResultRow row, [int at = 0]) => GameSummary(
   currentPlayers: row[at + 3] as int?,
   peak24h: row[at + 4] as int?,
   topRank: row[at + 5] as int?,
-  price: readPrice(row, at + 6),
+  isFree: row[at + 6]! as bool,
+  price: readPrice(row, at + 7),
 );
 
 /// Экранирует `%`, `_` и `\` для LIKE/ILIKE.
