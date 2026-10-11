@@ -17,6 +17,8 @@ Future<void> showWatchSheet(
   required GamePrice? price,
 }) => GlassModalSheet.show<void>(
   context: context,
+  // Поверх нижней панели вкладок.
+  useRootNavigator: true,
   halfSize: 0.62,
   builder: (_) => WatchSheet(appId: appId, price: price),
 );

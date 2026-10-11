@@ -695,4 +695,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get genreEarlyAccess => 'Early Access';
+
+  @override
+  String get share => 'Share';
+
+  @override
+  String get shareVia => 'Found in GameRadar';
+
+  @override
+  String get widgetTitle => 'GameRadar · Watchlist';
+
+  @override
+  String get widgetEmpty =>
+      'Add games to your watchlist to see prices and discounts here';
 }

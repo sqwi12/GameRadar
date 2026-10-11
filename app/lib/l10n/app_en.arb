@@ -198,5 +198,9 @@
   "genreSports": "Sports",
   "genreRacing": "Racing",
   "genreMmo": "MMO",
-  "genreEarlyAccess": "Early Access"
+  "genreEarlyAccess": "Early Access",
+  "share": "Share",
+  "shareVia": "Found in GameRadar",
+  "widgetTitle": "GameRadar · Watchlist",
+  "widgetEmpty": "Add games to your watchlist to see prices and discounts here"
 }

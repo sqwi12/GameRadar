@@ -4,4 +4,10 @@
     <color name="launch_background">#E6F3F7</color>
     <!-- Акцент значка уведомления (бирюзовый «радар»). -->
     <color name="notification_accent">#0E9FB0</color>
+    <color name="widget_background">#F2F7F9FC</color>
+    <color name="widget_border">#140C1322</color>
+    <color name="widget_text">#0C1322</color>
+    <color name="widget_muted">#8C0C1322</color>
+    <color name="widget_accent">#0A8F9E</color>
+    <color name="widget_discount">#138A43</color>
 </resources>

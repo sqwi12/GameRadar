@@ -16,6 +16,7 @@ import '../../watchlist/presentation/watchlist_providers.dart';
 import 'game_providers.dart';
 import 'game_charts_card.dart';
 import 'regional_prices_sheet.dart';
+import 'share_game.dart';
 
 /// Экран игры: цена и скидка, онлайн и пики, график за 7 дней, отслеживание.
 class GameScreen extends ConsumerWidget {
@@ -37,6 +38,18 @@ class GameScreen extends ConsumerWidget {
         semanticLabel: l10n.back,
         onPressed: context.pop,
       ),
+      actions: [
+        if (view.data case final game?)
+          AppBarButton(
+            icon: CupertinoIcons.share,
+            semanticLabel: l10n.share,
+            onPressed: () => shareGame(
+              l10n,
+              game,
+              Localizations.localeOf(context).toLanguageTag(),
+            ),
+          ),
+      ],
       body: ResourceScrollView<GameDetails>(
         view: view,
         insideTabs: false,

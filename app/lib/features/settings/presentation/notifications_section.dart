@@ -79,6 +79,8 @@ class NotificationsSection extends ConsumerWidget {
               ? null
               : () => GlassModalSheet.show<void>(
                   context: context,
+                  // Поверх нижней панели вкладок.
+                  useRootNavigator: true,
                   halfSize: 0.62,
                   builder: (_) =>
                       _QuietHoursSheet(initial: settings.quietHours),

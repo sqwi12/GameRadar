@@ -1291,6 +1291,30 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Ранний доступ'**
   String get genreEarlyAccess;
+
+  /// No description provided for @share.
+  ///
+  /// In ru, this message translates to:
+  /// **'Поделиться'**
+  String get share;
+
+  /// No description provided for @shareVia.
+  ///
+  /// In ru, this message translates to:
+  /// **'Нашёл в GameRadar'**
+  String get shareVia;
+
+  /// No description provided for @widgetTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'GameRadar · Отслеживаю'**
+  String get widgetTitle;
+
+  /// No description provided for @widgetEmpty.
+  ///
+  /// In ru, this message translates to:
+  /// **'Добавьте игры в «Отслеживаю» — здесь появятся цены и скидки'**
+  String get widgetEmpty;
 }
 
 class _AppLocalizationsDelegate

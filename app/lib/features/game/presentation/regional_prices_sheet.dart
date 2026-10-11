@@ -16,6 +16,8 @@ import 'game_providers.dart';
 Future<void> showRegionalPrices(BuildContext context, int appId) =>
     GlassModalSheet.show<void>(
       context: context,
+      // Поверх нижней панели вкладок.
+      useRootNavigator: true,
       halfSize: 0.75,
       builder: (_) => _RegionalPricesSheet(appId: appId),
     );

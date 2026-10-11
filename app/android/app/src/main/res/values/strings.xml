@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_title">GameRadar · Отслеживаю</string>
+    <string name="widget_empty">Откройте GameRadar, чтобы показать отслеживаемые игры</string>
+    <string name="widget_description">Цены и скидки отслеживаемых игр</string>
+</resources>

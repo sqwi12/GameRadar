@@ -396,5 +396,9 @@
   "genreSports": "Спорт",
   "genreRacing": "Гонки",
   "genreMmo": "ММО",
-  "genreEarlyAccess": "Ранний доступ"
+  "genreEarlyAccess": "Ранний доступ",
+  "share": "Поделиться",
+  "shareVia": "Нашёл в GameRadar",
+  "widgetTitle": "GameRadar · Отслеживаю",
+  "widgetEmpty": "Добавьте игры в «Отслеживаю» — здесь появятся цены и скидки"
 }

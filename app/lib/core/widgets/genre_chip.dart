@@ -23,6 +23,8 @@ class GenreChip extends StatelessWidget {
       selected: genre != null,
       onTap: () => GlassModalSheet.show<void>(
         context: context,
+        // Поверх нижней панели вкладок.
+        useRootNavigator: true,
         halfSize: 0.7,
         builder: (_) => _GenreSheet(selected: genre, onSelected: onSelected),
       ),

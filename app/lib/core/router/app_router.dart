@@ -8,6 +8,7 @@ import '../../features/game/presentation/game_screen.dart';
 import '../../features/search/presentation/search_screen.dart';
 import '../../features/settings/presentation/settings_screen.dart';
 import '../../features/top/presentation/top_screen.dart';
+import '../../features/watchlist/presentation/home_widget_sync.dart';
 import '../../features/watchlist/presentation/watchlist_screen.dart';
 import '../theme/app_background.dart';
 import '../theme/app_theme.dart';
@@ -91,51 +92,57 @@ class HomeShell extends StatelessWidget {
     final fade = AppColors.backgroundBottom.resolveFrom(context);
     return GlassScaffold(
       background: const AppBackground(),
-      body: Stack(
-        children: [
-          Positioned.fill(child: shell),
-          // Затемнение под панелью (как в Telegram, 60 dp): список
-          // плавно уходит под панель, а не обрывается.
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            height: bottomInset + 60,
-            child: IgnorePointer(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [fade.withAlpha(0), fade.withAlpha(0xD9)],
+      // Виджет «Отслеживаю» на рабочем столе следует за списком.
+      body: HomeWidgetUpdater(
+        child: Stack(
+          children: [
+            Positioned.fill(child: shell),
+            // Затемнение под панелью (как в Telegram, 60 dp): список
+            // плавно уходит под панель, а не обрывается.
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              height: bottomInset + 60,
+              child: IgnorePointer(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [fade.withAlpha(0), fade.withAlpha(0xD9)],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-          Positioned(
-            left: AppTabBar.margin,
-            right: AppTabBar.margin,
-            bottom: bottomInset + AppTabBar.margin,
-            child: AppTabBar(
-              selectedIndex: shell.currentIndex,
-              // Повторное нажатие на активную вкладку возвращает к её началу.
-              onSelected: (index) => shell.goBranch(
-                index,
-                initialLocation: index == shell.currentIndex,
-              ),
-              tabs: [
-                AppTab(
-                  icon: CupertinoIcons.chart_bar_alt_fill,
-                  label: l10n.tabTop,
+            Positioned(
+              left: AppTabBar.margin,
+              right: AppTabBar.margin,
+              bottom: bottomInset + AppTabBar.margin,
+              child: AppTabBar(
+                selectedIndex: shell.currentIndex,
+                // Повторное нажатие на активную вкладку возвращает к её началу.
+                onSelected: (index) => shell.goBranch(
+                  index,
+                  initialLocation: index == shell.currentIndex,
                 ),
-                AppTab(icon: CupertinoIcons.tag_fill, label: l10n.tabDiscounts),
-                AppTab(icon: CupertinoIcons.search, label: l10n.tabSearch),
-                AppTab(icon: CupertinoIcons.scope, label: l10n.tabWatchlist),
-              ],
+                tabs: [
+                  AppTab(
+                    icon: CupertinoIcons.chart_bar_alt_fill,
+                    label: l10n.tabTop,
+                  ),
+                  AppTab(
+                    icon: CupertinoIcons.tag_fill,
+                    label: l10n.tabDiscounts,
+                  ),
+                  AppTab(icon: CupertinoIcons.search, label: l10n.tabSearch),
+                  AppTab(icon: CupertinoIcons.scope, label: l10n.tabWatchlist),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

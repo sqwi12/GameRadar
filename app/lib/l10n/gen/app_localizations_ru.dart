@@ -696,4 +696,17 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get genreEarlyAccess => 'Ранний доступ';
+
+  @override
+  String get share => 'Поделиться';
+
+  @override
+  String get shareVia => 'Нашёл в GameRadar';
+
+  @override
+  String get widgetTitle => 'GameRadar · Отслеживаю';
+
+  @override
+  String get widgetEmpty =>
+      'Добавьте игры в «Отслеживаю» — здесь появятся цены и скидки';
 }

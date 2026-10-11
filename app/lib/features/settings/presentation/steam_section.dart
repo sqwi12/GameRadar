@@ -45,6 +45,8 @@ class SteamSection extends ConsumerWidget {
             AsyncError() => () => ref.invalidate(steamConnectionProvider),
             AsyncData() => () => GlassModalSheet.show<void>(
               context: context,
+              // Поверх нижней панели вкладок.
+              useRootNavigator: true,
               halfSize: 0.8,
               builder: (_) => _SteamSheet(initial: link),
             ),
