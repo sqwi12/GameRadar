@@ -63,12 +63,16 @@ final class GamesQueries {
         LEFT JOIN game_prices p ON p.app_id = g.app_id AND p.region = @region:text
         WHERE g.top_rank IS NOT NULL
           AND (NOT @only_discounted:boolean OR (p.is_available AND p.discount_pct > 0))
+          AND (NOT @only_free:boolean OR g.is_free)
+          AND (CAST(@genre:text AS text) IS NULL OR @genre:text = ANY(g.genres))
         ORDER BY $order
         LIMIT @limit:int4 OFFSET @offset:int4
       '''),
       parameters: {
         'region': query.region,
         'only_discounted': query.onlyDiscounted,
+        'only_free': query.onlyFree,
+        'genre': query.genre,
         'limit': query.limit,
         'offset': query.offset,
       },
@@ -95,6 +99,7 @@ final class GamesQueries {
           AND p.is_available
           AND p.discount_pct >= @min_discount:int4
           AND (@max_price:int8 IS NULL OR p.final_price <= @max_price:int8)
+          AND (CAST(@genre:text AS text) IS NULL OR @genre:text = ANY(g.genres))
           AND p.checked_at > now() - @fresh:int4 * interval '1 second'
         ORDER BY $order
         LIMIT @limit:int4 OFFSET @offset:int4
@@ -103,6 +108,7 @@ final class GamesQueries {
         'region': query.region,
         'min_discount': query.minDiscountPct,
         'max_price': query.maxPrice,
+        'genre': query.genre,
         'fresh': discountFreshness.inSeconds,
         'limit': query.limit,
         'offset': query.offset,

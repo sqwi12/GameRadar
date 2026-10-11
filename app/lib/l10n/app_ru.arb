@@ -382,5 +382,19 @@
         "type": "String"
       }
     }
-  }
+  },
+  "filterFree": "Бесплатные",
+  "genreTitle": "Жанр",
+  "genreAny": "Все жанры",
+  "genreAction": "Экшен",
+  "genreAdventure": "Приключения",
+  "genreRpg": "Ролевые",
+  "genreStrategy": "Стратегии",
+  "genreSimulation": "Симуляторы",
+  "genreIndie": "Инди",
+  "genreCasual": "Казуальные",
+  "genreSports": "Спорт",
+  "genreRacing": "Гонки",
+  "genreMmo": "ММО",
+  "genreEarlyAccess": "Ранний доступ"
 }

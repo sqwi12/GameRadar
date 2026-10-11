@@ -1207,6 +1207,90 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'{name} через {days, plural, one{{days} день} few{{days} дня} other{{days} дней}} · {dates}'**
   String saleIn(String name, int days, String dates);
+
+  /// No description provided for @filterFree.
+  ///
+  /// In ru, this message translates to:
+  /// **'Бесплатные'**
+  String get filterFree;
+
+  /// No description provided for @genreTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Жанр'**
+  String get genreTitle;
+
+  /// No description provided for @genreAny.
+  ///
+  /// In ru, this message translates to:
+  /// **'Все жанры'**
+  String get genreAny;
+
+  /// No description provided for @genreAction.
+  ///
+  /// In ru, this message translates to:
+  /// **'Экшен'**
+  String get genreAction;
+
+  /// No description provided for @genreAdventure.
+  ///
+  /// In ru, this message translates to:
+  /// **'Приключения'**
+  String get genreAdventure;
+
+  /// No description provided for @genreRpg.
+  ///
+  /// In ru, this message translates to:
+  /// **'Ролевые'**
+  String get genreRpg;
+
+  /// No description provided for @genreStrategy.
+  ///
+  /// In ru, this message translates to:
+  /// **'Стратегии'**
+  String get genreStrategy;
+
+  /// No description provided for @genreSimulation.
+  ///
+  /// In ru, this message translates to:
+  /// **'Симуляторы'**
+  String get genreSimulation;
+
+  /// No description provided for @genreIndie.
+  ///
+  /// In ru, this message translates to:
+  /// **'Инди'**
+  String get genreIndie;
+
+  /// No description provided for @genreCasual.
+  ///
+  /// In ru, this message translates to:
+  /// **'Казуальные'**
+  String get genreCasual;
+
+  /// No description provided for @genreSports.
+  ///
+  /// In ru, this message translates to:
+  /// **'Спорт'**
+  String get genreSports;
+
+  /// No description provided for @genreRacing.
+  ///
+  /// In ru, this message translates to:
+  /// **'Гонки'**
+  String get genreRacing;
+
+  /// No description provided for @genreMmo.
+  ///
+  /// In ru, this message translates to:
+  /// **'ММО'**
+  String get genreMmo;
+
+  /// No description provided for @genreEarlyAccess.
+  ///
+  /// In ru, this message translates to:
+  /// **'Ранний доступ'**
+  String get genreEarlyAccess;
 }
 
 class _AppLocalizationsDelegate

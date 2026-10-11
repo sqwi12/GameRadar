@@ -312,6 +312,38 @@ void main() {
       expect(status, 400);
     });
 
+    test('фильтры: жанр и только бесплатные', () async {
+      Future<List<int>> top(String q) async {
+        final (_, body) = await call(
+          () => topGames(Request.get(uri('/games/top?$q')), services),
+        );
+        final items = obj(body)['items']! as List;
+        return [
+          for (final j in items) (j as Map<String, Object?>)['app_id']! as int,
+        ];
+      }
+
+      expect(await top('genre=RPG'), [292030]);
+      expect(await top('genre=Action'), [730]);
+      await db.execute('UPDATE games SET is_free = true WHERE app_id = 570');
+      expect(await top('only_free=true'), [570]);
+      await db.execute('UPDATE games SET is_free = false WHERE app_id = 570');
+
+      final discounts = await call(
+        () => discountedGames(
+          Request.get(uri('/games/discounts?genre=RPG')),
+          services,
+        ),
+      );
+      expect(
+        [
+          for (final j in obj(discounts.$2)['items']! as List)
+            (j as Map<String, Object?>)['app_id'],
+        ],
+        [292030],
+      );
+    });
+
     test('топ: по месту, по пику, только со скидкой', () async {
       final byRank = await page(
         () => topGames(Request.get(uri('/games/top')), services),

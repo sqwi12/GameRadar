@@ -9,6 +9,7 @@ import '../../../core/widgets/settings_button.dart';
 import '../../../core/widgets/state_views.dart';
 import 'top_providers.dart';
 import '../../../core/widgets/app_controls.dart';
+import '../../../core/widgets/genre_chip.dart';
 
 /// «Топ по онлайну» с сортировкой и фильтром «Со скидкой».
 class TopScreen extends ConsumerWidget {
@@ -43,11 +44,21 @@ class TopScreen extends ConsumerWidget {
           ),
           FilterRow(
             children: [
+              GenreChip(
+                genre: filter.genre,
+                onSelected: ref.read(topFilterProvider.notifier).setGenre,
+              ),
               AppChip(
                 label: l10n.filterDiscounted,
                 icon: CupertinoIcons.tag_fill,
                 selected: filter.onlyDiscounted,
                 onTap: ref.read(topFilterProvider.notifier).toggleDiscounted,
+              ),
+              AppChip(
+                label: l10n.filterFree,
+                icon: CupertinoIcons.gift_fill,
+                selected: filter.onlyFree,
+                onTap: ref.read(topFilterProvider.notifier).toggleFree,
               ),
             ],
           ),

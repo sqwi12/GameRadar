@@ -89,7 +89,7 @@ final class DiscountsFilterProvider
   }
 }
 
-String _$discountsFilterHash() => r'dd948f002750d546840053b9fb2495164c475fb2';
+String _$discountsFilterHash() => r'fa74ccdf8fd9d97f8b1b5e69b9d20bf07085af0f';
 
 abstract class _$DiscountsFilter extends $Notifier<DiscountsQuery> {
   DiscountsQuery build();
@@ -141,7 +141,7 @@ final class DiscountsListProvider
   }
 }
 
-String _$discountsListHash() => r'1c5115f640eac8d6677e48ffc77602bd00800331';
+String _$discountsListHash() => r'21c90ca2ffd5bce007ce95837b3b017f772be3e8';
 
 abstract class _$DiscountsList extends $Notifier<PagedView<GameSummary>> {
   PagedView<GameSummary> build();

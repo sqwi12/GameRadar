@@ -184,5 +184,19 @@
   "saleWinter": "Steam Winter Sale",
   "saleActive": "{name} is on now — until {date}",
   "saleTomorrow": "{name} starts tomorrow",
-  "saleIn": "{name} in {days, plural, one{{days} day} other{{days} days}} · {dates}"
+  "saleIn": "{name} in {days, plural, one{{days} day} other{{days} days}} · {dates}",
+  "filterFree": "Free",
+  "genreTitle": "Genre",
+  "genreAny": "All genres",
+  "genreAction": "Action",
+  "genreAdventure": "Adventure",
+  "genreRpg": "RPG",
+  "genreStrategy": "Strategy",
+  "genreSimulation": "Simulation",
+  "genreIndie": "Indie",
+  "genreCasual": "Casual",
+  "genreSports": "Sports",
+  "genreRacing": "Racing",
+  "genreMmo": "MMO",
+  "genreEarlyAccess": "Early Access"
 }

@@ -10,6 +10,7 @@ import '../../../core/widgets/settings_button.dart';
 import '../../../core/widgets/state_views.dart';
 import 'discounts_providers.dart';
 import '../../../core/widgets/app_controls.dart';
+import '../../../core/widgets/genre_chip.dart';
 import 'sale_banner.dart';
 
 /// «Скидки сейчас»: сортировка, минимальная скидка и максимальная цена.
@@ -51,6 +52,7 @@ class DiscountsScreen extends ConsumerWidget {
           ),
           FilterRow(
             children: [
+              GenreChip(genre: filter.genre, onSelected: filters.setGenre),
               for (final pct in discountSteps.skip(1))
                 AppChip(
                   label: l10n.minDiscountChip(pct),

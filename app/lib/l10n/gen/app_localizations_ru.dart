@@ -654,4 +654,46 @@ class AppLocalizationsRu extends AppLocalizations {
     );
     return '$name через $_temp0 · $dates';
   }
+
+  @override
+  String get filterFree => 'Бесплатные';
+
+  @override
+  String get genreTitle => 'Жанр';
+
+  @override
+  String get genreAny => 'Все жанры';
+
+  @override
+  String get genreAction => 'Экшен';
+
+  @override
+  String get genreAdventure => 'Приключения';
+
+  @override
+  String get genreRpg => 'Ролевые';
+
+  @override
+  String get genreStrategy => 'Стратегии';
+
+  @override
+  String get genreSimulation => 'Симуляторы';
+
+  @override
+  String get genreIndie => 'Инди';
+
+  @override
+  String get genreCasual => 'Казуальные';
+
+  @override
+  String get genreSports => 'Спорт';
+
+  @override
+  String get genreRacing => 'Гонки';
+
+  @override
+  String get genreMmo => 'ММО';
+
+  @override
+  String get genreEarlyAccess => 'Ранний доступ';
 }

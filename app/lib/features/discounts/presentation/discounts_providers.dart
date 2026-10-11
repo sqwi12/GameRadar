@@ -32,6 +32,8 @@ class DiscountsFilter extends _$DiscountsFilter {
       state = state.copyWith(minDiscountPct: percent);
 
   /// [tenge] — в основных единицах; повторный выбор того же значения снимает фильтр.
+  void setGenre(String? genre) => state = state.copyWith(genre: genre);
+
   void toggleMaxPrice(int tenge) {
     final minor = tenge * minorUnitsPerMajor;
     state = state.copyWith(maxPrice: state.maxPrice == minor ? null : minor);
@@ -51,7 +53,7 @@ class DiscountsList extends _$DiscountsList {
         db: ref.watch(appDatabaseProvider),
         key:
             'discounts:${query.region}:${query.sort.wireName}:'
-            '${query.minDiscountPct}:${query.maxPrice}',
+            '${query.minDiscountPct}:${query.maxPrice}:${query.genre}',
         fetch: () => repository.fetch(query),
         decode: decodeGamePage,
         encode: encodeGamePage,

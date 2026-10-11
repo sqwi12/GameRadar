@@ -27,6 +27,10 @@ class TopFilter extends _$TopFilter {
 
   void toggleDiscounted() =>
       state = state.copyWith(onlyDiscounted: !state.onlyDiscounted);
+
+  void toggleFree() => state = state.copyWith(onlyFree: !state.onlyFree);
+
+  void setGenre(String? genre) => state = state.copyWith(genre: genre);
 }
 
 /// Список топа: первая страница из кэша, следующие — при прокрутке.
@@ -42,7 +46,8 @@ class TopList extends _$TopList {
       CachedResource<Paginated<GameSummary>>(
         db: ref.watch(appDatabaseProvider),
         key:
-            'top:${query.region}:${query.sort.wireName}:${query.onlyDiscounted}',
+            'top:${query.region}:${query.sort.wireName}:${query.onlyDiscounted}:'
+            '${query.onlyFree}:${query.genre}',
         fetch: () => repository.fetch(query),
         decode: decodeGamePage,
         encode: encodeGamePage,

@@ -93,6 +93,32 @@ enum TopSort {
   final String wireName;
 }
 
+/// Основные жанры Steam (так они хранятся в каталоге — по-английски).
+abstract final class SteamGenres {
+  static const common = [
+    'Action',
+    'Adventure',
+    'RPG',
+    'Strategy',
+    'Simulation',
+    'Indie',
+    'Casual',
+    'Sports',
+    'Racing',
+    'Massively Multiplayer',
+    'Early Access',
+  ];
+
+  static const maxLength = 40;
+}
+
+void _validateGenre(Validator v, String? genre) {
+  if (genre != null &&
+      (genre.isEmpty || genre.length > SteamGenres.maxLength)) {
+    v.add('genre', FieldErrorCode.invalidFormat);
+  }
+}
+
 /// GET /games/top
 @freezed
 abstract class TopQuery with _$TopQuery {
@@ -104,6 +130,12 @@ abstract class TopQuery with _$TopQuery {
 
     /// Только игры со скидкой.
     @Default(false) bool onlyDiscounted,
+
+    /// Только бесплатные игры.
+    @Default(false) bool onlyFree,
+
+    /// Жанр Steam (см. [SteamGenres]); null — любые.
+    String? genre,
     @Default(0) int offset,
     @Default(PageLimits.defaultLimit) int limit,
   }) = _TopQuery;
@@ -122,6 +154,8 @@ abstract class TopQuery with _$TopQuery {
           TopSort.current,
       region: params['region'] ?? Regions.defaultRegion,
       onlyDiscounted: params['only_discounted'] == 'true',
+      onlyFree: params['only_free'] == 'true',
+      genre: params['genre'],
       offset: parseIntParam(params, 'offset', v) ?? 0,
       limit: parseIntParam(params, 'limit', v) ?? PageLimits.defaultLimit,
     );
@@ -132,6 +166,7 @@ abstract class TopQuery with _$TopQuery {
 
   void _validate(Validator v) {
     _validateRegion(v, region);
+    _validateGenre(v, genre);
     _validatePaging(v, offset, limit);
   }
 
@@ -145,6 +180,8 @@ abstract class TopQuery with _$TopQuery {
     'sort': sort.wireName,
     'region': region,
     if (onlyDiscounted) 'only_discounted': 'true',
+    if (onlyFree) 'only_free': 'true',
+    'genre': ?genre,
     'offset': '$offset',
     'limit': '$limit',
   };
@@ -179,6 +216,9 @@ abstract class DiscountsQuery with _$DiscountsQuery {
 
     /// Максимальная цена со скидкой в минимальных единицах валюты.
     int? maxPrice,
+
+    /// Жанр Steam (см. [SteamGenres]); null — любые.
+    String? genre,
     @Default(0) int offset,
     @Default(PageLimits.defaultLimit) int limit,
   }) = _DiscountsQuery;
@@ -198,6 +238,7 @@ abstract class DiscountsQuery with _$DiscountsQuery {
       region: params['region'] ?? Regions.defaultRegion,
       minDiscountPct: parseIntParam(params, 'min_discount_pct', v) ?? 1,
       maxPrice: parseIntParam(params, 'max_price', v),
+      genre: params['genre'],
       offset: parseIntParam(params, 'offset', v) ?? 0,
       limit: parseIntParam(params, 'limit', v) ?? PageLimits.defaultLimit,
     );
@@ -211,6 +252,7 @@ abstract class DiscountsQuery with _$DiscountsQuery {
     v
       ..range('min_discount_pct', minDiscountPct, min: 1, max: 100)
       ..range('max_price', maxPrice, min: 0);
+    _validateGenre(v, genre);
     _validatePaging(v, offset, limit);
   }
 
@@ -225,6 +267,7 @@ abstract class DiscountsQuery with _$DiscountsQuery {
     'region': region,
     'min_discount_pct': '$minDiscountPct',
     if (maxPrice != null) 'max_price': '$maxPrice',
+    'genre': ?genre,
     'offset': '$offset',
     'limit': '$limit',
   };

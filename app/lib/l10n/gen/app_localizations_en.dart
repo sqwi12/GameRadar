@@ -653,4 +653,46 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$name in $_temp0 · $dates';
   }
+
+  @override
+  String get filterFree => 'Free';
+
+  @override
+  String get genreTitle => 'Genre';
+
+  @override
+  String get genreAny => 'All genres';
+
+  @override
+  String get genreAction => 'Action';
+
+  @override
+  String get genreAdventure => 'Adventure';
+
+  @override
+  String get genreRpg => 'RPG';
+
+  @override
+  String get genreStrategy => 'Strategy';
+
+  @override
+  String get genreSimulation => 'Simulation';
+
+  @override
+  String get genreIndie => 'Indie';
+
+  @override
+  String get genreCasual => 'Casual';
+
+  @override
+  String get genreSports => 'Sports';
+
+  @override
+  String get genreRacing => 'Racing';
+
+  @override
+  String get genreMmo => 'MMO';
+
+  @override
+  String get genreEarlyAccess => 'Early Access';
 }

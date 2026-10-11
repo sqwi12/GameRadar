@@ -85,7 +85,7 @@ final class TopFilterProvider extends $NotifierProvider<TopFilter, TopQuery> {
   }
 }
 
-String _$topFilterHash() => r'd3fe4429316ec4dd46ded2d12e8f12343c967b78';
+String _$topFilterHash() => r'416f7100e348655c94fce291d6c0cd8463640302';
 
 /// Фильтры топа: сортировка и «только со скидкой».
 
@@ -143,7 +143,7 @@ final class TopListProvider
   }
 }
 
-String _$topListHash() => r'152d7cce797d692942f726bca65ed4ef7a792643';
+String _$topListHash() => r'beadcc5292ae830619fde22637affb10eb3bc140';
 
 /// Список топа: первая страница из кэша, следующие — при прокрутке.
 
