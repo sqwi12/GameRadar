@@ -12,6 +12,9 @@ REST API GameRadar на Dart Frog. Работает только с нашей �
 | `POST /auth/anonymous` | — | Вход по ID устройства → `AuthResponse` с JWT на 7 дней |
 | `GET /me` | ✔ | Профиль и настройки |
 | `PUT /me/settings` | ✔ | Заменить настройки целиком (`UserSettings`) |
+| `GET /me/steam` | ✔ | Привязка профиля Steam и состояние импорта (`SteamLink`), 404 — не привязан |
+| `PUT /me/steam` | ✔ | Привязать профиль: `{"profile": "<ссылка или ник>", "import_min_discount_pct": 25}` |
+| `DELETE /me/steam` | ✔ | Отвязать профиль, импортированные игры убираются (204) |
 | `GET /games/search?q=&region=&limit=` | — | Поиск по названию |
 | `GET /games/top?sort=current\|peak_24h&only_discounted=&offset=&limit=` | — | Топ по онлайну |
 | `GET /games/discounts?sort=discount\|price\|players&min_discount_pct=&max_price=&offset=&limit=` | — | Скидки сейчас |
@@ -38,6 +41,8 @@ REST API GameRadar на Dart Frog. Работает только с нашей �
   - Не больше 200 игр, иначе ответ 409 `limit_exceeded`.
   - Регион фиксируется при добавлении.
   - При смене порогов сбрасывается отметка последнего уведомления.
+  - Ручное изменение делает запись ручной (`source = manual`): синхронизация со Steam её больше не трогает.
+- **Импорт списка желаемого.** Сервер в Steam не ходит: он сохраняет ввод пользователя и ставит привязку в статус `pending`. SteamID, имя профиля и сам импорт выполняет worker. Повторный `PUT` с тем же профилем сохраняет найденный SteamID, с другим — сбрасывает его.
 
 ## Запуск без Docker
 

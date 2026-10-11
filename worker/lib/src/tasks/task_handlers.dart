@@ -1,8 +1,10 @@
+import 'package:gameradar_shared/gameradar_shared.dart';
 import 'package:logging/logging.dart';
 
 import '../clock.dart';
 import '../config.dart';
 import '../db/games_repository.dart';
+import '../db/steam_links_repository.dart';
 import '../notifications/notification_service.dart';
 import '../queue/markers.dart';
 import '../queue/task_queue.dart';
@@ -27,6 +29,7 @@ final class TaskHandlers {
     required this._notifications,
     required this._markers,
     required this._config,
+    required this._steamLinks,
     this._clock = const SystemClock(),
   });
 
@@ -37,6 +40,7 @@ final class TaskHandlers {
   final NotificationService _notifications;
   final Markers _markers;
   final WorkerConfig _config;
+  final SteamLinksRepository _steamLinks;
   final Clock _clock;
 
   /// Свежесть замеров онлайна для места в топе.
@@ -50,6 +54,7 @@ final class TaskHandlers {
     TaskKind.appList => _appList(),
     TaskKind.topChart => _topChart(),
     TaskKind.image => _image(task),
+    TaskKind.wishlist => _wishlist(task),
     TaskKind.notify => _notifications.evaluateOne(
       task.payload['user_id']! as String,
       task.payload['app_id']! as int,
@@ -104,6 +109,51 @@ final class TaskHandlers {
       _log.warning('Обложка $appId недоступна: $e');
       await _games.dropImageUrl(appId, url);
     }
+  }
+
+  /// Импорт списка желаемого: ник → SteamID, открытость профиля, список.
+  /// Все запросы — через очередь и лимит worker'а (правило 2).
+  Future<void> _wishlist(QueueTask task) async {
+    final job = await _steamLinks.job(task.payload['user_id']! as String);
+    if (job == null) return; // Привязку уже удалили.
+
+    var steamId = job.steamId;
+    if (steamId == null) {
+      steamId = switch (SteamProfileRef.tryParse(job.profileInput)) {
+        SteamId64(:final value) => value,
+        SteamVanity(:final name) => await _steam.resolveVanity(name),
+        null => null,
+      };
+      if (steamId == null) {
+        await _steamLinks.markStatus(job.userId, 'not_found');
+        return;
+      }
+    }
+
+    final profile = await _steam.playerSummary(steamId);
+    if (profile == null) {
+      await _steamLinks.markStatus(job.userId, 'not_found');
+      return;
+    }
+    if (!profile.isPublic) {
+      await _steamLinks.markStatus(
+        job.userId,
+        'private_profile',
+        steamId: steamId,
+        personaName: profile.personaName,
+      );
+      return;
+    }
+    final appIds = await _steam.wishlist(steamId);
+    final imported = await _steamLinks.importWishlist(
+      job,
+      steamId,
+      profile.personaName,
+      appIds,
+    );
+    _log.info(
+      'Список желаемого ${job.userId}: ${appIds.length} игр, в отслеживаемых $imported',
+    );
   }
 
   Future<void> _appList() async {

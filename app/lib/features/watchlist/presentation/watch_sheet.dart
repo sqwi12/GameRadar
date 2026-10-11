@@ -192,6 +192,13 @@ class _WatchSheetState extends ConsumerState<WatchSheet> {
               style: AppText.secondary(context).copyWith(fontSize: 13),
             ),
           ],
+          if (_existing?.source == WatchSource.wishlist) ...[
+            const SizedBox(height: 8),
+            Text(
+              l10n.watchWishlistHint,
+              style: AppText.secondary(context).copyWith(fontSize: 13),
+            ),
+          ],
           const SizedBox(height: 24),
           SizedBox(
             height: 50,

@@ -69,4 +69,18 @@ void main() {
     await pump(tester, ThresholdsLabel(item: item(target: 400000)));
     expect(find.textContaining('Цель достигнута'), findsOneWidget);
   });
+
+  testWidgets('игра из списка желаемого Steam помечена', (tester) async {
+    WatchlistItem item(WatchSource source) => WatchlistItem(
+      game: GameSummary(appId: 1, name: 'X', price: price()),
+      region: 'kz',
+      minDiscountPct: 25,
+      createdAt: now,
+      source: source,
+    );
+    await pump(tester, ThresholdsLabel(item: item(WatchSource.manual)));
+    expect(find.text('Из списка желаемого Steam'), findsNothing);
+    await pump(tester, ThresholdsLabel(item: item(WatchSource.wishlist)));
+    expect(find.text('Из списка желаемого Steam'), findsOneWidget);
+  });
 }

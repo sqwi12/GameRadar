@@ -4,6 +4,7 @@ library;
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:gameradar_shared/gameradar_shared.dart';
 import 'package:gameradar_shared/steam.dart';
 import 'package:gameradar_worker/gameradar_worker.dart';
 import 'package:http/http.dart' as http;
@@ -17,9 +18,8 @@ import '../support/fake_clock.dart';
 /// Интеграционный тест SQL worker'а на настоящем PostgreSQL.
 ///
 /// ВНИМАНИЕ: пересоздаёт схему public в базе из TEST_DATABASE_URL.
-/// Запуск: TEST_DATABASE_URL=postgres://user:pass@localhost:5433/gameradar_test?sslmode=disable \
-///         dart test -t db
-final _url = Platform.environment['TEST_DATABASE_URL'];
+/// Адрес берётся из окружения или .env. Запуск: dart test -t db
+final _url = loadEnvironment()['TEST_DATABASE_URL'];
 
 /// Уведомитель, который запоминает отправленное.
 final class RecordingNotifier implements Notifier {
@@ -368,6 +368,223 @@ void main() {
     );
   });
 
+  group('импорт списка желаемого Steam', () {
+    late String user;
+    late SteamLinksRepository links;
+    late List<Uri> steamCalls;
+    late Map<String, Object?> Function(Uri uri) steamAnswer;
+
+    TaskHandlers handlers() {
+      final clock = FakeClock();
+      steamCalls = [];
+      return TaskHandlers(
+        steam: SteamClient(
+          httpClient: MockClient((request) async {
+            steamCalls.add(request.url);
+            return http.Response(jsonEncode(steamAnswer(request.url)), 200);
+          }),
+          rateLimiter: InMemoryRateLimiter(
+            interval: const Duration(milliseconds: 1500),
+            clock: clock,
+          ),
+          apiKey: 'k',
+          clock: clock,
+        ),
+        games: games,
+        notifications: NotificationService(
+          watchlist: watchlist,
+          notifier: RecordingNotifier(),
+          queue: InMemoryTaskQueue(clock),
+          clock: clock,
+        ),
+        markers: InMemoryMarkers(),
+        config: const WorkerConfig(
+          databaseUrl: '',
+          redisUrl: '',
+          steamApiKey: 'k',
+        ),
+        steamLinks: links,
+        clock: clock,
+      );
+    }
+
+    Map<String, Object?> publicProfile(Uri uri, List<int> wishlist) =>
+        switch (uri.path) {
+          final p when p.contains('ResolveVanityURL') => {
+            'response': {'steamid': '76561197960287930', 'success': 1},
+          },
+          final p when p.contains('GetPlayerSummaries') => {
+            'response': {
+              'players': [
+                {
+                  'steamid': '76561197960287930',
+                  'personaname': 'Tester',
+                  'communityvisibilitystate': 3,
+                },
+              ],
+            },
+          },
+          _ => {
+            'response': {
+              'items': [
+                for (var i = 0; i < wishlist.length; i++)
+                  {'appid': wishlist[i], 'priority': i},
+              ],
+            },
+          },
+        };
+
+    Future<void> runImport() => handlers().handle(
+      QueueTask(
+        id: 'wishlist:$user',
+        kind: TaskKind.wishlist,
+        lane: Lane.api,
+        priority: 0,
+        payload: {'user_id': user},
+      ),
+    );
+
+    Future<List<List<Object?>>> rows() async => [
+      for (final r in await db.execute(
+        Sql.named('''
+          SELECT app_id, source, min_discount_pct FROM watchlist
+          WHERE user_id = CAST(@u:text AS uuid) ORDER BY app_id
+        '''),
+        parameters: {'u': user},
+      ))
+        r.toList(),
+    ];
+
+    setUp(() async {
+      user = await createUser();
+      links = SteamLinksRepository(db);
+      await db.execute(
+        Sql.named('''
+          INSERT INTO steam_links (user_id, profile_input, import_min_discount_pct)
+          VALUES (CAST(@u:text AS uuid), 'https://steamcommunity.com/id/tester/', 50)
+        '''),
+        parameters: {'u': user},
+      );
+    });
+
+    test(
+      'ник → SteamID → список; новые игры добавляются, ручные не трогаются',
+      () async {
+        // Ручная запись на игру, которая есть и в списке желаемого.
+        await db.execute(
+          Sql.named('''
+          INSERT INTO watchlist (user_id, app_id, target_price)
+          VALUES (CAST(@u:text AS uuid), 570, 100)
+        '''),
+          parameters: {'u': user},
+        );
+        expect(await links.dueUserIds(limit: 50), contains(user));
+
+        steamAnswer = (uri) => publicProfile(uri, [730, 570, 999001]);
+        await runImport();
+
+        expect(steamCalls.map((u) => u.path.split('/')[1]), [
+          'ISteamUser',
+          'ISteamUser',
+          'IWishlistService',
+        ]);
+        expect(await rows(), [
+          [570, 'manual', null],
+          [730, 'wishlist', 50],
+          [999001, 'wishlist', 50],
+        ]);
+        final link = (await db.execute(
+          Sql.named(
+            'SELECT status, steam_id, persona_name, wishlist_count, imported_count '
+            'FROM steam_links WHERE user_id = CAST(@u:text AS uuid)',
+          ),
+          parameters: {'u': user},
+        )).first;
+        expect(link.toList(), ['ok', '76561197960287930', 'Tester', 3, 2]);
+        expect(await links.dueUserIds(limit: 50), isNot(contains(user)));
+        // Неизвестная игра добавлена в каталог, название подставят описания.
+        expect(
+          await scalar('SELECT name FROM games WHERE app_id = 999001'),
+          'App 999001',
+        );
+
+        // Игру убрали из списка желаемого, порог сменили: синхронизация.
+        await db.execute(
+          Sql.named(
+            "UPDATE steam_links SET import_min_discount_pct = 75, synced_at = now() - interval '2 days' "
+            'WHERE user_id = CAST(@u:text AS uuid)',
+          ),
+          parameters: {'u': user},
+        );
+        expect(await links.dueUserIds(limit: 50), contains(user));
+        steamAnswer = (uri) => publicProfile(uri, [999001]);
+        await runImport();
+        expect(await rows(), [
+          [570, 'manual', null],
+          [999001, 'wishlist', 75],
+        ]);
+        // SteamID сохранён: ник повторно не разрешается.
+        expect(
+          steamCalls.where((u) => u.path.contains('ResolveVanityURL')),
+          isEmpty,
+        );
+      },
+    );
+
+    test('лимит списка соблюдается', () async {
+      final many = [
+        for (var i = 0; i < WatchlistLimits.maxItems + 50; i++) 800000 + i,
+      ];
+      steamAnswer = (uri) => publicProfile(uri, many);
+      await runImport();
+      expect(
+        await scalar("SELECT count(*) FROM watchlist WHERE user_id = '$user'"),
+        WatchlistLimits.maxItems,
+      );
+      expect(
+        await scalar(
+          "SELECT wishlist_count FROM steam_links WHERE user_id = '$user'",
+        ),
+        WatchlistLimits.maxItems + 50,
+      );
+    });
+
+    test('скрытый профиль и несуществующий ник', () async {
+      steamAnswer = (uri) => uri.path.contains('GetPlayerSummaries')
+          ? {
+              'response': {
+                'players': [
+                  {
+                    'steamid': '76561197960287930',
+                    'communityvisibilitystate': 2,
+                  },
+                ],
+              },
+            }
+          : publicProfile(uri, [730]);
+      await runImport();
+      expect(
+        await scalar("SELECT status FROM steam_links WHERE user_id = '$user'"),
+        'private_profile',
+      );
+      expect(await rows(), isEmpty);
+      expect(steamCalls.where((u) => u.path.contains('Wishlist')), isEmpty);
+
+      await db.execute(
+        "UPDATE steam_links SET steam_id = NULL, status = 'pending' WHERE user_id = '$user'",
+      );
+      steamAnswer = (uri) => {
+        'response': {'success': 42, 'message': 'No match'},
+      };
+      await runImport();
+      expect(
+        await scalar("SELECT status FROM steam_links WHERE user_id = '$user'"),
+        'not_found',
+      );
+      expect(await links.dueUserIds(limit: 50), isNot(contains(user)));
+    });
+  });
+
   test('описание и отзывы', () async {
     await games.saveDetails(
       730,
@@ -448,6 +665,7 @@ void main() {
           redisUrl: '',
           steamApiKey: 'k',
         ),
+        steamLinks: SteamLinksRepository(db),
         clock: clock,
       );
       await handlers.handle(

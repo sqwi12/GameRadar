@@ -219,6 +219,59 @@ SteamAppListPage parseAppListPage(Object? json) {
   );
 }
 
+/// `GET api.steampowered.com/ISteamUser/ResolveVanityURL/v1/?vanityurl=...`
+///
+/// `{"response": {"steamid": "765...", "success": 1}}`; ника нет —
+/// `{"response": {"success": 42, "message": "No match"}}` → null.
+String? parseResolveVanity(Object? json) {
+  final root = _asMap(json, 'ResolveVanityURL');
+  final response = _asMap(root['response'], 'ResolveVanityURL.response');
+  if (_asInt(response['success']) != 1) return null;
+  final id = _asNonEmptyString(response['steamid']);
+  if (id == null) throw SteamFormatException('ResolveVanityURL: нет steamid');
+  return id;
+}
+
+/// `GET api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?steamids=...`
+/// null — профиля нет.
+SteamPlayerSummary? parsePlayerSummary(Object? json) {
+  final root = _asMap(json, 'GetPlayerSummaries');
+  final response = _asMap(root['response'], 'GetPlayerSummaries.response');
+  final players = response['players'];
+  if (players is! List) {
+    throw SteamFormatException('GetPlayerSummaries: нет players');
+  }
+  final player = players.whereType<Map<String, Object?>>().firstOrNull;
+  if (player == null) return null;
+  return SteamPlayerSummary(
+    steamId: _asNonEmptyString(player['steamid']) ?? '',
+    personaName: _asNonEmptyString(player['personaname']),
+    // 3 — профиль открыт; 1 и 2 — скрыт или только для друзей.
+    isPublic: _asInt(player['communityvisibilitystate']) == 3,
+  );
+}
+
+/// `GET api.steampowered.com/IWishlistService/GetWishlist/v1/?steamid=...`
+///
+/// `{"response": {"items": [{"appid": 1091500, "priority": 1, "date_added": ...}]}}`.
+/// Скрытый или пустой список — `{"response": {}}` → пустой список.
+/// Порядок — как в списке желаемого пользователя (по priority).
+List<int> parseWishlist(Object? json) {
+  final root = _asMap(json, 'GetWishlist');
+  final response = _asMap(root['response'], 'GetWishlist.response');
+  final items = response['items'];
+  if (items == null) return const [];
+  if (items is! List) {
+    throw SteamFormatException('GetWishlist: items не список');
+  }
+  final rows = [
+    for (final item in items.whereType<Map<String, Object?>>())
+      if (_asInt(item['appid']) case final int appId when appId > 0)
+        (appId: appId, priority: _asInt(item['priority']) ?? 1 << 30),
+  ]..sort((a, b) => a.priority.compareTo(b.priority));
+  return [for (final r in rows) r.appId];
+}
+
 /// `GET api.steampowered.com/ISteamChartsService/GetGamesByConcurrentPlayers/v1/`
 List<SteamChartEntry> parseConcurrentPlayersChart(Object? json) {
   final root = _asMap(json, 'GetGamesByConcurrentPlayers');

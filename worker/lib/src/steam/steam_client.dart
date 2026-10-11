@@ -167,6 +167,37 @@ final class SteamClient {
     return parseAppListPage(json);
   }
 
+  /// SteamID64 по нику (steamcommunity.com/id/<ник>) или null, если ника нет.
+  Future<String?> resolveVanity(String name) async => parseResolveVanity(
+    await _getJson(
+      Uri.https(apiHost, '/ISteamUser/ResolveVanityURL/v1/', {
+        'key': _apiKey,
+        'vanityurl': name,
+      }),
+    ),
+  );
+
+  /// Имя и открытость профиля или null, если профиля нет.
+  Future<SteamPlayerSummary?> playerSummary(String steamId) async =>
+      parsePlayerSummary(
+        await _getJson(
+          Uri.https(apiHost, '/ISteamUser/GetPlayerSummaries/v2/', {
+            'key': _apiKey,
+            'steamids': steamId,
+          }),
+        ),
+      );
+
+  /// appid из списка желаемого в порядке приоритета пользователя.
+  /// Скрытый список приходит пустым.
+  Future<List<int>> wishlist(String steamId) async => parseWishlist(
+    await _getJson(
+      Uri.https(apiHost, '/IWishlistService/GetWishlist/v1/', {
+        'steamid': steamId,
+      }),
+    ),
+  );
+
   /// Топ-100 по текущему онлайну от самого Steam.
   Future<List<SteamChartEntry>> fetchConcurrentChart() async {
     final json = await _getJson(

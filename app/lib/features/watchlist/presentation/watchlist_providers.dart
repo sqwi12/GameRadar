@@ -47,6 +47,10 @@ class Watchlist extends _$Watchlist {
 
   Future<void> retry() => _binding!.retry();
 
+  /// Загружает список с сервера без ограничения «раз в минуту»: после
+  /// импорта списка желаемого Steam.
+  Future<void> reload() => _binding!.reload();
+
   /// Добавляет игру или меняет пороги, затем перезагружает список.
   /// Ошибки (сеть, лимит списка) пробрасываются экрану.
   Future<WatchlistItem> save(int appId, WatchlistUpsertRequest request) async {

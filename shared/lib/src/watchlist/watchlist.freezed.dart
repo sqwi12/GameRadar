@@ -294,7 +294,7 @@ as int?,
 mixin _$WatchlistItem {
 
  GameSummary get game; String get region; int? get targetPrice; int? get minDiscountPct;/// Цена, о которой уже отправлено уведомление.
- int? get lastNotifiedPrice; DateTime? get lastNotifiedAt; DateTime get createdAt;
+ int? get lastNotifiedPrice; DateTime? get lastNotifiedAt; DateTime get createdAt; WatchSource get source;
 /// Create a copy of WatchlistItem
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -308,20 +308,20 @@ $WatchlistItemCopyWith<WatchlistItem> get copyWith => _$WatchlistItemCopyWithImp
 @override
 bool operator ==(Object other) {
   final _this = this as WatchlistItem;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is WatchlistItem&&(identical(other.game, _this.game) || other.game == _this.game)&&(identical(other.region, _this.region) || other.region == _this.region)&&(identical(other.targetPrice, _this.targetPrice) || other.targetPrice == _this.targetPrice)&&(identical(other.minDiscountPct, _this.minDiscountPct) || other.minDiscountPct == _this.minDiscountPct)&&(identical(other.lastNotifiedPrice, _this.lastNotifiedPrice) || other.lastNotifiedPrice == _this.lastNotifiedPrice)&&(identical(other.lastNotifiedAt, _this.lastNotifiedAt) || other.lastNotifiedAt == _this.lastNotifiedAt)&&(identical(other.createdAt, _this.createdAt) || other.createdAt == _this.createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is WatchlistItem&&(identical(other.game, _this.game) || other.game == _this.game)&&(identical(other.region, _this.region) || other.region == _this.region)&&(identical(other.targetPrice, _this.targetPrice) || other.targetPrice == _this.targetPrice)&&(identical(other.minDiscountPct, _this.minDiscountPct) || other.minDiscountPct == _this.minDiscountPct)&&(identical(other.lastNotifiedPrice, _this.lastNotifiedPrice) || other.lastNotifiedPrice == _this.lastNotifiedPrice)&&(identical(other.lastNotifiedAt, _this.lastNotifiedAt) || other.lastNotifiedAt == _this.lastNotifiedAt)&&(identical(other.createdAt, _this.createdAt) || other.createdAt == _this.createdAt)&&(identical(other.source, _this.source) || other.source == _this.source));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
   final _this = this as WatchlistItem;
-  return Object.hash(runtimeType,_this.game,_this.region,_this.targetPrice,_this.minDiscountPct,_this.lastNotifiedPrice,_this.lastNotifiedAt,_this.createdAt);
+  return Object.hash(runtimeType,_this.game,_this.region,_this.targetPrice,_this.minDiscountPct,_this.lastNotifiedPrice,_this.lastNotifiedAt,_this.createdAt,_this.source);
 }
 
 @override
 String toString() {
   final _this = this as WatchlistItem;
-  return 'WatchlistItem(game: ${_this.game}, region: ${_this.region}, targetPrice: ${_this.targetPrice}, minDiscountPct: ${_this.minDiscountPct}, lastNotifiedPrice: ${_this.lastNotifiedPrice}, lastNotifiedAt: ${_this.lastNotifiedAt}, createdAt: ${_this.createdAt})';
+  return 'WatchlistItem(game: ${_this.game}, region: ${_this.region}, targetPrice: ${_this.targetPrice}, minDiscountPct: ${_this.minDiscountPct}, lastNotifiedPrice: ${_this.lastNotifiedPrice}, lastNotifiedAt: ${_this.lastNotifiedAt}, createdAt: ${_this.createdAt}, source: ${_this.source})';
 }
 
 
@@ -332,7 +332,7 @@ abstract mixin class $WatchlistItemCopyWith<$Res>  {
   factory $WatchlistItemCopyWith(WatchlistItem value, $Res Function(WatchlistItem) _then) = _$WatchlistItemCopyWithImpl;
 @useResult
 $Res call({
- GameSummary game, String region, int? targetPrice, int? minDiscountPct, int? lastNotifiedPrice, DateTime? lastNotifiedAt, DateTime createdAt
+ GameSummary game, String region, int? targetPrice, int? minDiscountPct, int? lastNotifiedPrice, DateTime? lastNotifiedAt, DateTime createdAt, WatchSource source
 });
 
 
@@ -349,7 +349,7 @@ class _$WatchlistItemCopyWithImpl<$Res>
 
 /// Create a copy of WatchlistItem
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? game = null,Object? region = null,Object? targetPrice = freezed,Object? minDiscountPct = freezed,Object? lastNotifiedPrice = freezed,Object? lastNotifiedAt = freezed,Object? createdAt = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? game = null,Object? region = null,Object? targetPrice = freezed,Object? minDiscountPct = freezed,Object? lastNotifiedPrice = freezed,Object? lastNotifiedAt = freezed,Object? createdAt = null,Object? source = null,}) {
   return _then(WatchlistItem(
 game: null == game ? _self.game : game // ignore: cast_nullable_to_non_nullable
 as GameSummary,region: null == region ? _self.region : region // ignore: cast_nullable_to_non_nullable
@@ -358,7 +358,8 @@ as int?,minDiscountPct: freezed == minDiscountPct ? _self.minDiscountPct : minDi
 as int?,lastNotifiedPrice: freezed == lastNotifiedPrice ? _self.lastNotifiedPrice : lastNotifiedPrice // ignore: cast_nullable_to_non_nullable
 as int?,lastNotifiedAt: freezed == lastNotifiedAt ? _self.lastNotifiedAt : lastNotifiedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
-as DateTime,
+as DateTime,source: null == source ? _self.source : source // ignore: cast_nullable_to_non_nullable
+as WatchSource,
   ));
 }
 /// Create a copy of WatchlistItem
@@ -452,10 +453,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( GameSummary game,  String region,  int? targetPrice,  int? minDiscountPct,  int? lastNotifiedPrice,  DateTime? lastNotifiedAt,  DateTime createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( GameSummary game,  String region,  int? targetPrice,  int? minDiscountPct,  int? lastNotifiedPrice,  DateTime? lastNotifiedAt,  DateTime createdAt,  WatchSource source)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _WatchlistItem() when $default != null:
-return $default(_that.game,_that.region,_that.targetPrice,_that.minDiscountPct,_that.lastNotifiedPrice,_that.lastNotifiedAt,_that.createdAt);case _:
+return $default(_that.game,_that.region,_that.targetPrice,_that.minDiscountPct,_that.lastNotifiedPrice,_that.lastNotifiedAt,_that.createdAt,_that.source);case _:
   return orElse();
 
 }
@@ -473,10 +474,10 @@ return $default(_that.game,_that.region,_that.targetPrice,_that.minDiscountPct,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( GameSummary game,  String region,  int? targetPrice,  int? minDiscountPct,  int? lastNotifiedPrice,  DateTime? lastNotifiedAt,  DateTime createdAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( GameSummary game,  String region,  int? targetPrice,  int? minDiscountPct,  int? lastNotifiedPrice,  DateTime? lastNotifiedAt,  DateTime createdAt,  WatchSource source)  $default,) {final _that = this;
 switch (_that) {
 case _WatchlistItem():
-return $default(_that.game,_that.region,_that.targetPrice,_that.minDiscountPct,_that.lastNotifiedPrice,_that.lastNotifiedAt,_that.createdAt);case _:
+return $default(_that.game,_that.region,_that.targetPrice,_that.minDiscountPct,_that.lastNotifiedPrice,_that.lastNotifiedAt,_that.createdAt,_that.source);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -493,10 +494,10 @@ return $default(_that.game,_that.region,_that.targetPrice,_that.minDiscountPct,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( GameSummary game,  String region,  int? targetPrice,  int? minDiscountPct,  int? lastNotifiedPrice,  DateTime? lastNotifiedAt,  DateTime createdAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( GameSummary game,  String region,  int? targetPrice,  int? minDiscountPct,  int? lastNotifiedPrice,  DateTime? lastNotifiedAt,  DateTime createdAt,  WatchSource source)?  $default,) {final _that = this;
 switch (_that) {
 case _WatchlistItem() when $default != null:
-return $default(_that.game,_that.region,_that.targetPrice,_that.minDiscountPct,_that.lastNotifiedPrice,_that.lastNotifiedAt,_that.createdAt);case _:
+return $default(_that.game,_that.region,_that.targetPrice,_that.minDiscountPct,_that.lastNotifiedPrice,_that.lastNotifiedAt,_that.createdAt,_that.source);case _:
   return null;
 
 }
@@ -508,7 +509,7 @@ return $default(_that.game,_that.region,_that.targetPrice,_that.minDiscountPct,_
 @JsonSerializable()
 
 class _WatchlistItem extends WatchlistItem {
-  const _WatchlistItem({required this.game, required this.region, this.targetPrice, this.minDiscountPct, this.lastNotifiedPrice, this.lastNotifiedAt, required this.createdAt}): super._();
+  const _WatchlistItem({required this.game, required this.region, this.targetPrice, this.minDiscountPct, this.lastNotifiedPrice, this.lastNotifiedAt, required this.createdAt, this.source = WatchSource.manual}): super._();
   factory _WatchlistItem.fromJson(Map<String, dynamic> json) => _$WatchlistItemFromJson(json);
 
 @override final  GameSummary game;
@@ -519,6 +520,7 @@ class _WatchlistItem extends WatchlistItem {
 @override final  int? lastNotifiedPrice;
 @override final  DateTime? lastNotifiedAt;
 @override final  DateTime createdAt;
+@override@JsonKey() final  WatchSource source;
 
 /// Create a copy of WatchlistItem
 /// with the given fields replaced by the non-null parameter values.
@@ -533,18 +535,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _WatchlistItem&&(identical(other.game, game) || other.game == game)&&(identical(other.region, region) || other.region == region)&&(identical(other.targetPrice, targetPrice) || other.targetPrice == targetPrice)&&(identical(other.minDiscountPct, minDiscountPct) || other.minDiscountPct == minDiscountPct)&&(identical(other.lastNotifiedPrice, lastNotifiedPrice) || other.lastNotifiedPrice == lastNotifiedPrice)&&(identical(other.lastNotifiedAt, lastNotifiedAt) || other.lastNotifiedAt == lastNotifiedAt)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _WatchlistItem&&(identical(other.game, game) || other.game == game)&&(identical(other.region, region) || other.region == region)&&(identical(other.targetPrice, targetPrice) || other.targetPrice == targetPrice)&&(identical(other.minDiscountPct, minDiscountPct) || other.minDiscountPct == minDiscountPct)&&(identical(other.lastNotifiedPrice, lastNotifiedPrice) || other.lastNotifiedPrice == lastNotifiedPrice)&&(identical(other.lastNotifiedAt, lastNotifiedAt) || other.lastNotifiedAt == lastNotifiedAt)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.source, source) || other.source == source));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
-    return Object.hash(runtimeType,game,region,targetPrice,minDiscountPct,lastNotifiedPrice,lastNotifiedAt,createdAt);
+    return Object.hash(runtimeType,game,region,targetPrice,minDiscountPct,lastNotifiedPrice,lastNotifiedAt,createdAt,source);
 }
 
 @override
 String toString() {
-    return 'WatchlistItem(game: $game, region: $region, targetPrice: $targetPrice, minDiscountPct: $minDiscountPct, lastNotifiedPrice: $lastNotifiedPrice, lastNotifiedAt: $lastNotifiedAt, createdAt: $createdAt)';
+    return 'WatchlistItem(game: $game, region: $region, targetPrice: $targetPrice, minDiscountPct: $minDiscountPct, lastNotifiedPrice: $lastNotifiedPrice, lastNotifiedAt: $lastNotifiedAt, createdAt: $createdAt, source: $source)';
 }
 
 
@@ -555,7 +557,7 @@ abstract mixin class _$WatchlistItemCopyWith<$Res> implements $WatchlistItemCopy
   factory _$WatchlistItemCopyWith(_WatchlistItem value, $Res Function(_WatchlistItem) _then) = __$WatchlistItemCopyWithImpl;
 @override @useResult
 $Res call({
- GameSummary game, String region, int? targetPrice, int? minDiscountPct, int? lastNotifiedPrice, DateTime? lastNotifiedAt, DateTime createdAt
+ GameSummary game, String region, int? targetPrice, int? minDiscountPct, int? lastNotifiedPrice, DateTime? lastNotifiedAt, DateTime createdAt, WatchSource source
 });
 
 
@@ -572,7 +574,7 @@ class __$WatchlistItemCopyWithImpl<$Res>
 
 /// Create a copy of WatchlistItem
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? game = null,Object? region = null,Object? targetPrice = freezed,Object? minDiscountPct = freezed,Object? lastNotifiedPrice = freezed,Object? lastNotifiedAt = freezed,Object? createdAt = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? game = null,Object? region = null,Object? targetPrice = freezed,Object? minDiscountPct = freezed,Object? lastNotifiedPrice = freezed,Object? lastNotifiedAt = freezed,Object? createdAt = null,Object? source = null,}) {
   return _then(_WatchlistItem(
 game: null == game ? _self.game : game // ignore: cast_nullable_to_non_nullable
 as GameSummary,region: null == region ? _self.region : region // ignore: cast_nullable_to_non_nullable
@@ -581,7 +583,8 @@ as int?,minDiscountPct: freezed == minDiscountPct ? _self.minDiscountPct : minDi
 as int?,lastNotifiedPrice: freezed == lastNotifiedPrice ? _self.lastNotifiedPrice : lastNotifiedPrice // ignore: cast_nullable_to_non_nullable
 as int?,lastNotifiedAt: freezed == lastNotifiedAt ? _self.lastNotifiedAt : lastNotifiedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
-as DateTime,
+as DateTime,source: null == source ? _self.source : source // ignore: cast_nullable_to_non_nullable
+as WatchSource,
   ));
 }
 

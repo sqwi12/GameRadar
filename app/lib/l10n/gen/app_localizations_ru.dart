@@ -376,4 +376,101 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get settingsSaveFailed => 'Не удалось сохранить настройки';
+
+  @override
+  String get steamSection => 'Steam';
+
+  @override
+  String get steamImportTitle => 'Импорт списка желаемого';
+
+  @override
+  String get steamSectionFooter =>
+      'Игры из списка желаемого Steam сами попадают в отслеживаемые и обновляются раз в сутки. Вход в Steam не нужен, но профиль и список желаемого должны быть открытыми.';
+
+  @override
+  String get steamNotLinked => 'Не подключён — нажмите, чтобы подключить';
+
+  @override
+  String get steamPending => 'Импорт… обычно меньше минуты';
+
+  @override
+  String get steamPrivate => 'Профиль или список желаемого скрыт';
+
+  @override
+  String get steamNotFound => 'Профиль не найден';
+
+  @override
+  String steamImported(String name, int imported, int total) {
+    return '$name · импортировано $imported из $total';
+  }
+
+  @override
+  String get steamSheetIntro =>
+      'Вставьте ссылку на свой профиль Steam или его короткое имя. Игры из списка желаемого появятся в отслеживаемых.';
+
+  @override
+  String get steamProfileLabel => 'Ссылка на профиль или ник';
+
+  @override
+  String get steamProfilePlaceholder => 'steamcommunity.com/id/…';
+
+  @override
+  String get steamProfileInvalid =>
+      'Нужна ссылка вида steamcommunity.com/id/… или …/profiles/…, либо короткое имя профиля';
+
+  @override
+  String get steamImportDiscountLabel => 'Уведомлять о скидке от';
+
+  @override
+  String get steamImportDiscountHint =>
+      'Порог для импортированных игр. У любой игры его можно поменять вручную — тогда она перестанет обновляться из Steam.';
+
+  @override
+  String get steamImportButton => 'Импортировать';
+
+  @override
+  String get steamResyncButton => 'Синхронизировать сейчас';
+
+  @override
+  String get steamImportStarted => 'Импорт начался';
+
+  @override
+  String get steamUnlink => 'Отвязать профиль';
+
+  @override
+  String get steamUnlinkHint =>
+      'Импортированные игры будут убраны из отслеживаемых. Игры, добавленные или изменённые вручную, останутся.';
+
+  @override
+  String get steamUnlinkConfirm => 'Отвязать';
+
+  @override
+  String get steamUnlinked => 'Профиль отвязан';
+
+  @override
+  String get steamPendingHint =>
+      'Список желаемого загружается. Можно закрыть настройки — игры появятся в отслеживаемых сами.';
+
+  @override
+  String get steamPrivateHint =>
+      'В Steam откройте Профиль → Редактировать профиль → Приватность и сделайте «Мой профиль» и «Список желаемого» открытыми. Затем нажмите «Синхронизировать сейчас».';
+
+  @override
+  String get steamNotFoundHint =>
+      'Проверьте ссылку: откройте свой профиль в Steam и скопируйте адрес страницы.';
+
+  @override
+  String get steamOkHint =>
+      'Список обновляется раз в сутки: новые игры добавляются, убранные из списка желаемого — убираются.';
+
+  @override
+  String get wishlistBadge => 'Из списка желаемого Steam';
+
+  @override
+  String get watchWishlistHint =>
+      'Игра импортирована из списка желаемого Steam. После сохранения порогов она перестанет обновляться оттуда.';
+
+  @override
+  String get steamEmptyHint =>
+      'Список желаемого пуст или скрыт. Если в нём есть игры — в настройках приватности Steam сделайте «Список желаемого» открытым и нажмите «Синхронизировать сейчас».';
 }

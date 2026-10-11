@@ -378,4 +378,101 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsSaveFailed => 'Couldn’t save settings';
+
+  @override
+  String get steamSection => 'Steam';
+
+  @override
+  String get steamImportTitle => 'Wishlist import';
+
+  @override
+  String get steamSectionFooter =>
+      'Games from your Steam wishlist are added to your watchlist automatically and refreshed once a day. No Steam sign-in is needed, but your profile and wishlist must be public.';
+
+  @override
+  String get steamNotLinked => 'Not connected — tap to set up';
+
+  @override
+  String get steamPending => 'Importing… usually under a minute';
+
+  @override
+  String get steamPrivate => 'Profile or wishlist is private';
+
+  @override
+  String get steamNotFound => 'Profile not found';
+
+  @override
+  String steamImported(String name, int imported, int total) {
+    return '$name · $imported of $total imported';
+  }
+
+  @override
+  String get steamSheetIntro =>
+      'Paste a link to your Steam profile or its custom URL name. Games from your wishlist will appear in your watchlist.';
+
+  @override
+  String get steamProfileLabel => 'Profile link or custom URL';
+
+  @override
+  String get steamProfilePlaceholder => 'steamcommunity.com/id/…';
+
+  @override
+  String get steamProfileInvalid =>
+      'Expected a link like steamcommunity.com/id/… or …/profiles/…, or a custom URL name';
+
+  @override
+  String get steamImportDiscountLabel => 'Notify about discounts from';
+
+  @override
+  String get steamImportDiscountHint =>
+      'Threshold for imported games. You can change it for any game manually — it then stops syncing from Steam.';
+
+  @override
+  String get steamImportButton => 'Import';
+
+  @override
+  String get steamResyncButton => 'Sync now';
+
+  @override
+  String get steamImportStarted => 'Import started';
+
+  @override
+  String get steamUnlink => 'Disconnect profile';
+
+  @override
+  String get steamUnlinkHint =>
+      'Imported games will be removed from your watchlist. Games you added or edited manually stay.';
+
+  @override
+  String get steamUnlinkConfirm => 'Disconnect';
+
+  @override
+  String get steamUnlinked => 'Profile disconnected';
+
+  @override
+  String get steamPendingHint =>
+      'Loading your wishlist. You can leave settings — the games will show up in your watchlist.';
+
+  @override
+  String get steamPrivateHint =>
+      'In Steam open Profile → Edit Profile → Privacy Settings and make “My profile” and “Wishlist” public. Then tap “Sync now”.';
+
+  @override
+  String get steamNotFoundHint =>
+      'Check the link: open your profile in Steam and copy the page address.';
+
+  @override
+  String get steamOkHint =>
+      'The list refreshes daily: new games are added, games removed from your wishlist are removed.';
+
+  @override
+  String get wishlistBadge => 'From your Steam wishlist';
+
+  @override
+  String get watchWishlistHint =>
+      'Imported from your Steam wishlist. After you save thresholds it stops syncing from there.';
+
+  @override
+  String get steamEmptyHint =>
+      'The wishlist is empty or private. If it has games, make “Wishlist” public in Steam privacy settings and tap “Sync now”.';
 }

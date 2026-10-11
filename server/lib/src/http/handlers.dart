@@ -197,6 +197,45 @@ Future<Response> priceHistory(
   return jsonResponse([for (final e in entries) e.toJson()]);
 }
 
+// ----------------------------------------------------------------- steam
+
+/// GET /me/steam — привязанный профиль Steam и состояние импорта.
+/// 404 — профиль не привязан.
+Future<Response> getSteamLink(
+  Request request,
+  Services services,
+  AuthUser user,
+) async {
+  final link = await services.steamLinks.find(user.id);
+  if (link == null) throw ApiException.notFound('Профиль Steam не привязан');
+  return jsonResponse(link.toJson());
+}
+
+/// PUT /me/steam — привязать профиль (ссылка или ник) для импорта
+/// списка желаемого. Импорт выполнит worker в течение минуты.
+Future<Response> putSteamLink(
+  Request request,
+  Services services,
+  AuthUser user,
+) async {
+  final body = await readJsonBody(request, SteamLinkRequest.fromJson);
+  ensureValid(body.validate());
+  final link = await services.steamLinks.upsert(user.id, body);
+  return jsonResponse(link.toJson());
+}
+
+/// DELETE /me/steam — отвязать профиль; импортированные игры убираются.
+Future<Response> deleteSteamLink(
+  Request request,
+  Services services,
+  AuthUser user,
+) async {
+  if (!await services.steamLinks.delete(user.id)) {
+    throw ApiException.notFound('Профиль Steam не привязан');
+  }
+  return noContent();
+}
+
 // ------------------------------------------------------------- watchlist
 
 /// GET /watchlist

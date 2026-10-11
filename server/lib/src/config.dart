@@ -9,7 +9,7 @@ final class ServerConfig {
     required this.jwtSecret,
     this.defaultRegion = Regions.defaultRegion,
     this.tokenTtl = const Duration(days: 7),
-    this.maxWatchlistSize = 200,
+    this.maxWatchlistSize = WatchlistLimits.maxItems,
   });
 
   factory ServerConfig.fromEnvironment([Map<String, String>? env]) {

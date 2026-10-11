@@ -30,6 +30,7 @@ abstract final class TaskKind {
   static const topChart = 'top_chart';
   static const notify = 'notify';
   static const image = 'image';
+  static const wishlist = 'wishlist';
 }
 
 /// Задача очереди. [id] детерминирован (например, `players:730`), поэтому

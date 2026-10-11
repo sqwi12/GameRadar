@@ -98,7 +98,7 @@ final class WatchlistProvider
   }
 }
 
-String _$watchlistHash() => r'd556af7b448a106ae2536d0f43ad2b002408340f';
+String _$watchlistHash() => r'09d860832e4d24098922bfcb81da60cbaeac519b';
 
 /// Список отслеживания. Живёт всё время работы приложения: по нему экран
 /// игры показывает «Отслеживается».

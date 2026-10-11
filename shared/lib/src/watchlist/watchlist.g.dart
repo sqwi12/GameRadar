@@ -31,6 +31,9 @@ _WatchlistItem _$WatchlistItemFromJson(Map<String, dynamic> json) =>
           ? null
           : DateTime.parse(json['last_notified_at'] as String),
       createdAt: DateTime.parse(json['created_at'] as String),
+      source:
+          $enumDecodeNullable(_$WatchSourceEnumMap, json['source']) ??
+          WatchSource.manual,
     );
 
 Map<String, dynamic> _$WatchlistItemToJson(_WatchlistItem instance) =>
@@ -42,4 +45,10 @@ Map<String, dynamic> _$WatchlistItemToJson(_WatchlistItem instance) =>
       'last_notified_price': ?instance.lastNotifiedPrice,
       'last_notified_at': ?instance.lastNotifiedAt?.toIso8601String(),
       'created_at': instance.createdAt.toIso8601String(),
+      'source': _$WatchSourceEnumMap[instance.source]!,
     };
+
+const _$WatchSourceEnumMap = {
+  WatchSource.manual: 'manual',
+  WatchSource.wishlist: 'wishlist',
+};

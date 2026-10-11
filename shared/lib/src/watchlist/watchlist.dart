@@ -26,6 +26,23 @@ bool thresholdsMet({
   return minDiscountPct != null && price.discountPct >= minDiscountPct;
 }
 
+/// Ограничения списка отслеживания.
+abstract final class WatchlistLimits {
+  /// Максимум игр у пользователя (вместе с импортом из Steam): защита
+  /// лимита запросов к Steam от одного аккаунта.
+  static const maxItems = 200;
+}
+
+/// Откуда игра в списке отслеживания.
+@JsonEnum()
+enum WatchSource {
+  /// Добавлена вручную (или пороги менялись вручную).
+  manual,
+
+  /// Импортирована из списка желаемого Steam и синхронизируется с ним.
+  wishlist,
+}
+
 /// PUT /watchlist/{appId} — добавить игру или изменить пороги.
 @freezed
 abstract class WatchlistUpsertRequest with _$WatchlistUpsertRequest {
@@ -65,6 +82,7 @@ abstract class WatchlistItem with _$WatchlistItem {
     int? lastNotifiedPrice,
     DateTime? lastNotifiedAt,
     required DateTime createdAt,
+    @Default(WatchSource.manual) WatchSource source,
   }) = _WatchlistItem;
 
   factory WatchlistItem.fromJson(Map<String, Object?> json) =>

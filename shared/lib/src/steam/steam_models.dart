@@ -88,6 +88,18 @@ abstract class SteamAppListPage with _$SteamAppListPage {
   }) = _SteamAppListPage;
 }
 
+/// Профиль Steam из `GetPlayerSummaries`.
+@freezed
+abstract class SteamPlayerSummary with _$SteamPlayerSummary {
+  const factory SteamPlayerSummary({
+    required String steamId,
+    String? personaName,
+
+    /// Профиль открыт (иначе список желаемого не прочитать).
+    required bool isPublic,
+  }) = _SteamPlayerSummary;
+}
+
 /// Строка чарта `ISteamChartsService/GetGamesByConcurrentPlayers` (топ-100).
 @freezed
 abstract class SteamChartEntry with _$SteamChartEntry {

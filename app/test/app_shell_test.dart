@@ -8,6 +8,7 @@ import 'package:gameradar_app/core/providers.dart';
 import 'package:gameradar_app/core/storage/preferences_store.dart';
 import 'package:gameradar_app/features/discounts/presentation/discounts_providers.dart';
 import 'package:gameradar_app/features/settings/presentation/settings_providers.dart';
+import 'package:gameradar_app/features/settings/presentation/steam_providers.dart';
 import 'package:gameradar_app/features/top/presentation/top_providers.dart';
 import 'package:gameradar_app/features/watchlist/presentation/watchlist_providers.dart';
 import 'package:gameradar_shared/gameradar_shared.dart';
@@ -59,6 +60,11 @@ class _FakeWatchlist extends Watchlist {
   );
 }
 
+class _FakeSteam extends SteamConnection {
+  @override
+  Future<SteamLink?> build() async => null;
+}
+
 void main() {
   // Без drift: нативный SQLite внутри виджет-тестов изредка роняет
   // flutter_tester. Кэш и БД проверяются отдельными тестами.
@@ -87,6 +93,7 @@ void main() {
           topListProvider.overrideWith(_FakeTop.new),
           discountsListProvider.overrideWith(_FakeDiscounts.new),
           watchlistProvider.overrideWith(_FakeWatchlist.new),
+          steamConnectionProvider.overrideWith(_FakeSteam.new),
           initialPreferencesProvider.overrideWithValue(preferences),
           currentProfileProvider.overrideWith(
             (ref) =>
@@ -128,6 +135,13 @@ void main() {
   testWidgets('настройки: пометка о Valve и статус аккаунта', (tester) async {
     await pumpApp(tester);
     await openSettings(tester);
+
+    // Импорт списка желаемого Steam: профиль не привязан.
+    await tester.scrollUntilVisible(find.text('Импорт списка желаемого'), 100);
+    expect(
+      find.text('Не подключён — нажмите, чтобы подключить'),
+      findsOneWidget,
+    );
 
     // Сервер недоступен — статус показывает ошибку и действие «Повторить».
     await tester.scrollUntilVisible(find.text('Анонимный аккаунт'), 100);
@@ -174,12 +188,12 @@ void main() {
       ),
     );
     await openSettings(tester);
-    expect(find.text('Подключено к серверу'), findsOneWidget);
 
     await tester.tap(find.text('English').first);
     await settle(tester);
     expect(find.text('Settings'), findsOneWidget);
     expect(preferencesStore.values['locale'], 'en');
+    await tester.scrollUntilVisible(find.text('Connected to the server'), 100);
   });
 
   testWidgets('сохранённые тема и язык применяются сразу при запуске', (

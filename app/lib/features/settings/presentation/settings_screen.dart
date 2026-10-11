@@ -10,6 +10,7 @@ import '../../../core/widgets/glass_screen.dart';
 import '../../../core/widgets/l10n.dart';
 import 'notifications_section.dart';
 import 'settings_providers.dart';
+import 'steam_section.dart';
 
 /// Настройки: тема, язык, регион, аккаунт и «О приложении».
 ///
@@ -62,6 +63,8 @@ class SettingsScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 28),
           const NotificationsSection(),
+          const SizedBox(height: 20),
+          const SteamSection(),
           const SizedBox(height: 20),
           GlassGroupedSection(
             header: Text(l10n.settingsAccount.toUpperCase()),

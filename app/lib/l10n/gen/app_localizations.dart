@@ -769,6 +769,174 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Не удалось сохранить настройки'**
   String get settingsSaveFailed;
+
+  /// No description provided for @steamSection.
+  ///
+  /// In ru, this message translates to:
+  /// **'Steam'**
+  String get steamSection;
+
+  /// No description provided for @steamImportTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Импорт списка желаемого'**
+  String get steamImportTitle;
+
+  /// No description provided for @steamSectionFooter.
+  ///
+  /// In ru, this message translates to:
+  /// **'Игры из списка желаемого Steam сами попадают в отслеживаемые и обновляются раз в сутки. Вход в Steam не нужен, но профиль и список желаемого должны быть открытыми.'**
+  String get steamSectionFooter;
+
+  /// No description provided for @steamNotLinked.
+  ///
+  /// In ru, this message translates to:
+  /// **'Не подключён — нажмите, чтобы подключить'**
+  String get steamNotLinked;
+
+  /// No description provided for @steamPending.
+  ///
+  /// In ru, this message translates to:
+  /// **'Импорт… обычно меньше минуты'**
+  String get steamPending;
+
+  /// No description provided for @steamPrivate.
+  ///
+  /// In ru, this message translates to:
+  /// **'Профиль или список желаемого скрыт'**
+  String get steamPrivate;
+
+  /// No description provided for @steamNotFound.
+  ///
+  /// In ru, this message translates to:
+  /// **'Профиль не найден'**
+  String get steamNotFound;
+
+  /// No description provided for @steamImported.
+  ///
+  /// In ru, this message translates to:
+  /// **'{name} · импортировано {imported} из {total}'**
+  String steamImported(String name, int imported, int total);
+
+  /// No description provided for @steamSheetIntro.
+  ///
+  /// In ru, this message translates to:
+  /// **'Вставьте ссылку на свой профиль Steam или его короткое имя. Игры из списка желаемого появятся в отслеживаемых.'**
+  String get steamSheetIntro;
+
+  /// No description provided for @steamProfileLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Ссылка на профиль или ник'**
+  String get steamProfileLabel;
+
+  /// No description provided for @steamProfilePlaceholder.
+  ///
+  /// In ru, this message translates to:
+  /// **'steamcommunity.com/id/…'**
+  String get steamProfilePlaceholder;
+
+  /// No description provided for @steamProfileInvalid.
+  ///
+  /// In ru, this message translates to:
+  /// **'Нужна ссылка вида steamcommunity.com/id/… или …/profiles/…, либо короткое имя профиля'**
+  String get steamProfileInvalid;
+
+  /// No description provided for @steamImportDiscountLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Уведомлять о скидке от'**
+  String get steamImportDiscountLabel;
+
+  /// No description provided for @steamImportDiscountHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'Порог для импортированных игр. У любой игры его можно поменять вручную — тогда она перестанет обновляться из Steam.'**
+  String get steamImportDiscountHint;
+
+  /// No description provided for @steamImportButton.
+  ///
+  /// In ru, this message translates to:
+  /// **'Импортировать'**
+  String get steamImportButton;
+
+  /// No description provided for @steamResyncButton.
+  ///
+  /// In ru, this message translates to:
+  /// **'Синхронизировать сейчас'**
+  String get steamResyncButton;
+
+  /// No description provided for @steamImportStarted.
+  ///
+  /// In ru, this message translates to:
+  /// **'Импорт начался'**
+  String get steamImportStarted;
+
+  /// No description provided for @steamUnlink.
+  ///
+  /// In ru, this message translates to:
+  /// **'Отвязать профиль'**
+  String get steamUnlink;
+
+  /// No description provided for @steamUnlinkHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'Импортированные игры будут убраны из отслеживаемых. Игры, добавленные или изменённые вручную, останутся.'**
+  String get steamUnlinkHint;
+
+  /// No description provided for @steamUnlinkConfirm.
+  ///
+  /// In ru, this message translates to:
+  /// **'Отвязать'**
+  String get steamUnlinkConfirm;
+
+  /// No description provided for @steamUnlinked.
+  ///
+  /// In ru, this message translates to:
+  /// **'Профиль отвязан'**
+  String get steamUnlinked;
+
+  /// No description provided for @steamPendingHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'Список желаемого загружается. Можно закрыть настройки — игры появятся в отслеживаемых сами.'**
+  String get steamPendingHint;
+
+  /// No description provided for @steamPrivateHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'В Steam откройте Профиль → Редактировать профиль → Приватность и сделайте «Мой профиль» и «Список желаемого» открытыми. Затем нажмите «Синхронизировать сейчас».'**
+  String get steamPrivateHint;
+
+  /// No description provided for @steamNotFoundHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'Проверьте ссылку: откройте свой профиль в Steam и скопируйте адрес страницы.'**
+  String get steamNotFoundHint;
+
+  /// No description provided for @steamOkHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'Список обновляется раз в сутки: новые игры добавляются, убранные из списка желаемого — убираются.'**
+  String get steamOkHint;
+
+  /// No description provided for @wishlistBadge.
+  ///
+  /// In ru, this message translates to:
+  /// **'Из списка желаемого Steam'**
+  String get wishlistBadge;
+
+  /// No description provided for @watchWishlistHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'Игра импортирована из списка желаемого Steam. После сохранения порогов она перестанет обновляться оттуда.'**
+  String get watchWishlistHint;
+
+  /// No description provided for @steamEmptyHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'Список желаемого пуст или скрыт. Если в нём есть игры — в настройках приватности Steam сделайте «Список желаемого» открытым и нажмите «Синхронизировать сейчас».'**
+  String get steamEmptyHint;
 }
 
 class _AppLocalizationsDelegate

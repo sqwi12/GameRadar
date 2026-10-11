@@ -4,6 +4,7 @@ import 'auth/jwt.dart';
 import 'config.dart';
 import 'db/devices_repository.dart';
 import 'db/games_queries.dart';
+import 'db/steam_links_repository.dart';
 import 'db/users_repository.dart';
 import 'db/watchlist_repository.dart';
 
@@ -16,7 +17,8 @@ final class Services {
       users = UsersRepository(db),
       games = GamesQueries(db),
       watchlist = WatchlistRepository(db),
-      devices = DevicesRepository(db);
+      devices = DevicesRepository(db),
+      steamLinks = SteamLinksRepository(db);
 
   factory Services.fromConfig(ServerConfig config) =>
       Services(config: config, db: Pool<void>.withUrl(config.databaseUrl));
@@ -28,6 +30,7 @@ final class Services {
   final GamesQueries games;
   final WatchlistRepository watchlist;
   final DevicesRepository devices;
+  final SteamLinksRepository steamLinks;
 
   Future<void> close() => _db.close();
 }

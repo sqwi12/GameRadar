@@ -660,6 +660,122 @@ void main() {
     });
   });
 
+  group('импорт списка желаемого Steam', () {
+    test('привязка, повторная привязка, ручная правка, отвязка', () async {
+      final auth = await signIn('device-steam-0000000000');
+      Future<(int, Object?)> put(Map<String, Object?> body) => call(
+        () => putSteamLink(
+          Request.put(uri('/me/steam'), body: jsonEncode(body)),
+          services,
+          auth.user,
+        ),
+      );
+      Future<(int, Object?)> get() => call(
+        () => getSteamLink(Request.get(uri('/me/steam')), services, auth.user),
+      );
+
+      expect((await get()).$1, 404);
+      expect((await put({'profile': 'https://example.com/x'})).$1, 400);
+      expect(
+        (await put({'profile': 'tester', 'import_min_discount_pct': 0})).$1,
+        400,
+      );
+
+      var (status, body) = await put({
+        'profile': ' https://steamcommunity.com/id/tester/ ',
+      });
+      expect(status, 200);
+      var link = SteamLink.fromJson(obj(body));
+      expect(link.status, SteamLinkStatus.pending);
+      expect(link.profileInput, 'https://steamcommunity.com/id/tester/');
+      expect(link.importMinDiscountPct, 25);
+
+      // Так пишет worker после импорта.
+      await db.execute(
+        Sql.named('''
+          UPDATE steam_links SET status = 'ok', steam_id = '76561197960287930',
+            persona_name = 'Tester', wishlist_count = 2, imported_count = 2, synced_at = now()
+          WHERE user_id = CAST(@u:text AS uuid)
+        '''),
+        parameters: {'u': auth.user.id},
+      );
+      await db.execute(
+        Sql.named('''
+          INSERT INTO watchlist (user_id, app_id, min_discount_pct, source)
+          VALUES (CAST(@u:text AS uuid), 730, 25, 'wishlist'),
+                 (CAST(@u:text AS uuid), 570, 25, 'wishlist')
+        '''),
+        parameters: {'u': auth.user.id},
+      );
+      (status, body) = await get();
+      link = SteamLink.fromJson(obj(body));
+      expect(link.status, SteamLinkStatus.ok);
+      expect(link.personaName, 'Tester');
+
+      // Тот же профиль, другой порог: SteamID сохраняется, синхронизация заново.
+      (_, body) = await put({
+        'profile': 'https://steamcommunity.com/id/tester/',
+        'import_min_discount_pct': 50,
+      });
+      link = SteamLink.fromJson(obj(body));
+      expect(link.status, SteamLinkStatus.pending);
+      expect(link.steamId, '76561197960287930');
+      // Другой профиль — SteamID определяется заново.
+      (_, body) = await put({'profile': 'other_user'});
+      expect(SteamLink.fromJson(obj(body)).steamId, isNull);
+
+      // Ручная правка импортированной игры делает её ручной.
+      await call(
+        () => putWatchlistItem(
+          Request.put(uri('/watchlist/730'), body: '{"target_price":100}'),
+          services,
+          auth.user,
+          '730',
+        ),
+      );
+      final (_, list) = await call(
+        () =>
+            listWatchlist(Request.get(uri('/watchlist')), services, auth.user),
+      );
+      final sources = {
+        for (final j in list! as List)
+          WatchlistItem.fromJson(j as Map<String, Object?>)
+              .game
+              .appId: WatchlistItem.fromJson(j)
+              .source,
+      };
+      expect(sources, {730: WatchSource.manual, 570: WatchSource.wishlist});
+
+      // Отвязка убирает только импортированные игры.
+      final (deleted, _) = await call(
+        () => deleteSteamLink(
+          Request.delete(uri('/me/steam')),
+          services,
+          auth.user,
+        ),
+      );
+      expect(deleted, 204);
+      final left = await db.execute(
+        Sql.named(
+          'SELECT app_id, source FROM watchlist WHERE user_id = CAST(@u:text AS uuid)',
+        ),
+        parameters: {'u': auth.user.id},
+      );
+      expect(left.map((r) => r.toList()), [
+        [730, 'manual'],
+      ]);
+      expect((await get()).$1, 404);
+      final (again, _) = await call(
+        () => deleteSteamLink(
+          Request.delete(uri('/me/steam')),
+          services,
+          auth.user,
+        ),
+      );
+      expect(again, 404);
+    });
+  });
+
   group('устройства', () {
     test('токен регистрируется и переходит к новому пользователю', () async {
       final a = await signIn('device-fcm-a-0000000000');

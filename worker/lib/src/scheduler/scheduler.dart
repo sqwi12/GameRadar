@@ -5,6 +5,7 @@ import 'package:logging/logging.dart';
 import '../clock.dart';
 import '../config.dart';
 import '../db/games_repository.dart';
+import '../db/steam_links_repository.dart';
 import '../queue/markers.dart';
 import '../queue/task_queue.dart';
 import '../steam/steam_client.dart';
@@ -39,6 +40,7 @@ final class Scheduler {
     required this._queue,
     required this._markers,
     required this._config,
+    required this._steamLinks,
     this._clock = const SystemClock(),
     this.tick = const Duration(minutes: 1),
   });
@@ -49,6 +51,7 @@ final class Scheduler {
   final TaskQueue _queue;
   final Markers _markers;
   final WorkerConfig _config;
+  final SteamLinksRepository _steamLinks;
   final Clock _clock;
   final Duration tick;
 
@@ -94,6 +97,7 @@ final class Scheduler {
       _config.schedule.reviews,
     );
     await _planImages(now);
+    await _planWishlists(now);
   }
 
   Future<void> _planPrices(DateTime now) async {
@@ -209,6 +213,24 @@ final class Scheduler {
             watchers: g.watchers,
           ),
           payload: {'app_id': g.appId},
+        ),
+      );
+    }
+  }
+
+  /// Импорт списков желаемого: новые привязки — сразу, остальные — раз в сутки.
+  Future<void> _planWishlists(DateTime now) async {
+    for (final userId in await _steamLinks.dueUserIds(limit: 100)) {
+      await _queue.enqueue(
+        QueueTask(
+          id: '${TaskKind.wishlist}:$userId',
+          kind: TaskKind.wishlist,
+          lane: Lane.api,
+          // Пользователь ждёт результат на экране — выше обычных замеров онлайна.
+          priority: now
+              .subtract(const Duration(hours: 2))
+              .millisecondsSinceEpoch,
+          payload: {'user_id': userId},
         ),
       );
     }

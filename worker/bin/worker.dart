@@ -72,6 +72,7 @@ Future<void> main() async {
     markers: markers,
     config: config,
     clock: clock,
+    steamLinks: SteamLinksRepository(db),
   );
 
   final scheduler = Scheduler(
@@ -79,6 +80,7 @@ Future<void> main() async {
     queue: queue,
     markers: markers,
     config: config,
+    steamLinks: SteamLinksRepository(db),
   );
   final lanes = [
     for (final lane in Lane.values)

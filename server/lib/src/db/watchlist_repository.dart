@@ -14,7 +14,7 @@ final class WatchlistRepository {
       '''
     SELECT $summaryColumns,
            w.region::text, w.target_price, w.min_discount_pct,
-           w.last_notified_price, w.last_notified_at, w.created_at
+           w.last_notified_price, w.last_notified_at, w.created_at, w.source
     FROM watchlist w
     JOIN games g ON g.app_id = w.app_id
     $imageJoin
@@ -31,6 +31,7 @@ final class WatchlistRepository {
       lastNotifiedPrice: r[at + 3] as int?,
       lastNotifiedAt: r[at + 4] as DateTime?,
       createdAt: r[at + 5]! as DateTime,
+      source: WatchSource.values.byName(r[at + 6]! as String),
     );
   }
 
@@ -75,11 +76,13 @@ final class WatchlistRepository {
   }) async {
     final rows = await _db.execute(
       Sql.named('''
-        INSERT INTO watchlist (user_id, app_id, region, target_price, min_discount_pct)
-        VALUES (CAST(@user:text AS uuid), @app:int4, @region:text, @target:int8, @discount:int2)
+        INSERT INTO watchlist (user_id, app_id, region, target_price, min_discount_pct, source)
+        VALUES (CAST(@user:text AS uuid), @app:int4, @region:text, @target:int8, @discount:int2, 'manual')
         ON CONFLICT (user_id, app_id) DO UPDATE SET
           target_price = EXCLUDED.target_price,
           min_discount_pct = EXCLUDED.min_discount_pct,
+          -- Пороги изменены вручную: синхронизация со Steam запись больше не трогает.
+          source = 'manual',
           last_notified_price = CASE
             WHEN (watchlist.target_price, watchlist.min_discount_pct)
                  IS DISTINCT FROM (EXCLUDED.target_price, EXCLUDED.min_discount_pct)

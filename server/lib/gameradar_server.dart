@@ -6,6 +6,7 @@ export 'src/auth/jwt.dart';
 export 'src/config.dart';
 export 'src/db/devices_repository.dart';
 export 'src/db/games_queries.dart';
+export 'src/db/steam_links_repository.dart';
 export 'src/db/users_repository.dart';
 export 'src/db/watchlist_repository.dart';
 export 'src/http/api_exception.dart';

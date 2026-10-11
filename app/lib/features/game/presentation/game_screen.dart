@@ -354,7 +354,7 @@ class ThresholdsLabel extends StatelessWidget {
     final color = reached
         ? AppColors.discount.resolveFrom(context)
         : AppColors.textSecondary.resolveFrom(context);
-    return Row(
+    final thresholds = Row(
       children: [
         Icon(
           reached ? CupertinoIcons.checkmark_seal_fill : CupertinoIcons.bell,
@@ -370,6 +370,28 @@ class ThresholdsLabel extends StatelessWidget {
             style: AppText.secondary(context)
                 .copyWith(fontSize: 13, color: color),
           ),
+        ),
+      ],
+    );
+    if (item.source != WatchSource.wishlist) return thresholds;
+    final muted = AppColors.textSecondary.resolveFrom(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        thresholds,
+        const SizedBox(height: 3),
+        Row(
+          children: [
+            Icon(CupertinoIcons.gift, size: 14, color: muted),
+            const SizedBox(width: 5),
+            Flexible(
+              child: Text(
+                context.l10n.wishlistBadge,
+                style: AppText.secondary(context)
+                    .copyWith(fontSize: 12, color: muted),
+              ),
+            ),
+          ],
         ),
       ],
     );

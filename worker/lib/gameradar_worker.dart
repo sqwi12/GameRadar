@@ -6,6 +6,7 @@ export 'src/clock.dart';
 export 'src/config.dart';
 export 'src/db/devices_repository.dart';
 export 'src/db/games_repository.dart';
+export 'src/db/steam_links_repository.dart';
 
 export 'package:gameradar_shared/dotenv.dart';
 

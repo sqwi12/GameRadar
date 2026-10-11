@@ -19,6 +19,7 @@ export 'src/games/game_summary.dart';
 export 'src/games/history.dart';
 export 'src/games/player_stats.dart';
 export 'src/games/review_summary.dart';
+export 'src/steam_link/steam_link.dart';
 export 'src/users/auth.dart';
 export 'src/users/device.dart';
 export 'src/users/user.dart';
