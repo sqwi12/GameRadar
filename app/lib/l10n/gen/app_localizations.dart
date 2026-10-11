@@ -1058,6 +1058,18 @@ abstract class AppLocalizations {
   /// **'Минимум за всё время — {date} · IsThereAnyDeal'**
   String allTimeLowSource(String date);
 
+  /// No description provided for @bestCutLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Лучшая скидка'**
+  String get bestCutLabel;
+
+  /// No description provided for @bestCutSource.
+  ///
+  /// In ru, this message translates to:
+  /// **'Лучшая скидка в Steam — {date} · IsThereAnyDeal'**
+  String bestCutSource(String date);
+
   /// No description provided for @allTimeLowShort.
   ///
   /// In ru, this message translates to:

@@ -190,6 +190,12 @@ class _PriceView extends ConsumerWidget {
     final discounted = best != null && best.discountPct > 0;
     // Исторический минимум показываем, только если он в той же валюте.
     final storeLow = game.storeLow?.currency == currency ? game.storeLow : null;
+    // Для части регионов (например, kz) ITAD отдаёт минимум в другой валюте
+    // и по другому региону: цену не сравнить, но процент скидки в Steam
+    // обычно одинаков везде — показываем лучшую скидку.
+    final bestCut = storeLow == null && (game.storeLow?.cut ?? 0) > 0
+        ? game.storeLow
+        : null;
     final dateFormat = DateFormat.MMMd(locale);
     final discountColor = AppColors.discount.resolveFrom(context);
     final nowPrice = current?.isAvailable == true ? current!.finalPrice : null;
@@ -225,6 +231,12 @@ class _PriceView extends ConsumerWidget {
                 value: price(storeLow.price),
                 color: discountColor,
               )
+            else if (bestCut != null)
+              _Figure(
+                label: l10n.bestCutLabel,
+                value: l10n.discountBadge(bestCut.cut),
+                color: discountColor,
+              )
             else
               _Figure(
                 label: l10n.priceRegularLabel,
@@ -255,6 +267,10 @@ class _PriceView extends ConsumerWidget {
           storeLow != null
               ? l10n.allTimeLowSource(
                   DateFormat.yMMMd(locale).format(storeLow.at.toLocal()),
+                )
+              : bestCut != null
+              ? l10n.bestCutSource(
+                  DateFormat.yMMMd(locale).format(bestCut.at.toLocal()),
                 )
               : [
                   if (summary.since case final since?)

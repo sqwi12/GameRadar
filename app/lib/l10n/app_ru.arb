@@ -314,6 +314,15 @@
     }
   },
   "allTimeLowSource": "Минимум за всё время — {date} · IsThereAnyDeal",
+  "bestCutLabel": "Лучшая скидка",
+  "bestCutSource": "Лучшая скидка в Steam — {date} · IsThereAnyDeal",
+  "@bestCutSource": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "allTimeLowShort": "минимум",
   "@allTimeLowSource": {
     "placeholders": {

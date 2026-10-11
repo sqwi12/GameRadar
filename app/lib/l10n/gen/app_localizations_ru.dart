@@ -562,6 +562,14 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get bestCutLabel => 'Лучшая скидка';
+
+  @override
+  String bestCutSource(String date) {
+    return 'Лучшая скидка в Steam — $date · IsThereAnyDeal';
+  }
+
+  @override
   String get allTimeLowShort => 'минимум';
 
   @override
