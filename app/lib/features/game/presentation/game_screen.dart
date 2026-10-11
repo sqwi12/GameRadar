@@ -5,12 +5,15 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
+import '../../../core/cache/resource_state.dart';
 import '../../../core/format/formatters.dart';
+import '../../../core/router/routes.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/game_widgets.dart';
 import '../../../core/widgets/glass_screen.dart';
 import '../../../core/widgets/l10n.dart';
 import '../../../core/widgets/resource_scroll_view.dart';
+import '../../../l10n/gen/app_localizations.dart';
 import '../../watchlist/presentation/watch_sheet.dart';
 import '../../watchlist/presentation/watchlist_providers.dart';
 import 'game_providers.dart';
@@ -30,13 +33,35 @@ class GameScreen extends ConsumerWidget {
     final view = ref.watch(gameDetailsStateProvider(appId));
     final notifier = ref.read(gameDetailsStateProvider(appId).notifier);
 
+    // Открыта ссылкой (gameradar://app/game/…) — возвращаться некуда:
+    // «назад» ведёт на главный экран, а не закрывает приложение.
+    final canPop = context.canPop();
+    void back() => canPop ? context.pop() : context.go(Routes.top);
+
+    return PopScope(
+      canPop: canPop,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) context.go(Routes.top);
+      },
+      child: _buildScreen(context, ref, l10n, view, notifier, back),
+    );
+  }
+
+  Widget _buildScreen(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l10n,
+    ResourceView<GameDetails> view,
+    GameDetailsState notifier,
+    VoidCallback back,
+  ) {
     return GlassScreen(
       title: view.data?.name ?? l10n.gameTitle,
       insideTabs: false,
       leading: AppBarButton(
         icon: CupertinoIcons.chevron_back,
         semanticLabel: l10n.back,
-        onPressed: context.pop,
+        onPressed: back,
       ),
       actions: [
         if (view.data case final game?)
