@@ -511,11 +511,48 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String priceTrackedSince(String date) {
-    return 'Tracking the price since $date';
+    return 'Tracking since $date';
   }
 
   @override
   String priceBestOn(String date) {
-    return 'Best price was on $date';
+    return 'best on $date';
+  }
+
+  @override
+  String get metricPlayers => 'Players';
+
+  @override
+  String get metricPrice => 'Price';
+
+  @override
+  String get periodAll => 'All';
+
+  @override
+  String get playersPeakPeriod => 'Period peak';
+
+  @override
+  String get playersAverage => 'Average';
+
+  @override
+  String playersReadings(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count readings',
+      one: '$count reading',
+    );
+    return '$_temp0 in this period';
+  }
+
+  @override
+  String playersDailyPeaks(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days',
+      one: '$count day',
+    );
+    return 'Daily peak · $_temp0';
   }
 }

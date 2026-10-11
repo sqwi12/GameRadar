@@ -509,11 +509,50 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String priceTrackedSince(String date) {
-    return 'Цену отслеживаем с $date';
+    return 'Отслеживаем с $date';
   }
 
   @override
   String priceBestOn(String date) {
-    return 'Лучшая цена была $date';
+    return 'лучшая — $date';
+  }
+
+  @override
+  String get metricPlayers => 'Онлайн';
+
+  @override
+  String get metricPrice => 'Цена';
+
+  @override
+  String get periodAll => 'Всё';
+
+  @override
+  String get playersPeakPeriod => 'Пик за период';
+
+  @override
+  String get playersAverage => 'В среднем';
+
+  @override
+  String playersReadings(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count замеров',
+      few: '$count замера',
+      one: '$count замер',
+    );
+    return '$_temp0 за период';
+  }
+
+  @override
+  String playersDailyPeaks(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count дней',
+      few: '$count дня',
+      one: '$count день',
+    );
+    return 'Максимум за сутки · $_temp0';
   }
 }

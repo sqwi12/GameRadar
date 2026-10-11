@@ -29,109 +29,111 @@ class PlayersChart extends StatelessWidget {
     ];
     final maxY =
         points.map((p) => p.players).reduce((a, b) => a > b ? a : b) * 1.15;
-    const hour = 60 * 60 * 1000.0;
-    // Подписи снизу: часы за сутки, дни недели за неделю, даты за месяц.
-    final (axisFormat, axisInterval) = switch (period) {
-      HistoryPeriod.day => (DateFormat.Hm(locale), 6 * hour),
-      HistoryPeriod.week => (DateFormat.E(locale), 24 * hour),
-      HistoryPeriod.month => (DateFormat.MMMd(locale), 7 * 24 * hour),
-    };
+    final minX = spots.first.x;
+    final maxX = spots.last.x;
+    final axisFormat = axisDateFormat(minX, maxX, locale);
     final tooltipFormat = DateFormat.MMMd(locale).add_Hm();
 
-    return LineChart(
-      duration: const Duration(milliseconds: 250),
-      LineChartData(
-        minY: 0,
-        maxY: maxY <= 0 ? 1 : maxY,
-        gridData: FlGridData(
-          drawVerticalLine: false,
-          horizontalInterval: maxY <= 0 ? 1 : maxY / 4,
-          getDrawingHorizontalLine: (_) => FlLine(
-            color: AppColors.cardBorder.resolveFrom(context),
-            strokeWidth: 1,
-          ),
-        ),
-        borderData: FlBorderData(show: false),
-        titlesData: FlTitlesData(
-          topTitles: const AxisTitles(),
-          rightTitles: const AxisTitles(),
-          leftTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              reservedSize: 60,
-              interval: maxY <= 0 ? 1 : maxY / 4,
-              getTitlesWidget: (value, meta) => value == meta.max
-                  ? const SizedBox.shrink()
-                  : Text(formatPlayers(value.round(), locale), style: muted),
-            ),
-          ),
-          bottomTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              interval: axisInterval,
-              reservedSize: 24,
-              getTitlesWidget: (value, meta) =>
-                  value == meta.min || value == meta.max
-                  ? const SizedBox.shrink()
-                  : Padding(
-                      padding: const EdgeInsets.only(top: 6),
-                      child: Text(
-                        axisFormat.format(
-                          DateTime.fromMillisecondsSinceEpoch(value.round())
-                              .toLocal(),
-                        ),
-                        style: muted,
-                      ),
-                    ),
-            ),
-          ),
-        ),
-        lineTouchData: chartTouchData(
-          context,
-          color: color,
-          tooltip: (spots) => [
-            for (final s in spots)
-              LineTooltipItem(
-                '${formatCount(s.y.round(), locale)}\n',
-                AppText.title(context).copyWith(
-                  fontSize: 15,
-                  color: color,
-                  fontFeatures: AppText.tabular,
+    String label(double x) => axisFormat.format(
+      DateTime.fromMillisecondsSinceEpoch(x.round()).toLocal(),
+    );
+    return Column(
+      children: [
+        Expanded(
+          child: LineChart(
+            duration: const Duration(milliseconds: 250),
+            LineChartData(
+              minY: 0,
+              maxY: maxY <= 0 ? 1 : maxY,
+              gridData: FlGridData(
+                drawVerticalLine: false,
+                horizontalInterval: maxY <= 0 ? 1 : maxY / 4,
+                getDrawingHorizontalLine: (_) => FlLine(
+                  color: AppColors.cardBorder.resolveFrom(context),
+                  strokeWidth: 1,
                 ),
-                children: [
-                  TextSpan(
-                    text: tooltipFormat.format(
-                      DateTime.fromMillisecondsSinceEpoch(s.x.round())
-                          .toLocal(),
-                    ),
-                    style: muted.copyWith(fontSize: 12),
+              ),
+              borderData: FlBorderData(show: false),
+              titlesData: FlTitlesData(
+                topTitles: const AxisTitles(),
+                rightTitles: const AxisTitles(),
+                leftTitles: AxisTitles(
+                  sideTitles: SideTitles(
+                    showTitles: true,
+                    reservedSize: 60,
+                    interval: maxY <= 0 ? 1 : maxY / 4,
+                    getTitlesWidget: (value, meta) => value == meta.max
+                        ? const SizedBox.shrink()
+                        : Text(
+                            formatPlayers(value.round(), locale),
+                            style: muted,
+                          ),
                   ),
+                ),
+                bottomTitles: const AxisTitles(),
+              ),
+              lineTouchData: chartTouchData(
+                context,
+                color: color,
+                tooltip: (spots) => [
+                  for (final s in spots)
+                    LineTooltipItem(
+                      '${formatCount(s.y.round(), locale)}\n',
+                      AppText.title(context).copyWith(
+                        fontSize: 15,
+                        color: color,
+                        fontFeatures: AppText.tabular,
+                      ),
+                      children: [
+                        TextSpan(
+                          text: tooltipFormat.format(
+                            DateTime.fromMillisecondsSinceEpoch(s.x.round())
+                                .toLocal(),
+                          ),
+                          style: muted.copyWith(fontSize: 12),
+                        ),
+                      ],
+                    ),
                 ],
               ),
-          ],
-        ),
-        lineBarsData: [
-          LineChartBarData(
-            spots: spots,
-            isCurved: true,
-            preventCurveOverShooting: true,
-            color: color,
-            barWidth: 2.5,
-            dotData: const FlDotData(show: false),
-            belowBarData: BarAreaData(
-              show: true,
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  color.withValues(alpha: 0.35),
-                  color.withValues(alpha: 0),
-                ],
-              ),
+              lineBarsData: [
+                LineChartBarData(
+                  spots: spots,
+                  isCurved: true,
+                  preventCurveOverShooting: true,
+                  color: color,
+                  barWidth: 2.5,
+                  dotData: const FlDotData(show: false),
+                  belowBarData: BarAreaData(
+                    show: true,
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        color.withValues(alpha: 0.35),
+                        color.withValues(alpha: 0),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-        ],
-      ),
+        ),
+        const SizedBox(height: 6),
+        Padding(
+          // Под областью графика, без колонки чисел слева.
+          padding: const EdgeInsets.only(left: 60),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(label(minX), style: muted),
+              Text(label((minX + maxX) / 2), style: muted),
+              Text(label(maxX), style: muted),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

@@ -158,7 +158,7 @@ Future<Response> gameHeader(
   );
 }
 
-/// GET /games/{appId}/players?period=24h|7d|30d
+/// GET /games/{appId}/players?period=24h|7d|30d|all
 Future<Response> playerHistory(
   Request request,
   Services services,

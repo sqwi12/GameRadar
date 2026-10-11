@@ -71,4 +71,39 @@ void main() {
       expect(summary.canDraw, isFalse);
     },
   );
+
+  test('период: цена на начало периода берётся из записи до него', () {
+    final from = DateTime.utc(2026, 10, 10);
+    final summary = PriceHistorySummary.from(
+      [
+        entry(1, price: 400000, discount: 60),
+        entry(5, price: 1000000),
+        entry(15, price: 800000, discount: 20),
+      ],
+      now: now,
+      from: from,
+    );
+    // 10-е (цена с 5-го), 15-е и «сейчас».
+    expect(summary.points.map((p) => p?.at), [
+      from,
+      DateTime.utc(2026, 10, 15),
+      now,
+    ]);
+    expect(summary.points.first?.price, 1000000);
+    // Лучшая — за период, а не за всё время (400 000 было до периода).
+    expect(summary.best?.price, 800000);
+    // «Отслеживаем с» — по-прежнему первая запись вообще.
+    expect(summary.since, DateTime.utc(2026, 10, 1));
+  });
+
+  test('период без изменений: график — одна цена от начала до «сейчас»', () {
+    final from = DateTime.utc(2026, 10, 19);
+    final summary = PriceHistorySummary.from(
+      [entry(1, price: 500000, discount: 50)],
+      now: now,
+      from: from,
+    );
+    expect(summary.points.map((p) => p?.at), [from, now]);
+    expect(summary.canDraw, isTrue);
+  });
 }

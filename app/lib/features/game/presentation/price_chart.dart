@@ -20,37 +20,52 @@ class PriceHistorySummary {
   /// Строит сводку из записей сервера (только изменения цены, по возрастанию
   /// времени). Последняя цена продлевается до [now], чтобы на графике было
   /// видно, сколько она уже держится. Периоды «нет в продаже» — разрывы.
+  ///
+  /// [from] — начало выбранного периода (null — всё время). Цена, которая
+  /// уже действовала к началу периода, начинает график с этого момента:
+  /// иначе за сутки без изменений график был бы пустым.
   factory PriceHistorySummary.from(
     List<PriceHistoryEntry> entries, {
     DateTime? now,
+    DateTime? from,
   }) {
+    final end = now ?? DateTime.now();
     final points = <PricePoint?>[];
     PricePoint? best;
     int? regular;
-    for (final e in entries) {
+
+    void add(PriceHistoryEntry e, DateTime at) {
       if (!e.isAvailable || e.finalPrice == null) {
         points.add(null);
-        continue;
+        return;
       }
-      final p = (
-        at: e.recordedAt,
-        price: e.finalPrice!,
-        discountPct: e.discountPct,
-      );
+      final p = (at: at, price: e.finalPrice!, discountPct: e.discountPct);
       points.add(p);
       // При равной цене лучшей считается первая: «впервые с такой ценой».
-      if (best == null || p.price < best.price) best = p;
+      if (best == null || p.price < best!.price) best = p;
       if (e.initialPrice case final initial?) {
-        if (regular == null || initial > regular) regular = initial;
+        if (regular == null || initial > regular!) regular = initial;
       }
     }
+
+    // Последняя запись до начала периода — состояние на его начало.
+    PriceHistoryEntry? before;
+    for (final e in entries) {
+      if (from != null && e.recordedAt.isBefore(from)) {
+        before = e;
+        continue;
+      }
+      if (before != null) {
+        add(before, from!);
+        before = null;
+      }
+      add(e, e.recordedAt);
+    }
+    if (before != null) add(before, from!);
+
     final last = points.lastOrNull;
     if (last != null) {
-      points.add((
-        at: now ?? DateTime.now(),
-        price: last.price,
-        discountPct: last.discountPct,
-      ));
+      points.add((at: end, price: last.price, discountPct: last.discountPct));
     }
     return PriceHistorySummary._(
       points,
@@ -63,7 +78,7 @@ class PriceHistorySummary {
   /// Точки графика; null — разрыв (игры не было в продаже).
   final List<PricePoint?> points;
 
-  /// Самая низкая цена за время наблюдения.
+  /// Самая низкая цена за выбранный период.
   final PricePoint? best;
 
   /// С какого момента есть история (начало отслеживания).
@@ -114,10 +129,7 @@ class PriceChart extends StatelessWidget {
     final xs = spots.where((s) => !s.isNull()).map((s) => s.x);
     final minX = xs.reduce((a, b) => a < b ? a : b);
     final maxX = xs.reduce((a, b) => a > b ? a : b);
-    const day = 24 * 60 * 60 * 1000;
-    final dateFormat = maxX - minX < 1.5 * day
-        ? DateFormat.MMMd(locale).add_Hm()
-        : DateFormat.MMMd(locale);
+    final dateFormat = axisDateFormat(minX, maxX, locale);
     final tooltipFormat = DateFormat.yMMMd(locale);
 
     final start = DateTime.fromMillisecondsSinceEpoch(minX.round()).toLocal();

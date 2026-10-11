@@ -1001,14 +1001,56 @@ abstract class AppLocalizations {
   /// No description provided for @priceTrackedSince.
   ///
   /// In ru, this message translates to:
-  /// **'Цену отслеживаем с {date}'**
+  /// **'Отслеживаем с {date}'**
   String priceTrackedSince(String date);
 
   /// No description provided for @priceBestOn.
   ///
   /// In ru, this message translates to:
-  /// **'Лучшая цена была {date}'**
+  /// **'лучшая — {date}'**
   String priceBestOn(String date);
+
+  /// No description provided for @metricPlayers.
+  ///
+  /// In ru, this message translates to:
+  /// **'Онлайн'**
+  String get metricPlayers;
+
+  /// No description provided for @metricPrice.
+  ///
+  /// In ru, this message translates to:
+  /// **'Цена'**
+  String get metricPrice;
+
+  /// No description provided for @periodAll.
+  ///
+  /// In ru, this message translates to:
+  /// **'Всё'**
+  String get periodAll;
+
+  /// No description provided for @playersPeakPeriod.
+  ///
+  /// In ru, this message translates to:
+  /// **'Пик за период'**
+  String get playersPeakPeriod;
+
+  /// No description provided for @playersAverage.
+  ///
+  /// In ru, this message translates to:
+  /// **'В среднем'**
+  String get playersAverage;
+
+  /// No description provided for @playersReadings.
+  ///
+  /// In ru, this message translates to:
+  /// **'{count, plural, one{{count} замер} few{{count} замера} other{{count} замеров}} за период'**
+  String playersReadings(int count);
+
+  /// No description provided for @playersDailyPeaks.
+  ///
+  /// In ru, this message translates to:
+  /// **'Максимум за сутки · {count, plural, one{{count} день} few{{count} дня} other{{count} дней}}'**
+  String playersDailyPeaks(int count);
 }
 
 class _AppLocalizationsDelegate

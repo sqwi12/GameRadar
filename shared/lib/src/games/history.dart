@@ -10,11 +10,14 @@ enum HistoryPeriod {
   @JsonValue('7d')
   week(Duration(days: 7), '7d'),
   @JsonValue('30d')
-  month(Duration(days: 30), '30d');
+  month(Duration(days: 30), '30d'),
+  @JsonValue('all')
+  all(null, 'all');
 
   const HistoryPeriod(this.duration, this.wireName);
 
-  final Duration duration;
+  /// null — за всё время наблюдения.
+  final Duration? duration;
 
   /// Значение в JSON и query-параметре `period`.
   final String wireName;

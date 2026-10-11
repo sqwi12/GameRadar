@@ -276,7 +276,7 @@
   },
   "priceRegularLabel": "Без скидки",
   "priceHistoryEmpty": "История появится после первой проверки цены",
-  "priceTrackedSince": "Цену отслеживаем с {date}",
+  "priceTrackedSince": "Отслеживаем с {date}",
   "@priceTrackedSince": {
     "placeholders": {
       "date": {
@@ -284,11 +284,32 @@
       }
     }
   },
-  "priceBestOn": "Лучшая цена была {date}",
+  "priceBestOn": "лучшая — {date}",
   "@priceBestOn": {
     "placeholders": {
       "date": {
         "type": "String"
+      }
+    }
+  },
+  "metricPlayers": "Онлайн",
+  "metricPrice": "Цена",
+  "periodAll": "Всё",
+  "playersPeakPeriod": "Пик за период",
+  "playersAverage": "В среднем",
+  "playersReadings": "{count, plural, one{{count} замер} few{{count} замера} other{{count} замеров}} за период",
+  "@playersReadings": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "playersDailyPeaks": "Максимум за сутки · {count, plural, one{{count} день} few{{count} дня} other{{count} дней}}",
+  "@playersDailyPeaks": {
+    "placeholders": {
+      "count": {
+        "type": "int"
       }
     }
   }

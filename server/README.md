@@ -19,7 +19,7 @@ REST API GameRadar на Dart Frog. Работает только с нашей �
 | `GET /games/top?sort=current\|peak_24h&only_discounted=&offset=&limit=` | — | Топ по онлайну |
 | `GET /games/discounts?sort=discount\|price\|players&min_discount_pct=&max_price=&offset=&limit=` | — | Скидки сейчас |
 | `GET /games/{appId}?region=` | — | Экран игры (`GameDetails`) |
-| `GET /games/{appId}/players?period=24h\|7d\|30d` | — | График онлайна |
+| `GET /games/{appId}/players?period=24h\|7d\|30d\|all` | — | График онлайна (месяц — максимум за час, всё время — максимум за сутки) |
 | `GET /games/{appId}/prices?region=` | — | История изменений цены |
 | `GET /games/{appId}/header?v=` | — | Обложка игры из нашей БД (кэш на год, ETag, 304) |
 | `GET /watchlist` | ✔ | Список отслеживания |

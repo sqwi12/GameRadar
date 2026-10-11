@@ -38,6 +38,7 @@ const _$HistoryPeriodEnumMap = {
   HistoryPeriod.day: '24h',
   HistoryPeriod.week: '7d',
   HistoryPeriod.month: '30d',
+  HistoryPeriod.all: 'all',
 };
 
 _PriceHistoryEntry _$PriceHistoryEntryFromJson(Map<String, dynamic> json) =>

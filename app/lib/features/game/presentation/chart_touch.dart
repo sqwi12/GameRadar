@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 
 import '../../../core/theme/app_theme.dart';
 
@@ -63,4 +64,20 @@ LineTouchData chartTouchData(
       getTooltipItems: tooltip,
     ),
   );
+}
+
+/// Формат подписей оси времени по показанному отрезку [fromMs]–[toMs]:
+/// в пределах одних суток — время, до 4 дней — дата и время, дальше —
+/// даты, больше ~10 месяцев — месяц и год.
+DateFormat axisDateFormat(double fromMs, double toMs, String locale) {
+  const day = 24 * 60 * 60 * 1000;
+  final from = DateTime.fromMillisecondsSinceEpoch(fromMs.round()).toLocal();
+  final to = DateTime.fromMillisecondsSinceEpoch(toMs.round()).toLocal();
+  final sameDay =
+      from.year == to.year && from.month == to.month && from.day == to.day;
+  final span = toMs - fromMs;
+  if (sameDay) return DateFormat.Hm(locale);
+  if (span < 4 * day) return DateFormat.MMMd(locale).add_Hm();
+  if (span < 300 * day) return DateFormat.MMMd(locale);
+  return DateFormat.yMMM(locale);
 }

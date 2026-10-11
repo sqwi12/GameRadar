@@ -215,24 +215,36 @@ final class GamesQueries {
     int appId,
     HistoryPeriod period,
   ) async {
-    final hourly = period == HistoryPeriod.month;
+    // Сутки и неделя — все замеры, месяц — максимум за час,
+    // всё время — максимум за сутки (не больше ~365 точек в год).
+    final bucket = switch (period) {
+      HistoryPeriod.day || HistoryPeriod.week => null,
+      HistoryPeriod.month => 'hour',
+      HistoryPeriod.all => 'day',
+    };
+    final since = period.duration == null
+        ? ''
+        : "AND recorded_at >= now() - @secs:int4 * interval '1 second'";
     final rows = await _db.execute(
       Sql.named(
-        hourly
+        bucket == null
             ? '''
-              SELECT date_trunc('hour', recorded_at) AS at, max(players)
-              FROM player_counts
-              WHERE app_id = @id:int4 AND recorded_at >= now() - @secs:int4 * interval '1 second'
-              GROUP BY at ORDER BY at
-            '''
-            : '''
               SELECT recorded_at, players
               FROM player_counts
-              WHERE app_id = @id:int4 AND recorded_at >= now() - @secs:int4 * interval '1 second'
+              WHERE app_id = @id:int4 $since
               ORDER BY recorded_at
+            '''
+            : '''
+              SELECT date_trunc('$bucket', recorded_at) AS at, max(players)
+              FROM player_counts
+              WHERE app_id = @id:int4 $since
+              GROUP BY at ORDER BY at
             ''',
       ),
-      parameters: {'id': appId, 'secs': period.duration.inSeconds},
+      parameters: {
+        'id': appId,
+        if (period.duration case final d?) 'secs': d.inSeconds,
+      },
     );
     return [
       for (final r in rows)

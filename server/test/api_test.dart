@@ -428,6 +428,25 @@ void main() {
         ),
       );
       expect(week.period, HistoryPeriod.week);
+
+      // Всё время: максимум за сутки. 100 часовых замеров — это 5 суток.
+      final all = PlayerHistory.fromJson(
+        obj(
+          (await call(
+            () => playerHistory(
+              Request.get(uri('/games/730/players?period=all')),
+              services,
+              '730',
+            ),
+          )).$2,
+        ),
+      );
+      expect(all.period, HistoryPeriod.all);
+      expect(all.points.length, inInclusiveRange(4, 6));
+      expect(
+        all.points.map((p) => p.players).reduce((a, b) => a > b ? a : b),
+        800000 + 100 * 1000,
+      );
       expect(week.points, hasLength(100));
 
       final (bad, _) = await call(
