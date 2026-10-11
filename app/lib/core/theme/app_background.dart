@@ -11,28 +11,31 @@ class AppBackground extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Color c(CupertinoDynamicColor color) => color.resolveFrom(context);
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [c(AppColors.backgroundTop), c(AppColors.backgroundBottom)],
+    // Отдельный слой: при прокрутке фон не перерисовывается.
+    return RepaintBoundary(
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [c(AppColors.backgroundTop), c(AppColors.backgroundBottom)],
+          ),
         ),
-      ),
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          _Glow(
-            alignment: const Alignment(0.2, -1.25),
-            color: c(AppColors.glowA),
-            size: 1.6,
-          ),
-          _Glow(
-            alignment: const Alignment(1.3, 1.1),
-            color: c(AppColors.glowB),
-            size: 1.2,
-          ),
-        ],
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            _Glow(
+              alignment: const Alignment(0.2, -1.25),
+              color: c(AppColors.glowA),
+              size: 1.6,
+            ),
+            _Glow(
+              alignment: const Alignment(1.3, 1.1),
+              color: c(AppColors.glowB),
+              size: 1.2,
+            ),
+          ],
+        ),
       ),
     );
   }

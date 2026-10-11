@@ -6,11 +6,13 @@ import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 import 'app.dart';
 import 'core/database/app_database.dart';
+import 'core/perf/frame_stats.dart';
 import 'core/providers.dart';
 import 'core/push/push_providers.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  FrameStats.start();
 
   // Шейдеры Liquid Glass загружаются заранее (только чтение с диска, без
   // работы GPU), чтобы стекло не «мигало» на первом кадре.

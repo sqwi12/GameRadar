@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 
@@ -14,7 +12,7 @@ class AppTab {
 }
 
 /// Нижняя панель вкладок в стиле Telegram для Android (MainTabsLayout):
-/// матовая «таблетка» по центру, выбранная вкладка — акцентным цветом
+/// «таблетка» по центру, выбранная вкладка — акцентным цветом
 /// на мягкой подложке, которая перетекает между вкладками.
 ///
 /// Долгое нажатие и движение пальцем перетаскивают выделение, как в
@@ -108,8 +106,7 @@ class _AppTabBarState extends State<AppTabBar> {
             ),
             child: ClipPath(
               clipper: const ShapeBorderClipper(shape: StadiumBorder()),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
+              child: RepaintBoundary(
                 child: DecoratedBox(
                   decoration: ShapeDecoration(
                     color: surface,

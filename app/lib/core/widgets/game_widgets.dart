@@ -25,7 +25,7 @@ class AppSurface extends StatelessWidget {
     final box = DecoratedBox(
       decoration: ShapeDecoration(
         color: AppColors.card.resolveFrom(context),
-        shape: RoundedSuperellipseBorder(
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
           side: BorderSide(
             color: AppColors.cardBorder.resolveFrom(context),
@@ -95,7 +95,7 @@ class GameImage extends StatelessWidget {
       ),
     );
     final resolved = resolveImageUrl(url);
-    return ClipRSuperellipse(
+    return ClipRRect(
       borderRadius: BorderRadius.circular(radius),
       child: SizedBox(
         width: width,
@@ -106,6 +106,11 @@ class GameImage extends StatelessWidget {
               : CachedNetworkImage(
                   imageUrl: resolved,
                   fit: BoxFit.cover,
+                  // Декодируем в размере показа: меньше памяти и работы GPU.
+                  memCacheWidth: width == null
+                      ? null
+                      : (width! * MediaQuery.devicePixelRatioOf(context))
+                            .round(),
                   fadeInDuration: const Duration(milliseconds: 200),
                   placeholder: (_, _) => placeholder,
                   errorWidget: (_, _, _) => placeholder,
@@ -127,7 +132,7 @@ class DiscountBadge extends StatelessWidget {
   Widget build(BuildContext context) => DecoratedBox(
     decoration: ShapeDecoration(
       color: AppColors.discountTint.resolveFrom(context),
-      shape: RoundedSuperellipseBorder(
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(large ? 9 : 6),
       ),
     ),
@@ -331,21 +336,24 @@ class GameTile extends StatelessWidget {
                   constraints: const BoxConstraints(
                     minHeight: _imageWidth * 215 / 460,
                   ),
-                  child: IntrinsicHeight(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Text(
-                          game.name,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: AppText.title(context)
-                              .copyWith(fontSize: 15.5, height: 1.2),
-                        ),
-                        if (hasMeta) ...[
-                          const Spacer(),
-                          const SizedBox(height: 4),
-                          Row(
+                  // Без IntrinsicHeight (двойное измерение каждой строки):
+                  // при неограниченной высоте Column берёт высоту детей, но
+                  // не меньше minHeight, а spaceBetween прижимает цену вниз.
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        game.name,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppText.title(context)
+                            .copyWith(fontSize: 15.5, height: 1.2),
+                      ),
+                      if (hasMeta) ...[
+                        Padding(
+                          padding: const EdgeInsets.only(top: 4),
+                          child: Row(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               if (game.currentPlayers != null)
@@ -362,9 +370,9 @@ class GameTile extends StatelessWidget {
                               ),
                             ],
                           ),
-                        ],
+                        ),
                       ],
-                    ),
+                    ],
                   ),
                 ),
               ),
@@ -393,7 +401,7 @@ class RankLabel extends StatelessWidget {
   Widget build(BuildContext context) => DecoratedBox(
     decoration: ShapeDecoration(
       color: AppColors.overlayChip,
-      shape: RoundedSuperellipseBorder(borderRadius: BorderRadius.circular(7)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7)),
     ),
     child: Padding(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
