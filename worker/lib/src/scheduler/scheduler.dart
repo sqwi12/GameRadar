@@ -105,7 +105,41 @@ final class Scheduler {
     await _planImages(now);
     await _planWishlists(now);
     await _planStoreLows(now);
+    await _planRegionPrices(now);
   }
+
+  /// Цены в регионах сравнения раз в 12 часов — только для отслеживаемых
+  /// и недавно открытых игр (на каждые 50 игр — запрос на регион).
+  Future<void> _planRegionPrices(DateTime now) async {
+    if (_config.compareRegions.isEmpty) return;
+    if (await _queue.countKind(TaskKind.regionPrices) > 0) return;
+    for (final region in _config.compareRegions) {
+      if (region == _config.region) continue;
+      final due = await _games.dueRegionPrices(
+        region: region,
+        minAge: regionPricesInterval,
+        limit: SteamClient.maxPriceBatch * 4,
+      );
+      for (var i = 0; i < due.length; i += SteamClient.maxPriceBatch) {
+        final ids = due.sublist(
+          i,
+          math.min(i + SteamClient.maxPriceBatch, due.length),
+        )..sort();
+        await _queue.enqueue(
+          QueueTask(
+            id: '${TaskKind.regionPrices}:$region:${_batchKey(ids)}',
+            kind: TaskKind.regionPrices,
+            lane: Lane.store,
+            // Ниже основных цен: сравнение — справочная информация.
+            priority: now.add(const Duration(hours: 6)).millisecondsSinceEpoch,
+            payload: {'region': region, 'app_ids': ids},
+          ),
+        );
+      }
+    }
+  }
+
+  static const regionPricesInterval = Duration(hours: 12);
 
   /// Исторические минимумы (IsThereAnyDeal) раз в сутки, пакетами по 200.
   /// Лимит ITAD — 1000 запросов за 5 минут, у нас ~10 запросов в сутки.
@@ -302,6 +336,18 @@ final class Scheduler {
           id: TaskKind.appList,
           kind: TaskKind.appList,
           lane: Lane.api,
+          priority: now.millisecondsSinceEpoch,
+        ),
+      );
+    }
+    // Курсы НБК — раз в сутки, если включено сравнение регионов.
+    if (_config.compareRegions.isNotEmpty &&
+        await due(MarkerName.fxRates, const Duration(hours: 24))) {
+      await _queue.enqueue(
+        QueueTask(
+          id: TaskKind.fxRates,
+          kind: TaskKind.fxRates,
+          lane: Lane.local,
           priority: now.millisecondsSinceEpoch,
         ),
       );

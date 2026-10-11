@@ -6,6 +6,7 @@ import '../config.dart';
 import '../db/games_repository.dart';
 import '../db/steam_links_repository.dart';
 import '../db/store_lows_repository.dart';
+import '../fx/fx_client.dart';
 import '../itad/itad_client.dart';
 import '../notifications/notification_service.dart';
 import '../queue/markers.dart';
@@ -18,6 +19,7 @@ abstract final class MarkerName {
   static const topChart = 'top_chart';
   static const compaction = 'compaction';
   static const topRanks = 'top_ranks';
+  static const fxRates = 'fx_rates';
 }
 
 /// Обработчик одной задачи очереди.
@@ -34,6 +36,7 @@ final class TaskHandlers {
     required this._steamLinks,
     this._itad,
     this._storeLows,
+    this._fx,
     this._clock = const SystemClock(),
   });
 
@@ -49,6 +52,9 @@ final class TaskHandlers {
   /// Есть, только если задан ITAD_API_KEY.
   final ItadClient? _itad;
   final StoreLowsRepository? _storeLows;
+
+  /// Курсы валют НБК для сравнения цен по регионам.
+  final FxClient? _fx;
   final Clock _clock;
 
   /// Свежесть замеров онлайна для места в топе.
@@ -64,6 +70,10 @@ final class TaskHandlers {
     TaskKind.image => _image(task),
     TaskKind.wishlist => _wishlist(task),
     TaskKind.storeLows => _storeLowsTask(task),
+    // Цены другого региона — тот же запрос, что и основные; уведомления
+    // в нём не сработают: подписки только на регион пользователя.
+    TaskKind.regionPrices => _prices(task),
+    TaskKind.fxRates => _fxRates(),
     TaskKind.notify => _notifications.evaluateOne(
       task.payload['user_id']! as String,
       task.payload['app_id']! as int,
@@ -122,6 +132,15 @@ final class TaskHandlers {
 
   /// Импорт списка желаемого: ник → SteamID, открытость профиля, список.
   /// Все запросы — через очередь и лимит worker'а (правило 2).
+  Future<void> _fxRates() async {
+    final fx = _fx;
+    if (fx == null) return;
+    final rates = await fx.latest();
+    await _games.saveFxRates(rates);
+    await _markers.setLastRun(MarkerName.fxRates, _clock.now());
+    _log.info('Курсы НБК: ${rates.length} валют');
+  }
+
   /// Исторические минимумы в Steam (IsThereAnyDeal) для пакета игр:
   /// ID неизвестных игр ищутся одним запросом, минимумы — вторым.
   Future<void> _storeLowsTask(QueueTask task) async {

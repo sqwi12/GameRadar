@@ -415,6 +415,38 @@ void main() {
       expect((await details()).price!.finalPrice, 399900);
     });
 
+    test('цены по регионам: в тенге по курсу, дешевле — выше', () async {
+      await db.execute('''
+        INSERT INTO fx_rates (currency, kzt_per_unit, rate_date)
+        VALUES ('USD', 500, '2026-10-12'), ('RUB', 6.12, '2026-10-12')
+      ''');
+      await db.execute('''
+        INSERT INTO game_prices (app_id, region, is_available, currency, initial_price,
+                                 final_price, discount_pct, checked_at)
+        VALUES (292030, 'us', true, 'USD', 3999, 999, 75, now()),
+               (292030, 'ru', true, 'RUB', 99900, 24900, 75, now()),
+               (292030, 'tr', true, 'USD', 1999, 499, 75, now() - interval '5 days'),
+               (292030, 'ar', false, NULL, NULL, NULL, 0, now())
+      ''');
+      final (status, body) = await call(
+        () => regionalPrices(
+          Request.get(uri('/games/292030/regions')),
+          services,
+          '292030',
+        ),
+      );
+      expect(status, 200);
+      final prices = [
+        for (final j in body! as List)
+          RegionalPrice.fromJson(j as Map<String, Object?>),
+      ];
+      // Старая (5 дней) и недоступная цены не показываются.
+      expect(prices.map((p) => p.price.region), ['ru', 'kz', 'us']);
+      expect(prices.first.finalPriceKzt, (24900 * 6.12).round());
+      expect(prices[1].finalPriceKzt, 399900);
+      expect(prices.last.finalPriceKzt, 999 * 500);
+    });
+
     test('экран игры: несуществующая игра и мусор вместо id — 404', () async {
       expect(
         (await call(

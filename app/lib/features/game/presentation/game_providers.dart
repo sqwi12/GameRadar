@@ -6,6 +6,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../core/cache/cached_resource.dart';
 import '../../../core/cache/resource_state.dart';
 import '../../../core/providers.dart';
+import '../../settings/presentation/settings_providers.dart';
 import '../data/game_repository.dart';
 
 part 'game_providers.g.dart';
@@ -46,6 +47,11 @@ class GameDetailsState extends _$GameDetailsState {
 
   Future<void> retry() => _binding!.retry();
 }
+
+/// Цены в других регионах — только по запросу (лист сравнения), без кэша.
+@Riverpod(retry: noRetry)
+Future<List<RegionalPrice>> regionalPrices(Ref ref, int appId) =>
+    ref.watch(gameRepositoryProvider).regionalPrices(appId);
 
 /// История цены для графика и «лучшей цены».
 @riverpod

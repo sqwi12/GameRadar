@@ -15,6 +15,7 @@ import '../../watchlist/presentation/watch_sheet.dart';
 import '../../watchlist/presentation/watchlist_providers.dart';
 import 'game_providers.dart';
 import 'game_charts_card.dart';
+import 'regional_prices_sheet.dart';
 
 /// Экран игры: цена и скидка, онлайн и пики, график за 7 дней, отслеживание.
 class GameScreen extends ConsumerWidget {
@@ -202,32 +203,51 @@ class _PriceCard extends ConsumerWidget {
             ThresholdsLabel(item: watched),
           ],
           const SizedBox(height: 14),
-          GlassButton.custom(
-            onTap: () =>
-                showWatchSheet(context, appId: appId, price: game.price),
-            height: 48,
-            width: double.infinity,
-            label: watched == null ? l10n.watchAdd : l10n.watchEdit,
-            shape: const LiquidRoundedSuperellipse(borderRadius: 24),
-            useOwnLayer: true,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  watched == null
-                      ? CupertinoIcons.bell
-                      : CupertinoIcons.bell_fill,
-                  size: 18,
-                  color: AppColors.accent.resolveFrom(context),
+          Row(
+            children: [
+              Expanded(
+                child: GlassButton.custom(
+                  onTap: () =>
+                      showWatchSheet(context, appId: appId, price: game.price),
+                  height: 48,
+                  width: double.infinity,
+                  label: watched == null ? l10n.watchAdd : l10n.watchEdit,
+                  shape: const LiquidRoundedSuperellipse(borderRadius: 24),
+                  useOwnLayer: true,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        watched == null
+                            ? CupertinoIcons.bell
+                            : CupertinoIcons.bell_fill,
+                        size: 18,
+                        color: AppColors.accent.resolveFrom(context),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        watched == null ? l10n.watchAdd : l10n.watchEdit,
+                        style: AppText.title(context).copyWith(
+                          color: AppColors.accent.resolveFrom(context),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                const SizedBox(width: 8),
-                Text(
-                  watched == null ? l10n.watchAdd : l10n.watchEdit,
-                  style: AppText.title(context)
-                      .copyWith(color: AppColors.accent.resolveFrom(context)),
+              ),
+              // Цены в других регионах — рядом, чтобы экран не вырос.
+              if (!game.isFree) ...[
+                const SizedBox(width: 10),
+                SizedBox.square(
+                  dimension: 48,
+                  child: AppBarButton(
+                    icon: CupertinoIcons.globe,
+                    semanticLabel: l10n.regionsTitle,
+                    onPressed: () => showRegionalPrices(context, appId),
+                  ),
                 ),
               ],
-            ),
+            ],
           ),
         ],
       ),

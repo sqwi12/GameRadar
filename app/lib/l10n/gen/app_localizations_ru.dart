@@ -578,4 +578,46 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get recordLowAlertsSubtitle =>
       'Когда отслеживаемая игра дешевле, чем когда-либо в Steam';
+
+  @override
+  String get regionsTitle => 'Цены в других регионах';
+
+  @override
+  String get regionsIntro =>
+      'Та же игра в Steam других стран — в тенге по курсу Нацбанка Казахстана.';
+
+  @override
+  String get regionsEmpty =>
+      'Цены других регионов ещё загружаются — загляните через несколько минут.';
+
+  @override
+  String get regionsFootnote =>
+      'Купить можно только в регионе своего аккаунта Steam. Курс НБК обновляется раз в сутки, суммы приблизительные.';
+
+  @override
+  String get regionsSame => 'так же';
+
+  @override
+  String get regionsHome => 'ваш регион';
+
+  @override
+  String get regionKz => 'Казахстан';
+
+  @override
+  String get regionUs => 'США';
+
+  @override
+  String get regionDe => 'Германия (евро)';
+
+  @override
+  String get regionTr => 'Турция';
+
+  @override
+  String get regionAr => 'Аргентина';
+
+  @override
+  String get regionRu => 'Россия';
+
+  @override
+  String get regionIn => 'Индия';
 }

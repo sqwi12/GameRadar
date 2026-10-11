@@ -182,6 +182,20 @@ Future<Response> playerHistory(
   );
 }
 
+/// GET /games/{appId}/regions — цены в регионах Steam и в тенге.
+Future<Response> regionalPrices(
+  Request request,
+  Services services,
+  String rawId,
+) async {
+  final appId = parseAppId(rawId);
+  if (!await services.games.exists(appId)) {
+    throw ApiException.notFound('Игра не найдена');
+  }
+  final prices = await services.games.regionalPrices(appId);
+  return jsonResponse([for (final p in prices) p.toJson()]);
+}
+
 /// GET /games/{appId}/prices?region=kz — только изменения цены.
 Future<Response> priceHistory(
   Request request,

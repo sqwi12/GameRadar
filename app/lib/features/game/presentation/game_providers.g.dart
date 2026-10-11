@@ -158,6 +158,92 @@ abstract class _$GameDetailsState extends $Notifier<ResourceView<GameDetails>> {
   }
 }
 
+/// Цены в других регионах — только по запросу (лист сравнения), без кэша.
+
+@ProviderFor(regionalPrices)
+final regionalPricesProvider = RegionalPricesFamily._();
+
+/// Цены в других регионах — только по запросу (лист сравнения), без кэша.
+
+final class RegionalPricesProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<RegionalPrice>>,
+          List<RegionalPrice>,
+          FutureOr<List<RegionalPrice>>
+        >
+    with
+        $FutureModifier<List<RegionalPrice>>,
+        $FutureProvider<List<RegionalPrice>> {
+  /// Цены в других регионах — только по запросу (лист сравнения), без кэша.
+  RegionalPricesProvider._({
+    required RegionalPricesFamily super.from,
+    required int super.argument,
+  }) : super(
+         retry: noRetry,
+         name: r'regionalPricesProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$regionalPricesHash();
+
+  @override
+  String toString() {
+    return r'regionalPricesProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<List<RegionalPrice>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<RegionalPrice>> create(Ref ref) {
+    final argument = this.argument as int;
+    return regionalPrices(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is RegionalPricesProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$regionalPricesHash() => r'5bd045310a110e6526c4252dce1b900b730279a5';
+
+/// Цены в других регионах — только по запросу (лист сравнения), без кэша.
+
+final class RegionalPricesFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<List<RegionalPrice>>, int> {
+  RegionalPricesFamily._()
+    : super(
+        retry: noRetry,
+        name: r'regionalPricesProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// Цены в других регионах — только по запросу (лист сравнения), без кэша.
+
+  RegionalPricesProvider call(int appId) =>
+      RegionalPricesProvider._(argument: appId, from: this);
+
+  @override
+  String toString() => r'regionalPricesProvider';
+}
+
 /// История цены для графика и «лучшей цены».
 
 @ProviderFor(PriceHistoryState)

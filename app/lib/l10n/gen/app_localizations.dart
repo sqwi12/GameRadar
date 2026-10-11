@@ -1087,6 +1087,84 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Когда отслеживаемая игра дешевле, чем когда-либо в Steam'**
   String get recordLowAlertsSubtitle;
+
+  /// No description provided for @regionsTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Цены в других регионах'**
+  String get regionsTitle;
+
+  /// No description provided for @regionsIntro.
+  ///
+  /// In ru, this message translates to:
+  /// **'Та же игра в Steam других стран — в тенге по курсу Нацбанка Казахстана.'**
+  String get regionsIntro;
+
+  /// No description provided for @regionsEmpty.
+  ///
+  /// In ru, this message translates to:
+  /// **'Цены других регионов ещё загружаются — загляните через несколько минут.'**
+  String get regionsEmpty;
+
+  /// No description provided for @regionsFootnote.
+  ///
+  /// In ru, this message translates to:
+  /// **'Купить можно только в регионе своего аккаунта Steam. Курс НБК обновляется раз в сутки, суммы приблизительные.'**
+  String get regionsFootnote;
+
+  /// No description provided for @regionsSame.
+  ///
+  /// In ru, this message translates to:
+  /// **'так же'**
+  String get regionsSame;
+
+  /// No description provided for @regionsHome.
+  ///
+  /// In ru, this message translates to:
+  /// **'ваш регион'**
+  String get regionsHome;
+
+  /// No description provided for @regionKz.
+  ///
+  /// In ru, this message translates to:
+  /// **'Казахстан'**
+  String get regionKz;
+
+  /// No description provided for @regionUs.
+  ///
+  /// In ru, this message translates to:
+  /// **'США'**
+  String get regionUs;
+
+  /// No description provided for @regionDe.
+  ///
+  /// In ru, this message translates to:
+  /// **'Германия (евро)'**
+  String get regionDe;
+
+  /// No description provided for @regionTr.
+  ///
+  /// In ru, this message translates to:
+  /// **'Турция'**
+  String get regionTr;
+
+  /// No description provided for @regionAr.
+  ///
+  /// In ru, this message translates to:
+  /// **'Аргентина'**
+  String get regionAr;
+
+  /// No description provided for @regionRu.
+  ///
+  /// In ru, this message translates to:
+  /// **'Россия'**
+  String get regionRu;
+
+  /// No description provided for @regionIn.
+  ///
+  /// In ru, this message translates to:
+  /// **'Индия'**
+  String get regionIn;
 }
 
 class _AppLocalizationsDelegate

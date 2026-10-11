@@ -28,6 +28,15 @@ class GameRepository {
         return PlayerHistory.fromJson(asJsonMap(response.data));
       });
 
+  /// Цены в регионах Steam и они же в тенге.
+  Future<List<RegionalPrice>> regionalPrices(int appId) => apiCall(() async {
+    final response = await _dio.get<Object?>('/games/$appId/regions');
+    return [
+      for (final e in response.data! as List)
+        RegionalPrice.fromJson(e as Map<String, Object?>),
+    ];
+  });
+
   /// Изменения цены по возрастанию времени (сервер хранит только изменения).
   Future<List<PriceHistoryEntry>> priceHistory(int appId, String region) =>
       apiCall(() async {

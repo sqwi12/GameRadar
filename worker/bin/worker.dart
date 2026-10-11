@@ -94,6 +94,16 @@ Future<void> main() async {
     steamLinks: SteamLinksRepository(db),
     itad: itad,
     storeLows: storeLows,
+    fx: config.compareRegions.isEmpty
+        ? null
+        : FxClient(
+            httpClient: httpClient,
+            rateLimiter: RedisRateLimiter(
+              redis,
+              interval: config.requestInterval,
+            ),
+            clock: clock,
+          ),
   );
 
   final scheduler = Scheduler(

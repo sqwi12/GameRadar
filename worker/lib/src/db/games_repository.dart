@@ -4,6 +4,8 @@ import 'dart:typed_data';
 import 'package:gameradar_shared/steam.dart';
 import 'package:postgres/postgres.dart';
 
+import '../fx/fx_client.dart';
+
 /// Игра, которой пора обновить какие-то данные.
 typedef DueGame = ({int appId, DateTime? checkedAt, int watchers});
 
@@ -52,6 +54,53 @@ final class GamesRepository {
       },
     ),
   );
+
+  /// Игры для сравнения цен в другом регионе: отслеживаемые и открытые
+  /// за неделю, если цена в [region] не проверялась дольше [minAge].
+  Future<List<int>> dueRegionPrices({
+    required String region,
+    required Duration minAge,
+    required int limit,
+  }) async {
+    final rows = await _db.execute(
+      Sql.named('''
+        SELECT g.app_id
+        FROM games g
+        LEFT JOIN game_prices p ON p.app_id = g.app_id AND p.region = @region:text
+        WHERE (g.watchers_count > 0 OR g.viewed_at > now() - interval '7 days')
+          AND (p.checked_at IS NULL OR p.checked_at < now() - @min_age:int4 * interval '1 second')
+        ORDER BY g.watchers_count DESC, p.checked_at ASC NULLS FIRST
+        LIMIT @limit:int4
+      '''),
+      parameters: {
+        'region': region,
+        'min_age': minAge.inSeconds,
+        'limit': limit,
+      },
+    );
+    return [for (final r in rows) r[0]! as int];
+  }
+
+  /// Курсы НБК: сколько тенге за единицу валюты.
+  Future<void> saveFxRates(List<FxRate> rates) => _db.runTx((tx) async {
+    for (final r in rates) {
+      await tx.execute(
+        Sql.named('''
+          INSERT INTO fx_rates (currency, kzt_per_unit, rate_date, updated_at)
+          VALUES (@currency:text, CAST(@rate:text AS numeric), @date:date, now())
+          ON CONFLICT (currency) DO UPDATE SET
+            kzt_per_unit = EXCLUDED.kzt_per_unit,
+            rate_date = EXCLUDED.rate_date,
+            updated_at = now()
+        '''),
+        parameters: {
+          'currency': r.currency,
+          'rate': r.kztPerUnit.toStringAsFixed(6),
+          'date': r.date,
+        },
+      );
+    }
+  });
 
   /// Сохраняет цены пакета. История изменений пишется триггером в БД.
   Future<void> savePrices(String region, Iterable<SteamPriceOverview> prices) =>

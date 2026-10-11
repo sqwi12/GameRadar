@@ -65,7 +65,12 @@ final class WorkerConfig {
     this.fcmProjectId,
     this.fcmServiceAccountFile,
     this.itadApiKey,
+    this.compareRegions = defaultCompareRegions,
   });
+
+  /// Регионы для сравнения цен (сверх основного): доллар США, евро,
+  /// региональные цены в долларах (Турция, Аргентина), рубли и рупии.
+  static const defaultCompareRegions = ['us', 'de', 'tr', 'ar', 'ru', 'in'];
 
   factory WorkerConfig.fromEnvironment([Map<String, String>? env]) {
     final e = env ?? loadEnvironment();
@@ -90,6 +95,7 @@ final class WorkerConfig {
       fcmProjectId: _nonEmpty(e['FCM_PROJECT_ID']),
       fcmServiceAccountFile: _nonEmpty(e['FCM_SERVICE_ACCOUNT_FILE']),
       itadApiKey: _nonEmpty(e['ITAD_API_KEY']),
+      compareRegions: _regions(e['COMPARE_REGIONS']) ?? defaultCompareRegions,
     );
   }
 
@@ -119,8 +125,25 @@ final class WorkerConfig {
   /// минимумы не загружаются. Только из окружения, не логируется.
   final String? itadApiKey;
 
+  /// Регионы сравнения цен (COMPARE_REGIONS=us,de,tr; пусто — выключено).
+  final List<String> compareRegions;
+
   bool get fcmConfigured =>
       fcmProjectId != null && fcmServiceAccountFile != null;
+
+  static List<String>? _regions(String? v) {
+    if (v == null) return null;
+    final list = [
+      for (final r in v.split(','))
+        if (r.trim().isNotEmpty) r.trim().toLowerCase(),
+    ];
+    for (final r in list) {
+      if (!Regions.isValid(r)) {
+        throw StateError('COMPARE_REGIONS: «$r» — не код региона');
+      }
+    }
+    return list;
+  }
 
   static String? _nonEmpty(String? v) =>
       v == null || v.trim().isEmpty ? null : v.trim();

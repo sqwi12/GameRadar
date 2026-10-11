@@ -264,6 +264,38 @@ final class GamesQueries {
     ];
   }
 
+  /// Цены игры во всех регионах, где она продаётся и цена проверялась
+  /// за последние 3 дня, с курсом НБК (тенге за единицу валюты).
+  Future<List<RegionalPrice>> regionalPrices(int appId) async {
+    final rows = await _db.execute(
+      Sql.named('''
+        SELECT $priceColumns,
+               CASE WHEN p.currency = 'KZT' THEN 1 ELSE f.kzt_per_unit END::float8
+        FROM game_prices p
+        LEFT JOIN fx_rates f ON f.currency = p.currency
+        WHERE p.app_id = @id:int4 AND p.is_available
+          AND p.checked_at > now() - interval '3 days'
+      '''),
+      parameters: {'id': appId},
+    );
+    final prices = [
+      for (final r in rows)
+        RegionalPrice(
+          price: readPrice(r, 0)!,
+          finalPriceKzt: switch (r[8]) {
+            final double rate => ((r[4]! as int) * rate).round(),
+            _ => null,
+          },
+        ),
+    ];
+    // Дешевле — выше; без курса — в конце.
+    prices.sort(
+      (a, b) =>
+          (a.finalPriceKzt ?? 1 << 62).compareTo(b.finalPriceKzt ?? 1 << 62),
+    );
+    return prices;
+  }
+
   /// Последние 200 изменений цены, по возрастанию времени.
   Future<List<PriceHistoryEntry>> priceHistory(int appId, String region) async {
     final rows = await _db.execute(

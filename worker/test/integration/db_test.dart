@@ -208,6 +208,30 @@ void main() {
     );
   });
 
+  test('сравнение регионов: выбор игр и курсы НБК', () async {
+    await db.execute('UPDATE games SET watchers_count = 1 WHERE app_id = 730');
+    expect(
+      await games.dueRegionPrices(
+        region: 'us',
+        minAge: const Duration(hours: 12),
+        limit: 10,
+      ),
+      contains(730),
+    );
+    await games.saveFxRates([
+      (currency: 'USD', kztPerUnit: 512.34, date: DateTime.utc(2026, 10, 12)),
+    ]);
+    await games.saveFxRates([
+      (currency: 'USD', kztPerUnit: 515.0, date: DateTime.utc(2026, 10, 13)),
+    ]);
+    expect(
+      await scalar(
+        "SELECT kzt_per_unit::text FROM fx_rates WHERE currency = 'USD'",
+      ),
+      '515.000000',
+    );
+  });
+
   group('рекордно низкая цена', () {
     late RecordingNotifier notifier;
     late NotificationService service;

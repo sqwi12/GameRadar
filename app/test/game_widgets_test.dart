@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gameradar_app/core/widgets/game_widgets.dart';
 import 'package:gameradar_app/features/game/presentation/game_screen.dart';
+import 'package:gameradar_app/features/game/presentation/regional_prices_sheet.dart';
 import 'package:gameradar_app/l10n/gen/app_localizations.dart';
 import 'package:gameradar_shared/gameradar_shared.dart';
 
@@ -82,5 +83,10 @@ void main() {
     expect(find.text('Из списка желаемого Steam'), findsNothing);
     await pump(tester, ThresholdsLabel(item: item(WatchSource.wishlist)));
     expect(find.text('Из списка желаемого Steam'), findsOneWidget);
+  });
+
+  test('флаг региона из кода страны', () {
+    expect(regionFlag('kz'), '\u{1F1F0}\u{1F1FF}');
+    expect(regionFlag('us'), '\u{1F1FA}\u{1F1F8}');
   });
 }
