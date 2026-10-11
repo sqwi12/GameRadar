@@ -3,7 +3,7 @@ import 'package:gameradar_shared/gameradar_shared.dart';
 
 import '../../../core/network/api_call.dart';
 
-/// Экран игры: GET /games/{appId} и история онлайна.
+/// Экран игры: GET /games/{appId}, история онлайна и история цены.
 class GameRepository {
   GameRepository(this._dio);
 
@@ -26,5 +26,18 @@ class GameRepository {
           queryParameters: {'period': period.wireName},
         );
         return PlayerHistory.fromJson(asJsonMap(response.data));
+      });
+
+  /// Изменения цены по возрастанию времени (сервер хранит только изменения).
+  Future<List<PriceHistoryEntry>> priceHistory(int appId, String region) =>
+      apiCall(() async {
+        final response = await _dio.get<Object?>(
+          '/games/$appId/prices',
+          queryParameters: {'region': region},
+        );
+        return [
+          for (final e in response.data! as List)
+            PriceHistoryEntry.fromJson(e as Map<String, Object?>),
+        ];
       });
 }

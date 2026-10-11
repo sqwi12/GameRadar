@@ -64,6 +64,12 @@ abstract final class AppColors {
     color: Color(0x0F0C1322),
     darkColor: Color(0x12FFFFFF),
   );
+
+  /// Кромка кнопок, переключателей и разделители строк.
+  static const controlBorder = CupertinoDynamicColor.withBrightness(
+    color: Color(0x140C1322),
+    darkColor: Color(0x1AFFFFFF),
+  );
   static const imagePlaceholder = CupertinoDynamicColor.withBrightness(
     color: Color(0xFFE3E8EF),
     darkColor: Color(0xFF1A2336),

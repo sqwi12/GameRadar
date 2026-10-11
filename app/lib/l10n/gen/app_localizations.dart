@@ -937,6 +937,78 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Список желаемого открыт, но пуст. Добавьте игры в Steam — они появятся здесь при следующей синхронизации.'**
   String get steamEmptyHint;
+
+  /// No description provided for @period24h.
+  ///
+  /// In ru, this message translates to:
+  /// **'24 ч'**
+  String get period24h;
+
+  /// No description provided for @period7d.
+  ///
+  /// In ru, this message translates to:
+  /// **'7 дн'**
+  String get period7d;
+
+  /// No description provided for @period30d.
+  ///
+  /// In ru, this message translates to:
+  /// **'30 дн'**
+  String get period30d;
+
+  /// No description provided for @chartHoldHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'Зажмите график и ведите пальцем, чтобы увидеть каждый замер'**
+  String get chartHoldHint;
+
+  /// No description provided for @priceHistoryTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'История цены'**
+  String get priceHistoryTitle;
+
+  /// No description provided for @priceNowLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Сейчас'**
+  String get priceNowLabel;
+
+  /// No description provided for @priceBestLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Лучшая цена'**
+  String get priceBestLabel;
+
+  /// No description provided for @priceBestWithDiscount.
+  ///
+  /// In ru, this message translates to:
+  /// **'Лучшая, {discount}'**
+  String priceBestWithDiscount(String discount);
+
+  /// No description provided for @priceRegularLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Без скидки'**
+  String get priceRegularLabel;
+
+  /// No description provided for @priceHistoryEmpty.
+  ///
+  /// In ru, this message translates to:
+  /// **'История появится после первой проверки цены'**
+  String get priceHistoryEmpty;
+
+  /// No description provided for @priceTrackedSince.
+  ///
+  /// In ru, this message translates to:
+  /// **'Цену отслеживаем с {date}'**
+  String priceTrackedSince(String date);
+
+  /// No description provided for @priceBestOn.
+  ///
+  /// In ru, this message translates to:
+  /// **'Лучшая цена была {date}'**
+  String priceBestOn(String date);
 }
 
 class _AppLocalizationsDelegate

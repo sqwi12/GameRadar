@@ -139,5 +139,17 @@
   "steamOkHint": "The list refreshes daily: new games are added, games removed from your wishlist are removed.",
   "wishlistBadge": "From your Steam wishlist",
   "watchWishlistHint": "Imported from your Steam wishlist. After you save thresholds it stops syncing from there.",
-  "steamEmptyHint": "Your wishlist is public but empty. Add games in Steam — they'll appear here on the next sync."
+  "steamEmptyHint": "Your wishlist is public but empty. Add games in Steam — they'll appear here on the next sync.",
+  "period24h": "24 h",
+  "period7d": "7 d",
+  "period30d": "30 d",
+  "chartHoldHint": "Press and slide along the chart to see every reading",
+  "priceHistoryTitle": "Price history",
+  "priceNowLabel": "Now",
+  "priceBestLabel": "Best price",
+  "priceBestWithDiscount": "Best, {discount}",
+  "priceRegularLabel": "Regular",
+  "priceHistoryEmpty": "History appears after the first price check",
+  "priceTrackedSince": "Tracking the price since {date}",
+  "priceBestOn": "Best price was on {date}"
 }

@@ -258,5 +258,38 @@
   "steamOkHint": "Список обновляется раз в сутки: новые игры добавляются, убранные из списка желаемого — убираются.",
   "wishlistBadge": "Из списка желаемого Steam",
   "watchWishlistHint": "Игра импортирована из списка желаемого Steam. После сохранения порогов она перестанет обновляться оттуда.",
-  "steamEmptyHint": "Список желаемого открыт, но пуст. Добавьте игры в Steam — они появятся здесь при следующей синхронизации."
+  "steamEmptyHint": "Список желаемого открыт, но пуст. Добавьте игры в Steam — они появятся здесь при следующей синхронизации.",
+  "period24h": "24 ч",
+  "period7d": "7 дн",
+  "period30d": "30 дн",
+  "chartHoldHint": "Зажмите график и ведите пальцем, чтобы увидеть каждый замер",
+  "priceHistoryTitle": "История цены",
+  "priceNowLabel": "Сейчас",
+  "priceBestLabel": "Лучшая цена",
+  "priceBestWithDiscount": "Лучшая, {discount}",
+  "@priceBestWithDiscount": {
+    "placeholders": {
+      "discount": {
+        "type": "String"
+      }
+    }
+  },
+  "priceRegularLabel": "Без скидки",
+  "priceHistoryEmpty": "История появится после первой проверки цены",
+  "priceTrackedSince": "Цену отслеживаем с {date}",
+  "@priceTrackedSince": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "priceBestOn": "Лучшая цена была {date}",
+  "@priceBestOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  }
 }

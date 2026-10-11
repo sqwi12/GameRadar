@@ -15,7 +15,9 @@ import '../../../core/widgets/state_views.dart';
 import '../../watchlist/presentation/watch_sheet.dart';
 import '../../watchlist/presentation/watchlist_providers.dart';
 import 'game_providers.dart';
+import '../../../core/widgets/app_controls.dart';
 import 'players_chart.dart';
+import 'price_chart.dart';
 
 /// Экран игры: цена и скидка, онлайн и пики, график за 7 дней, отслеживание.
 class GameScreen extends ConsumerWidget {
@@ -32,7 +34,7 @@ class GameScreen extends ConsumerWidget {
     return GlassScreen(
       title: view.data?.name ?? l10n.gameTitle,
       insideTabs: false,
-      leading: GlassBarButton(
+      leading: AppBarButton(
         icon: CupertinoIcons.chevron_back,
         semanticLabel: l10n.back,
         onPressed: context.pop,
@@ -42,8 +44,15 @@ class GameScreen extends ConsumerWidget {
         insideTabs: false,
         onRetry: notifier.retry,
         onRefresh: () async {
-          // Вместе с данными игры обновляется и график.
-          ref.read(playerHistoryStateProvider(appId).notifier).retry();
+          // Вместе с данными игры обновляются и графики.
+          ref.read(priceHistoryStateProvider(appId).notifier).retry();
+          for (final period in HistoryPeriod.values) {
+            if (ref.exists(playerHistoryStateProvider(appId, period))) {
+              ref
+                  .read(playerHistoryStateProvider(appId, period).notifier)
+                  .retry();
+            }
+          }
           return notifier.refresh();
         },
         isEmpty: (_) => false,
@@ -123,6 +132,10 @@ class GameScreen extends ConsumerWidget {
         const SizedBox(height: 12),
       ],
       _PriceCard(appId: appId, game: game),
+      if (!game.isFree) ...[
+        const SizedBox(height: 12),
+        _PriceHistoryCard(appId: appId, current: game.price),
+      ],
       const SizedBox(height: 12),
       _PlayersCard(appId: appId, stats: game.players),
       if (game.genres.isNotEmpty || description != null) ...[
@@ -206,19 +219,29 @@ class _PriceCard extends ConsumerWidget {
   }
 }
 
-/// Онлайн: текущий, пики за 24 ч и 7 дней, график.
-class _PlayersCard extends ConsumerWidget {
+/// Онлайн: текущий, пики за 24 ч и 7 дней, график за выбранный период.
+class _PlayersCard extends ConsumerStatefulWidget {
   const _PlayersCard({required this.appId, required this.stats});
 
   final int appId;
   final PlayerStats stats;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_PlayersCard> createState() => _PlayersCardState();
+}
+
+class _PlayersCardState extends ConsumerState<_PlayersCard> {
+  HistoryPeriod _period = HistoryPeriod.week;
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
     final locale = Localizations.localeOf(context).toLanguageTag();
-    final history = ref.watch(playerHistoryStateProvider(appId));
+    final history = ref.watch(
+      playerHistoryStateProvider(widget.appId, _period),
+    );
     final points = history.data?.points ?? const [];
+    final stats = widget.stats;
 
     String value(int? v) => v == null ? '—' : formatPlayers(v, locale);
 
@@ -244,12 +267,20 @@ class _PlayersCard extends ConsumerWidget {
             ],
           ),
           const SizedBox(height: 18),
-          Text(l10n.players7d, style: AppText.sectionHeader(context)),
-          const SizedBox(height: 12),
+          AppSegmentedControl(
+            labels: [l10n.period24h, l10n.period7d, l10n.period30d],
+            selectedIndex: HistoryPeriod.values.indexOf(_period),
+            onSelected: (i) =>
+                setState(() => _period = HistoryPeriod.values[i]),
+          ),
+          const SizedBox(height: 14),
           SizedBox(
-            height: 180,
+            height: 190,
             child: switch (history) {
-              _ when points.length >= 2 => PlayersChart(points: points),
+              _ when points.length >= 2 => PlayersChart(
+                points: points,
+                period: _period,
+              ),
               _ when history.isInitialLoading => const LoadingView(),
               _ => Center(
                 child: Text(
@@ -262,6 +293,118 @@ class _PlayersCard extends ConsumerWidget {
               ),
             },
           ),
+          const SizedBox(height: 6),
+          Text(
+            l10n.chartHoldHint,
+            style: AppText.secondary(context).copyWith(fontSize: 12),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// История цены: сейчас, лучшая цена за время наблюдения, без скидки
+/// и ступенчатый график изменений.
+class _PriceHistoryCard extends ConsumerWidget {
+  const _PriceHistoryCard({required this.appId, required this.current});
+
+  final int appId;
+  final GamePrice? current;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    final locale = Localizations.localeOf(context).toLanguageTag();
+    final history = ref.watch(priceHistoryStateProvider(appId));
+    final entries = history.data ?? const <PriceHistoryEntry>[];
+    final summary = PriceHistorySummary.from(entries);
+    final currency =
+        current?.currency ??
+        entries.map((e) => e.currency).whereType<String>().firstOrNull ??
+        'KZT';
+    final best = summary.best;
+    final discount = AppColors.discount.resolveFrom(context);
+    String price(int? v) => v == null ? '—' : formatPrice(v, currency, locale);
+
+    return AppSurface(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l10n.priceHistoryTitle.toUpperCase(),
+            style: AppText.sectionHeader(context),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: _Stat(
+                  label: l10n.priceNowLabel,
+                  value: current?.isAvailable == true
+                      ? price(current!.finalPrice)
+                      : '—',
+                ),
+              ),
+              Expanded(
+                child: _Stat(
+                  label: best != null && best.discountPct > 0
+                      ? l10n.priceBestWithDiscount(
+                          l10n.discountBadge(best.discountPct),
+                        )
+                      : l10n.priceBestLabel,
+                  value: price(best?.price),
+                  color: best != null && best.discountPct > 0 ? discount : null,
+                ),
+              ),
+              Expanded(
+                child: _Stat(
+                  label: l10n.priceRegularLabel,
+                  value: price(summary.regular ?? current?.initialPrice),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          SizedBox(
+            height: 170,
+            child: switch (history) {
+              _ when summary.canDraw => PriceChart(
+                summary: summary,
+                currency: currency,
+              ),
+              _ when history.isInitialLoading => const LoadingView(),
+              _ => Center(
+                child: Text(
+                  history.error != null && history.data == null
+                      ? describeError(l10n, history.error!)
+                      : l10n.priceHistoryEmpty,
+                  textAlign: TextAlign.center,
+                  style: AppText.secondary(context),
+                ),
+              ),
+            },
+          ),
+          if (summary.since case final since?) ...[
+            const SizedBox(height: 8),
+            Text(
+              l10n.priceTrackedSince(
+                DateFormat.yMMMd(locale).format(since.toLocal()),
+              ),
+              style: AppText.secondary(context).copyWith(fontSize: 12),
+            ),
+          ],
+          if (best != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 2),
+              child: Text(
+                l10n.priceBestOn(
+                  DateFormat.yMMMd(locale).format(best.at.toLocal()),
+                ),
+                style: AppText.secondary(context).copyWith(fontSize: 12),
+              ),
+            ),
         ],
       ),
     );
@@ -269,21 +412,36 @@ class _PlayersCard extends ConsumerWidget {
 }
 
 class _Stat extends StatelessWidget {
-  const _Stat({required this.label, required this.value, this.accent = false});
+  const _Stat({
+    required this.label,
+    required this.value,
+    this.accent = false,
+    this.color,
+  });
 
   final String label;
   final String value;
   final bool accent;
+  final Color? color;
 
   @override
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      Text(
-        value,
-        style: AppText.title(context).copyWith(
-          fontSize: 22,
-          color: accent ? AppColors.accent.resolveFrom(context) : null,
+      // Длинная цена уменьшается, а не обрезается.
+      FittedBox(
+        fit: BoxFit.scaleDown,
+        alignment: Alignment.centerLeft,
+        child: Text(
+          value,
+          maxLines: 1,
+          style: AppText.title(context).copyWith(
+            fontSize: 22,
+            fontFeatures: AppText.tabular,
+            color:
+                color ??
+                (accent ? AppColors.accent.resolveFrom(context) : null),
+          ),
         ),
       ),
       const SizedBox(height: 2),

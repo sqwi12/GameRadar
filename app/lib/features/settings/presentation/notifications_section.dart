@@ -8,6 +8,7 @@ import '../../../core/push/push_service.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/l10n.dart';
 import 'settings_providers.dart';
+import '../../../core/widgets/app_controls.dart';
 
 /// Раздел «Уведомления»: разрешение на push, выключатель уведомлений
 /// о ценах и тихие часы (правило 11).
@@ -20,7 +21,7 @@ class NotificationsSection extends ConsumerWidget {
     final push = ref.watch(pushServiceProvider);
     final settings = ref.watch(currentProfileProvider).value?.settings;
 
-    return GlassGroupedSection(
+    return AppGroupedSection(
       header: Text(l10n.settingsNotifications.toUpperCase()),
       footer: Text(l10n.quietHoursHint),
       children: [
@@ -28,7 +29,7 @@ class NotificationsSection extends ConsumerWidget {
           listenable: push,
           builder: (context, _) => _PushStatusTile(status: push.status),
         ),
-        GlassListTile(
+        AppListTile(
           leading: const Icon(CupertinoIcons.bell),
           title: Text(l10n.priceAlertsTitle),
           subtitle: Text(l10n.priceAlertsSubtitle),
@@ -50,14 +51,14 @@ class NotificationsSection extends ConsumerWidget {
                   },
           ),
         ),
-        GlassListTile(
+        AppListTile(
           leading: const Icon(CupertinoIcons.moon),
           title: Text(l10n.quietHoursTitle),
           subtitle: Text(switch (settings?.quietHours) {
             final q? => l10n.quietHoursRange('${q.start}', '${q.end}'),
             null => l10n.quietHoursOff,
           }),
-          trailing: GlassListTile.chevron,
+          trailing: AppListTile.chevron,
           onTap: settings == null
               ? null
               : () => GlassModalSheet.show<void>(
@@ -132,7 +133,7 @@ class _PushStatusTile extends ConsumerWidget {
         AppColors.textSecondary,
       ),
     };
-    return GlassListTile(
+    return AppListTile(
       leading: const Icon(CupertinoIcons.app_badge),
       title: Text(l10n.pushStatusTitle),
       subtitle: Text(text),

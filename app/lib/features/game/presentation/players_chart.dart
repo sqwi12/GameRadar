@@ -5,13 +5,15 @@ import 'package:intl/intl.dart';
 
 import '../../../core/format/formatters.dart';
 import '../../../core/theme/app_theme.dart';
+import 'chart_touch.dart';
 
 /// График онлайна (fl_chart): плавная линия с градиентной заливкой,
-/// подписи дней снизу, подсказка с датой и числом игроков при касании.
+/// подписи времени снизу, подсказка с датой и числом игроков при касании.
 class PlayersChart extends StatelessWidget {
-  const PlayersChart({required this.points, super.key});
+  const PlayersChart({required this.points, required this.period, super.key});
 
   final List<PlayerCountPoint> points;
+  final HistoryPeriod period;
 
   @override
   Widget build(BuildContext context) {
@@ -27,11 +29,17 @@ class PlayersChart extends StatelessWidget {
     ];
     final maxY =
         points.map((p) => p.players).reduce((a, b) => a > b ? a : b) * 1.15;
-    final dayFormat = DateFormat.E(locale);
+    const hour = 60 * 60 * 1000.0;
+    // Подписи снизу: часы за сутки, дни недели за неделю, даты за месяц.
+    final (axisFormat, axisInterval) = switch (period) {
+      HistoryPeriod.day => (DateFormat.Hm(locale), 6 * hour),
+      HistoryPeriod.week => (DateFormat.E(locale), 24 * hour),
+      HistoryPeriod.month => (DateFormat.MMMd(locale), 7 * 24 * hour),
+    };
     final tooltipFormat = DateFormat.MMMd(locale).add_Hm();
-    const day = 24 * 60 * 60 * 1000.0;
 
     return LineChart(
+      duration: const Duration(milliseconds: 250),
       LineChartData(
         minY: 0,
         maxY: maxY <= 0 ? 1 : maxY,
@@ -60,7 +68,7 @@ class PlayersChart extends StatelessWidget {
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
-              interval: day,
+              interval: axisInterval,
               reservedSize: 24,
               getTitlesWidget: (value, meta) =>
                   value == meta.min || value == meta.max
@@ -68,7 +76,7 @@ class PlayersChart extends StatelessWidget {
                   : Padding(
                       padding: const EdgeInsets.only(top: 6),
                       child: Text(
-                        dayFormat.format(
+                        axisFormat.format(
                           DateTime.fromMillisecondsSinceEpoch(value.round())
                               .toLocal(),
                         ),
@@ -78,26 +86,29 @@ class PlayersChart extends StatelessWidget {
             ),
           ),
         ),
-        lineTouchData: LineTouchData(
-          touchTooltipData: LineTouchTooltipData(
-            getTooltipColor: (_) => AppColors.card.resolveFrom(context),
-            getTooltipItems: (spots) => [
-              for (final s in spots)
-                LineTooltipItem(
-                  '${formatCount(s.y.round(), locale)}\n',
-                  AppText.title(context).copyWith(fontSize: 14, color: color),
-                  children: [
-                    TextSpan(
-                      text: tooltipFormat.format(
-                        DateTime.fromMillisecondsSinceEpoch(s.x.round())
-                            .toLocal(),
-                      ),
-                      style: muted,
-                    ),
-                  ],
+        lineTouchData: chartTouchData(
+          context,
+          color: color,
+          tooltip: (spots) => [
+            for (final s in spots)
+              LineTooltipItem(
+                '${formatCount(s.y.round(), locale)}\n',
+                AppText.title(context).copyWith(
+                  fontSize: 15,
+                  color: color,
+                  fontFeatures: AppText.tabular,
                 ),
-            ],
-          ),
+                children: [
+                  TextSpan(
+                    text: tooltipFormat.format(
+                      DateTime.fromMillisecondsSinceEpoch(s.x.round())
+                          .toLocal(),
+                    ),
+                    style: muted.copyWith(fontSize: 12),
+                  ),
+                ],
+              ),
+          ],
         ),
         lineBarsData: [
           LineChartBarData(

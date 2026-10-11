@@ -473,4 +473,47 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get steamEmptyHint =>
       'Список желаемого открыт, но пуст. Добавьте игры в Steam — они появятся здесь при следующей синхронизации.';
+
+  @override
+  String get period24h => '24 ч';
+
+  @override
+  String get period7d => '7 дн';
+
+  @override
+  String get period30d => '30 дн';
+
+  @override
+  String get chartHoldHint =>
+      'Зажмите график и ведите пальцем, чтобы увидеть каждый замер';
+
+  @override
+  String get priceHistoryTitle => 'История цены';
+
+  @override
+  String get priceNowLabel => 'Сейчас';
+
+  @override
+  String get priceBestLabel => 'Лучшая цена';
+
+  @override
+  String priceBestWithDiscount(String discount) {
+    return 'Лучшая, $discount';
+  }
+
+  @override
+  String get priceRegularLabel => 'Без скидки';
+
+  @override
+  String get priceHistoryEmpty => 'История появится после первой проверки цены';
+
+  @override
+  String priceTrackedSince(String date) {
+    return 'Цену отслеживаем с $date';
+  }
+
+  @override
+  String priceBestOn(String date) {
+    return 'Лучшая цена была $date';
+  }
 }

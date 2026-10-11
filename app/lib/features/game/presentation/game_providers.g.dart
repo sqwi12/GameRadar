@@ -158,18 +158,139 @@ abstract class _$GameDetailsState extends $Notifier<ResourceView<GameDetails>> {
   }
 }
 
-/// История онлайна за 7 дней для графика.
+/// История цены для графика и «лучшей цены».
+
+@ProviderFor(PriceHistoryState)
+final priceHistoryStateProvider = PriceHistoryStateFamily._();
+
+/// История цены для графика и «лучшей цены».
+final class PriceHistoryStateProvider
+    extends
+        $NotifierProvider<
+          PriceHistoryState,
+          ResourceView<List<PriceHistoryEntry>>
+        > {
+  /// История цены для графика и «лучшей цены».
+  PriceHistoryStateProvider._({
+    required PriceHistoryStateFamily super.from,
+    required int super.argument,
+  }) : super(
+         retry: null,
+         name: r'priceHistoryStateProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$priceHistoryStateHash();
+
+  @override
+  String toString() {
+    return r'priceHistoryStateProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  PriceHistoryState create() => PriceHistoryState();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(ResourceView<List<PriceHistoryEntry>> value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride:
+          $SyncValueProvider<ResourceView<List<PriceHistoryEntry>>>(value),
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is PriceHistoryStateProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$priceHistoryStateHash() => r'51f7794c9519e51cb845ce8c3fd66f3e5d5bf413';
+
+/// История цены для графика и «лучшей цены».
+
+final class PriceHistoryStateFamily extends $Family
+    with
+        $ClassFamilyOverride<
+          PriceHistoryState,
+          ResourceView<List<PriceHistoryEntry>>,
+          ResourceView<List<PriceHistoryEntry>>,
+          ResourceView<List<PriceHistoryEntry>>,
+          int
+        > {
+  PriceHistoryStateFamily._()
+    : super(
+        retry: null,
+        name: r'priceHistoryStateProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// История цены для графика и «лучшей цены».
+
+  PriceHistoryStateProvider call(int appId) =>
+      PriceHistoryStateProvider._(argument: appId, from: this);
+
+  @override
+  String toString() => r'priceHistoryStateProvider';
+}
+
+/// История цены для графика и «лучшей цены».
+
+abstract class _$PriceHistoryState
+    extends $Notifier<ResourceView<List<PriceHistoryEntry>>> {
+  late final _$args = ref.$arg as int;
+  int get appId => _$args;
+
+  ResourceView<List<PriceHistoryEntry>> build(int appId);
+  @$mustCallSuper
+  @override
+  WhenComplete runBuild() {
+    final ref =
+        this.ref
+            as $Ref<
+              ResourceView<List<PriceHistoryEntry>>,
+              ResourceView<List<PriceHistoryEntry>>
+            >;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<
+                ResourceView<List<PriceHistoryEntry>>,
+                ResourceView<List<PriceHistoryEntry>>
+              >,
+              ResourceView<List<PriceHistoryEntry>>,
+              Object?,
+              Object?
+            >;
+    return element.handleCreate(ref, () => build(_$args));
+  }
+}
+
+/// История онлайна за выбранный период для графика.
 
 @ProviderFor(PlayerHistoryState)
 final playerHistoryStateProvider = PlayerHistoryStateFamily._();
 
-/// История онлайна за 7 дней для графика.
+/// История онлайна за выбранный период для графика.
 final class PlayerHistoryStateProvider
     extends $NotifierProvider<PlayerHistoryState, ResourceView<PlayerHistory>> {
-  /// История онлайна за 7 дней для графика.
+  /// История онлайна за выбранный период для графика.
   PlayerHistoryStateProvider._({
     required PlayerHistoryStateFamily super.from,
-    required int super.argument,
+    required (int, HistoryPeriod) super.argument,
   }) : super(
          retry: null,
          name: r'playerHistoryStateProvider',
@@ -185,7 +306,7 @@ final class PlayerHistoryStateProvider
   String toString() {
     return r'playerHistoryStateProvider'
         ''
-        '($argument)';
+        '$argument';
   }
 
   @$internal
@@ -212,9 +333,9 @@ final class PlayerHistoryStateProvider
 }
 
 String _$playerHistoryStateHash() =>
-    r'28bfb89ff34bc701bc0dd99138e88bac1376a1c3';
+    r'46d6f276a52704e72f7d323c372864dd3bbe2d90';
 
-/// История онлайна за 7 дней для графика.
+/// История онлайна за выбранный период для графика.
 
 final class PlayerHistoryStateFamily extends $Family
     with
@@ -223,7 +344,7 @@ final class PlayerHistoryStateFamily extends $Family
           ResourceView<PlayerHistory>,
           ResourceView<PlayerHistory>,
           ResourceView<PlayerHistory>,
-          int
+          (int, HistoryPeriod)
         > {
   PlayerHistoryStateFamily._()
     : super(
@@ -234,23 +355,24 @@ final class PlayerHistoryStateFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// История онлайна за 7 дней для графика.
+  /// История онлайна за выбранный период для графика.
 
-  PlayerHistoryStateProvider call(int appId) =>
-      PlayerHistoryStateProvider._(argument: appId, from: this);
+  PlayerHistoryStateProvider call(int appId, HistoryPeriod period) =>
+      PlayerHistoryStateProvider._(argument: (appId, period), from: this);
 
   @override
   String toString() => r'playerHistoryStateProvider';
 }
 
-/// История онлайна за 7 дней для графика.
+/// История онлайна за выбранный период для графика.
 
 abstract class _$PlayerHistoryState
     extends $Notifier<ResourceView<PlayerHistory>> {
-  late final _$args = ref.$arg as int;
-  int get appId => _$args;
+  late final _$args = ref.$arg as (int, HistoryPeriod);
+  int get appId => _$args.$1;
+  HistoryPeriod get period => _$args.$2;
 
-  ResourceView<PlayerHistory> build(int appId);
+  ResourceView<PlayerHistory> build(int appId, HistoryPeriod period);
   @$mustCallSuper
   @override
   WhenComplete runBuild() {
@@ -268,6 +390,6 @@ abstract class _$PlayerHistoryState
               Object?,
               Object?
             >;
-    return element.handleCreate(ref, () => build(_$args));
+    return element.handleCreate(ref, () => build(_$args.$1, _$args.$2));
   }
 }

@@ -7,6 +7,7 @@ import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/l10n.dart';
 import 'steam_providers.dart';
+import '../../../core/widgets/app_controls.dart';
 
 /// Раздел «Steam»: импорт списка желаемого по ссылке на профиль.
 /// Вход через Steam не нужен — профиль должен быть открытым.
@@ -18,11 +19,11 @@ class SteamSection extends ConsumerWidget {
     final l10n = context.l10n;
     final connection = ref.watch(steamConnectionProvider);
     final link = connection.value;
-    return GlassGroupedSection(
+    return AppGroupedSection(
       header: Text(l10n.steamSection.toUpperCase()),
       footer: Text(l10n.steamSectionFooter),
       children: [
-        GlassListTile(
+        AppListTile(
           leading: const Icon(CupertinoIcons.gift),
           title: Text(l10n.steamImportTitle),
           subtitle: Text(switch (connection) {
@@ -92,7 +93,7 @@ class _StatusIcon extends StatelessWidget {
       CupertinoIcons.exclamationmark_triangle_fill,
       color: CupertinoColors.systemOrange.resolveFrom(context),
     ),
-    _ => GlassListTile.chevron,
+    _ => AppListTile.chevron,
   };
 }
 
@@ -250,11 +251,10 @@ class _SteamSheetState extends ConsumerState<_SteamSheet> {
             style: AppText.sectionHeader(context),
           ),
           const SizedBox(height: 8),
-          GlassSegmentedControl(
-            segments: [for (final d in discounts) GlassSegment(label: '$d%')],
+          AppSegmentedControl(
+            labels: [for (final d in discounts) '$d%'],
             selectedIndex: discounts.indexOf(_discount),
-            onSegmentSelected: (i) => setState(() => _discount = discounts[i]),
-            useOwnLayer: true,
+            onSelected: (i) => setState(() => _discount = discounts[i]),
           ),
           const SizedBox(height: 6),
           Text(

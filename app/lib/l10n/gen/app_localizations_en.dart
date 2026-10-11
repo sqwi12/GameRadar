@@ -475,4 +475,47 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get steamEmptyHint =>
       'Your wishlist is public but empty. Add games in Steam — they\'ll appear here on the next sync.';
+
+  @override
+  String get period24h => '24 h';
+
+  @override
+  String get period7d => '7 d';
+
+  @override
+  String get period30d => '30 d';
+
+  @override
+  String get chartHoldHint =>
+      'Press and slide along the chart to see every reading';
+
+  @override
+  String get priceHistoryTitle => 'Price history';
+
+  @override
+  String get priceNowLabel => 'Now';
+
+  @override
+  String get priceBestLabel => 'Best price';
+
+  @override
+  String priceBestWithDiscount(String discount) {
+    return 'Best, $discount';
+  }
+
+  @override
+  String get priceRegularLabel => 'Regular';
+
+  @override
+  String get priceHistoryEmpty => 'History appears after the first price check';
+
+  @override
+  String priceTrackedSince(String date) {
+    return 'Tracking the price since $date';
+  }
+
+  @override
+  String priceBestOn(String date) {
+    return 'Best price was on $date';
+  }
 }

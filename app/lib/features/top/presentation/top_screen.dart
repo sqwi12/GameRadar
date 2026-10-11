@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gameradar_shared/gameradar_shared.dart';
-import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 import '../../../core/widgets/glass_screen.dart';
 import '../../../core/widgets/l10n.dart';
@@ -9,6 +8,7 @@ import '../../../core/widgets/paged_games_view.dart';
 import '../../../core/widgets/settings_button.dart';
 import '../../../core/widgets/state_views.dart';
 import 'top_providers.dart';
+import '../../../core/widgets/app_controls.dart';
 
 /// «Топ по онлайну» с сортировкой и фильтром «Со скидкой».
 class TopScreen extends ConsumerWidget {
@@ -34,25 +34,20 @@ class TopScreen extends ConsumerWidget {
           message: l10n.topEmpty,
         ),
         header: [
-          GlassSegmentedControl(
-            segments: [
-              GlassSegment(label: l10n.topSortCurrent),
-              GlassSegment(label: l10n.topSortPeak),
-            ],
+          AppSegmentedControl(
+            labels: [l10n.topSortCurrent, l10n.topSortPeak],
             selectedIndex: filter.sort == TopSort.current ? 0 : 1,
-            onSegmentSelected: (i) => ref
+            onSelected: (i) => ref
                 .read(topFilterProvider.notifier)
                 .setSort(i == 0 ? TopSort.current : TopSort.peak24h),
-            useOwnLayer: true,
           ),
           FilterRow(
             children: [
-              GlassChip(
+              AppChip(
                 label: l10n.filterDiscounted,
-                icon: const Icon(CupertinoIcons.tag_fill),
+                icon: CupertinoIcons.tag_fill,
                 selected: filter.onlyDiscounted,
                 onTap: ref.read(topFilterProvider.notifier).toggleDiscounted,
-                useOwnLayer: true,
               ),
             ],
           ),

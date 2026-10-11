@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gameradar_shared/gameradar_shared.dart';
 import 'package:go_router/go_router.dart';
-import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 import '../../../core/config/app_config.dart';
 import '../../../core/theme/app_theme.dart';
@@ -11,6 +10,7 @@ import '../../../core/widgets/l10n.dart';
 import 'notifications_section.dart';
 import 'settings_providers.dart';
 import 'steam_section.dart';
+import '../../../core/widgets/app_controls.dart';
 
 /// Настройки: тема, язык, регион, аккаунт и «О приложении».
 ///
@@ -28,7 +28,7 @@ class SettingsScreen extends ConsumerWidget {
     return GlassScreen(
       title: l10n.settingsTitle,
       insideTabs: false,
-      leading: GlassBarButton(
+      leading: AppBarButton(
         icon: CupertinoIcons.chevron_back,
         semanticLabel: l10n.back,
         onPressed: context.pop,
@@ -66,10 +66,10 @@ class SettingsScreen extends ConsumerWidget {
           const SizedBox(height: 20),
           const SteamSection(),
           const SizedBox(height: 20),
-          GlassGroupedSection(
+          AppGroupedSection(
             header: Text(l10n.settingsAccount.toUpperCase()),
             children: [
-              GlassListTile(
+              AppListTile(
                 leading: const Icon(CupertinoIcons.money_dollar_circle),
                 title: Text(l10n.settingsRegion),
                 subtitle: Text(l10n.regionKazakhstan),
@@ -78,16 +78,16 @@ class SettingsScreen extends ConsumerWidget {
             ],
           ),
           const SizedBox(height: 20),
-          GlassGroupedSection(
+          AppGroupedSection(
             header: Text(l10n.settingsAbout.toUpperCase()),
             footer: Text(l10n.aboutDisclaimer),
             children: [
-              GlassListTile(
+              AppListTile(
                 leading: const Icon(CupertinoIcons.scope),
                 title: Text(l10n.appTitle),
                 subtitle: Text(l10n.aboutVersion(AppConfig.appVersion)),
               ),
-              GlassListTile(
+              AppListTile(
                 leading: const Icon(CupertinoIcons.chart_bar_square),
                 title: Text(l10n.aboutDataSourceTitle),
                 subtitle: Text(l10n.aboutDataSource),
@@ -109,7 +109,7 @@ class _AccountTile extends ConsumerWidget {
     final l10n = context.l10n;
     final profile = ref.watch(currentProfileProvider);
     const error = CupertinoColors.systemRed;
-    return GlassListTile(
+    return AppListTile(
       leading: const Icon(CupertinoIcons.person_crop_circle),
       title: Text(l10n.accountAnonymous),
       subtitle: switch (profile) {
@@ -173,10 +173,9 @@ class _Choice<T> extends StatelessWidget {
   final ValueChanged<T> onSelected;
 
   @override
-  Widget build(BuildContext context) => GlassSegmentedControl(
-    segments: [for (final v in values) GlassSegment(label: label(v))],
+  Widget build(BuildContext context) => AppSegmentedControl(
+    labels: [for (final v in values) label(v)],
     selectedIndex: values.indexOf(selected),
-    onSegmentSelected: (i) => onSelected(values[i]),
-    useOwnLayer: true,
+    onSelected: (i) => onSelected(values[i]),
   );
 }

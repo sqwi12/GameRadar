@@ -47,14 +47,45 @@ class GameDetailsState extends _$GameDetailsState {
   Future<void> retry() => _binding!.retry();
 }
 
-/// История онлайна за 7 дней для графика.
+/// История цены для графика и «лучшей цены».
+@riverpod
+class PriceHistoryState extends _$PriceHistoryState {
+  ResourceBinding<List<PriceHistoryEntry>>? _binding;
+
+  @override
+  ResourceView<List<PriceHistoryEntry>> build(int appId) {
+    const region = Regions.defaultRegion;
+    final repository = ref.watch(gameRepositoryProvider);
+    final binding = _binding = ResourceBinding(
+      CachedResource<List<PriceHistoryEntry>>(
+        db: ref.watch(appDatabaseProvider),
+        key: 'prices:$appId:$region',
+        fetch: () => repository.priceHistory(appId, region),
+        decode: (json) => [
+          for (final e in json! as List)
+            PriceHistoryEntry.fromJson(e as Map<String, Object?>),
+        ],
+        encode: (entries) => [for (final e in entries) e.toJson()],
+        staleAfter: const Duration(minutes: 15),
+      ),
+      read: () => state,
+      write: (v) => state = v,
+    );
+    ref.onDispose(binding.dispose);
+    scheduleMicrotask(binding.start);
+    return const ResourceView();
+  }
+
+  Future<void> retry() => _binding!.retry();
+}
+
+/// История онлайна за выбранный период для графика.
 @riverpod
 class PlayerHistoryState extends _$PlayerHistoryState {
   ResourceBinding<PlayerHistory>? _binding;
 
   @override
-  ResourceView<PlayerHistory> build(int appId) {
-    const period = HistoryPeriod.week;
+  ResourceView<PlayerHistory> build(int appId, HistoryPeriod period) {
     final repository = ref.watch(gameRepositoryProvider);
     final binding = _binding = ResourceBinding(
       CachedResource<PlayerHistory>(
