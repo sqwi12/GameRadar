@@ -13,6 +13,7 @@ export 'src/common/quiet_hours.dart';
 export 'src/common/region.dart';
 export 'src/common/validation.dart';
 export 'src/games/game_details.dart';
+export 'src/games/store_low.dart';
 export 'src/games/game_price.dart';
 export 'src/games/game_queries.dart';
 export 'src/games/game_summary.dart';

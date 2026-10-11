@@ -64,6 +64,7 @@ final class WorkerConfig {
     this.schedule = const Schedule(),
     this.fcmProjectId,
     this.fcmServiceAccountFile,
+    this.itadApiKey,
   });
 
   factory WorkerConfig.fromEnvironment([Map<String, String>? env]) {
@@ -88,6 +89,7 @@ final class WorkerConfig {
       saleMode: e['SALE_MODE'] == 'true',
       fcmProjectId: _nonEmpty(e['FCM_PROJECT_ID']),
       fcmServiceAccountFile: _nonEmpty(e['FCM_SERVICE_ACCOUNT_FILE']),
+      itadApiKey: _nonEmpty(e['ITAD_API_KEY']),
     );
   }
 
@@ -112,6 +114,10 @@ final class WorkerConfig {
   /// Без них уведомления только пишутся в журнал (LoggingNotifier).
   final String? fcmProjectId;
   final String? fcmServiceAccountFile;
+
+  /// Ключ IsThereAnyDeal API для исторических минимумов цен. Без него
+  /// минимумы не загружаются. Только из окружения, не логируется.
+  final String? itadApiKey;
 
   bool get fcmConfigured =>
       fcmProjectId != null && fcmServiceAccountFile != null;

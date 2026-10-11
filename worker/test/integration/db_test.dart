@@ -368,6 +368,130 @@ void main() {
     );
   });
 
+  test(
+    'исторические минимумы IsThereAnyDeal: поиск ID, минимум, повтор',
+    () async {
+      await db.execute('UPDATE games SET top_rank = 1 WHERE app_id = 730');
+      final lows = StoreLowsRepository(db);
+      final due = await lows.due(region: 'kz', limit: 10);
+      expect(due, contains(730));
+
+      final calls = <String>[];
+      final clock = FakeClock();
+      final handlers = TaskHandlers(
+        steam: SteamClient(
+          httpClient: MockClient((_) async => http.Response('{}', 200)),
+          rateLimiter: InMemoryRateLimiter(
+            interval: const Duration(milliseconds: 1500),
+            clock: clock,
+          ),
+          apiKey: 'k',
+          clock: clock,
+        ),
+        games: games,
+        notifications: NotificationService(
+          watchlist: watchlist,
+          notifier: RecordingNotifier(),
+          queue: InMemoryTaskQueue(clock),
+          clock: clock,
+        ),
+        markers: InMemoryMarkers(),
+        config: const WorkerConfig(
+          databaseUrl: '',
+          redisUrl: '',
+          steamApiKey: 'k',
+        ),
+        steamLinks: SteamLinksRepository(db),
+        storeLows: lows,
+        itad: ItadClient(
+          httpClient: MockClient((request) async {
+            calls.add(request.url.path);
+            if (request.url.path.contains('lookup')) {
+              return http.Response(
+                jsonEncode({
+                  'app/730': '018d937f-07a7-72c5-a2fc-0b14f1a6c2f6',
+                  'app/570': null,
+                }),
+                200,
+              );
+            }
+            return http.Response(
+              jsonEncode([
+                {
+                  'id': '018d937f-07a7-72c5-a2fc-0b14f1a6c2f6',
+                  'lows': [
+                    {
+                      'shop': {'id': 61, 'name': 'Steam'},
+                      'price': {
+                        'amount': 3375,
+                        'amountInt': 337500,
+                        'currency': 'KZT',
+                      },
+                      'regular': {
+                        'amount': 22500,
+                        'amountInt': 2250000,
+                        'currency': 'KZT',
+                      },
+                      'cut': 85,
+                      'timestamp': '2025-06-26T17:00:00Z',
+                    },
+                  ],
+                },
+              ]),
+              200,
+            );
+          }),
+          rateLimiter: InMemoryRateLimiter(
+            interval: const Duration(milliseconds: 1500),
+            clock: clock,
+          ),
+          apiKey: 'itad',
+          clock: clock,
+        ),
+        clock: clock,
+      );
+      Future<void> run() => handlers.handle(
+        const QueueTask(
+          id: 'store_lows:kz:test',
+          kind: TaskKind.storeLows,
+          lane: Lane.itad,
+          priority: 0,
+          payload: {
+            'region': 'kz',
+            'app_ids': [570, 730],
+          },
+        ),
+      );
+
+      await run();
+      expect(calls, ['/lookup/id/shop/61/v1', '/games/storelow/v2']);
+      final row = (await db.execute(
+        'SELECT low_price, regular_price, cut, currency, low_at FROM game_store_lows '
+        "WHERE app_id = 730 AND region = 'kz'",
+      )).first;
+      expect(row.toList(), [
+        337500,
+        2250000,
+        85,
+        'KZT',
+        DateTime.utc(2025, 6, 26, 17),
+      ]);
+      // Неизвестная ITAD игра сохранена без минимума: искать снова не нужно.
+      expect(
+        await scalar(
+          'SELECT itad_id IS NULL AND low_price IS NULL FROM game_store_lows WHERE app_id = 570',
+        ),
+        isTrue,
+      );
+      expect(await lows.due(region: 'kz', limit: 10), isNot(contains(730)));
+
+      // Повтор: ID уже известны — только запрос минимумов.
+      calls.clear();
+      await run();
+      expect(calls, ['/games/storelow/v2']);
+    },
+  );
+
   group('импорт списка желаемого Steam', () {
     late String user;
     late SteamLinksRepository links;

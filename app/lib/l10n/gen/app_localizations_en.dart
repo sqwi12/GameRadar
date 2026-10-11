@@ -555,4 +555,20 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return 'Daily peak · $_temp0';
   }
+
+  @override
+  String allTimeLowSource(String date) {
+    return 'All-time low on $date · IsThereAnyDeal';
+  }
+
+  @override
+  String get allTimeLowShort => 'all-time low';
+
+  @override
+  String allTimeLowLabel(String discount) {
+    return 'All-time low, $discount';
+  }
+
+  @override
+  String get priceNowAtLow => 'Now — all-time low';
 }

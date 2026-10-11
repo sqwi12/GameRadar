@@ -65,6 +65,25 @@ Future<void> main() async {
     queue: queue,
     clock: clock,
   );
+  // Исторические минимумы цен (IsThereAnyDeal) — только с ключом.
+  final itadKey = config.itadApiKey;
+  final storeLows = itadKey == null ? null : StoreLowsRepository(db);
+  final itad = itadKey == null
+      ? null
+      : ItadClient(
+          httpClient: httpClient,
+          rateLimiter: RedisRateLimiter(
+            redis,
+            interval: config.requestInterval,
+          ),
+          apiKey: itadKey,
+          clock: clock,
+        );
+  log.info(
+    itad == null
+        ? 'Исторические минимумы: ITAD_API_KEY не задан — выключены'
+        : 'Исторические минимумы: IsThereAnyDeal',
+  );
   final handlers = TaskHandlers(
     steam: steam,
     games: games,
@@ -73,6 +92,8 @@ Future<void> main() async {
     config: config,
     clock: clock,
     steamLinks: SteamLinksRepository(db),
+    itad: itad,
+    storeLows: storeLows,
   );
 
   final scheduler = Scheduler(
@@ -81,6 +102,7 @@ Future<void> main() async {
     markers: markers,
     config: config,
     steamLinks: SteamLinksRepository(db),
+    storeLows: storeLows,
   );
   final lanes = [
     for (final lane in Lane.values)

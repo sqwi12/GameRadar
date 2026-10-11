@@ -383,6 +383,36 @@ void main() {
       expect(viewed.first.first, isTrue);
     });
 
+    test('экран игры: исторический минимум в Steam (IsThereAnyDeal)', () async {
+      Future<GameDetails> details() async => GameDetails.fromJson(
+        obj(
+          (await call(
+            () => gameDetails(
+              Request.get(uri('/games/292030')),
+              services,
+              '292030',
+            ),
+          )).$2,
+        ),
+      );
+      expect((await details()).storeLow, isNull);
+
+      await db.execute('''
+        INSERT INTO game_store_lows
+          (app_id, region, itad_id, currency, low_price, regular_price, cut, low_at)
+        VALUES (292030, 'kz', '018d937f-07a7-72c5-a2fc-0b14f1a6c2f6', 'KZT',
+                319900, 1599900, 80, '2025-06-26T17:00:00Z')
+      ''');
+      final low = (await details()).storeLow!;
+      expect(low.price, 319900);
+      expect(low.regularPrice, 1599900);
+      expect(low.cut, 80);
+      expect(low.currency, 'KZT');
+      expect(low.at, DateTime.utc(2025, 6, 26, 17));
+      // Текущая цена по-прежнему на месте.
+      expect((await details()).price!.finalPrice, 399900);
+    });
+
     test('экран игры: несуществующая игра и мусор вместо id — 404', () async {
       expect(
         (await call(

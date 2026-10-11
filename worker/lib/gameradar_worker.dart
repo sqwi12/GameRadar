@@ -7,6 +7,8 @@ export 'src/config.dart';
 export 'src/db/devices_repository.dart';
 export 'src/db/games_repository.dart';
 export 'src/db/steam_links_repository.dart';
+export 'src/db/store_lows_repository.dart';
+export 'src/itad/itad_client.dart';
 
 export 'package:gameradar_shared/dotenv.dart';
 

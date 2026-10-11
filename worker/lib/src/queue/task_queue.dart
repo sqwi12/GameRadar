@@ -18,6 +18,9 @@ enum Lane {
 
   /// Без запросов к Steam: отложенные уведомления.
   local,
+
+  /// api.isthereanydeal.com: исторические минимумы цен.
+  itad,
 }
 
 /// Виды задач.
@@ -31,6 +34,7 @@ abstract final class TaskKind {
   static const notify = 'notify';
   static const image = 'image';
   static const wishlist = 'wishlist';
+  static const storeLows = 'store_lows';
 }
 
 /// Задача очереди. [id] детерминирован (например, `players:730`), поэтому

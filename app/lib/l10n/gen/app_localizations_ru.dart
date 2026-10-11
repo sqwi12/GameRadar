@@ -555,4 +555,20 @@ class AppLocalizationsRu extends AppLocalizations {
     );
     return 'Максимум за сутки · $_temp0';
   }
+
+  @override
+  String allTimeLowSource(String date) {
+    return 'Минимум за всё время — $date · IsThereAnyDeal';
+  }
+
+  @override
+  String get allTimeLowShort => 'минимум';
+
+  @override
+  String allTimeLowLabel(String discount) {
+    return 'Мин. всё время, $discount';
+  }
+
+  @override
+  String get priceNowAtLow => 'Сейчас — минимум';
 }

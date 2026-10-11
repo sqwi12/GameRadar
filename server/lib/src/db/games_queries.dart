@@ -128,10 +128,12 @@ final class GamesQueries {
                g.release_date::text, g.reviews_positive, g.reviews_total,
                g.current_players, g.peak_24h, g.peak_7d, g.peak_30d,
                g.players_checked_at, g.top_rank, g.details_checked_at,
+               l.low_price, l.regular_price, l.cut, l.currency::text, l.low_at,
                $priceColumns
         FROM games g
         $imageJoin
         LEFT JOIN game_prices p ON p.app_id = g.app_id AND p.region = @region:text
+        LEFT JOIN game_store_lows l ON l.app_id = g.app_id AND l.region = @region:text
         WHERE g.app_id = @id:int4
       '''),
       parameters: {'id': appId, 'region': region},
@@ -167,7 +169,17 @@ final class GamesQueries {
       ),
       topRank: r[17] as int?,
       detailsCheckedAt: r[18] as DateTime?,
-      price: readPrice(r, 19),
+      storeLow: switch (r[19]) {
+        final int price => StoreLow(
+          price: price,
+          regularPrice: r[20]! as int,
+          cut: r[21]! as int,
+          currency: (r[22]! as String).trim(),
+          at: r[23]! as DateTime,
+        ),
+        _ => null,
+      },
+      price: readPrice(r, 24),
     );
   }
 

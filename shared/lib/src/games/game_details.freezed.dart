@@ -18,7 +18,9 @@ mixin _$GameDetails {
 
  int get appId; String get name;@JsonKey(unknownEnumValue: GameType.unknown) GameType get type; bool get isFree; String? get headerImageUrl;/// Краткое описание по языкам: `{"ru": "...", "en": "..."}`.
  Map<String, String> get shortDescription; List<String> get developers; List<String> get publishers; List<String> get genres;@DateOnlyConverter() DateTime? get releaseDate; ReviewSummary? get reviews; PlayerStats get players;/// Цена в регионе запроса; null — цена ещё не загружалась.
- GamePrice? get price; int? get topRank;/// Когда worker последний раз обновлял описание.
+ GamePrice? get price;/// Исторический минимум в Steam в регионе запроса (IsThereAnyDeal);
+/// null — неизвестен (нет ключа API, игры нет в ITAD или не загружен).
+ StoreLow? get storeLow; int? get topRank;/// Когда worker последний раз обновлял описание.
  DateTime? get detailsCheckedAt;
 /// Create a copy of GameDetails
 /// with the given fields replaced by the non-null parameter values.
@@ -33,20 +35,20 @@ $GameDetailsCopyWith<GameDetails> get copyWith => _$GameDetailsCopyWithImpl<Game
 @override
 bool operator ==(Object other) {
   final _this = this as GameDetails;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is GameDetails&&(identical(other.appId, _this.appId) || other.appId == _this.appId)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.type, _this.type) || other.type == _this.type)&&(identical(other.isFree, _this.isFree) || other.isFree == _this.isFree)&&(identical(other.headerImageUrl, _this.headerImageUrl) || other.headerImageUrl == _this.headerImageUrl)&&const DeepCollectionEquality().equals(other.shortDescription, _this.shortDescription)&&const DeepCollectionEquality().equals(other.developers, _this.developers)&&const DeepCollectionEquality().equals(other.publishers, _this.publishers)&&const DeepCollectionEquality().equals(other.genres, _this.genres)&&(identical(other.releaseDate, _this.releaseDate) || other.releaseDate == _this.releaseDate)&&(identical(other.reviews, _this.reviews) || other.reviews == _this.reviews)&&(identical(other.players, _this.players) || other.players == _this.players)&&(identical(other.price, _this.price) || other.price == _this.price)&&(identical(other.topRank, _this.topRank) || other.topRank == _this.topRank)&&(identical(other.detailsCheckedAt, _this.detailsCheckedAt) || other.detailsCheckedAt == _this.detailsCheckedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is GameDetails&&(identical(other.appId, _this.appId) || other.appId == _this.appId)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.type, _this.type) || other.type == _this.type)&&(identical(other.isFree, _this.isFree) || other.isFree == _this.isFree)&&(identical(other.headerImageUrl, _this.headerImageUrl) || other.headerImageUrl == _this.headerImageUrl)&&const DeepCollectionEquality().equals(other.shortDescription, _this.shortDescription)&&const DeepCollectionEquality().equals(other.developers, _this.developers)&&const DeepCollectionEquality().equals(other.publishers, _this.publishers)&&const DeepCollectionEquality().equals(other.genres, _this.genres)&&(identical(other.releaseDate, _this.releaseDate) || other.releaseDate == _this.releaseDate)&&(identical(other.reviews, _this.reviews) || other.reviews == _this.reviews)&&(identical(other.players, _this.players) || other.players == _this.players)&&(identical(other.price, _this.price) || other.price == _this.price)&&(identical(other.storeLow, _this.storeLow) || other.storeLow == _this.storeLow)&&(identical(other.topRank, _this.topRank) || other.topRank == _this.topRank)&&(identical(other.detailsCheckedAt, _this.detailsCheckedAt) || other.detailsCheckedAt == _this.detailsCheckedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
   final _this = this as GameDetails;
-  return Object.hash(runtimeType,_this.appId,_this.name,_this.type,_this.isFree,_this.headerImageUrl,const DeepCollectionEquality().hash(_this.shortDescription),const DeepCollectionEquality().hash(_this.developers),const DeepCollectionEquality().hash(_this.publishers),const DeepCollectionEquality().hash(_this.genres),_this.releaseDate,_this.reviews,_this.players,_this.price,_this.topRank,_this.detailsCheckedAt);
+  return Object.hash(runtimeType,_this.appId,_this.name,_this.type,_this.isFree,_this.headerImageUrl,const DeepCollectionEquality().hash(_this.shortDescription),const DeepCollectionEquality().hash(_this.developers),const DeepCollectionEquality().hash(_this.publishers),const DeepCollectionEquality().hash(_this.genres),_this.releaseDate,_this.reviews,_this.players,_this.price,_this.storeLow,_this.topRank,_this.detailsCheckedAt);
 }
 
 @override
 String toString() {
   final _this = this as GameDetails;
-  return 'GameDetails(appId: ${_this.appId}, name: ${_this.name}, type: ${_this.type}, isFree: ${_this.isFree}, headerImageUrl: ${_this.headerImageUrl}, shortDescription: ${_this.shortDescription}, developers: ${_this.developers}, publishers: ${_this.publishers}, genres: ${_this.genres}, releaseDate: ${_this.releaseDate}, reviews: ${_this.reviews}, players: ${_this.players}, price: ${_this.price}, topRank: ${_this.topRank}, detailsCheckedAt: ${_this.detailsCheckedAt})';
+  return 'GameDetails(appId: ${_this.appId}, name: ${_this.name}, type: ${_this.type}, isFree: ${_this.isFree}, headerImageUrl: ${_this.headerImageUrl}, shortDescription: ${_this.shortDescription}, developers: ${_this.developers}, publishers: ${_this.publishers}, genres: ${_this.genres}, releaseDate: ${_this.releaseDate}, reviews: ${_this.reviews}, players: ${_this.players}, price: ${_this.price}, storeLow: ${_this.storeLow}, topRank: ${_this.topRank}, detailsCheckedAt: ${_this.detailsCheckedAt})';
 }
 
 
@@ -57,11 +59,11 @@ abstract mixin class $GameDetailsCopyWith<$Res>  {
   factory $GameDetailsCopyWith(GameDetails value, $Res Function(GameDetails) _then) = _$GameDetailsCopyWithImpl;
 @useResult
 $Res call({
- int appId, String name,@JsonKey(unknownEnumValue: GameType.unknown) GameType type, bool isFree, String? headerImageUrl, Map<String, String> shortDescription, List<String> developers, List<String> publishers, List<String> genres,@DateOnlyConverter() DateTime? releaseDate, ReviewSummary? reviews, PlayerStats players, GamePrice? price, int? topRank, DateTime? detailsCheckedAt
+ int appId, String name,@JsonKey(unknownEnumValue: GameType.unknown) GameType type, bool isFree, String? headerImageUrl, Map<String, String> shortDescription, List<String> developers, List<String> publishers, List<String> genres,@DateOnlyConverter() DateTime? releaseDate, ReviewSummary? reviews, PlayerStats players, GamePrice? price, StoreLow? storeLow, int? topRank, DateTime? detailsCheckedAt
 });
 
 
-$ReviewSummaryCopyWith<$Res>? get reviews;$PlayerStatsCopyWith<$Res> get players;$GamePriceCopyWith<$Res>? get price;
+$ReviewSummaryCopyWith<$Res>? get reviews;$PlayerStatsCopyWith<$Res> get players;$GamePriceCopyWith<$Res>? get price;$StoreLowCopyWith<$Res>? get storeLow;
 
 }
 /// @nodoc
@@ -74,7 +76,7 @@ class _$GameDetailsCopyWithImpl<$Res>
 
 /// Create a copy of GameDetails
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? appId = null,Object? name = null,Object? type = null,Object? isFree = null,Object? headerImageUrl = freezed,Object? shortDescription = null,Object? developers = null,Object? publishers = null,Object? genres = null,Object? releaseDate = freezed,Object? reviews = freezed,Object? players = null,Object? price = freezed,Object? topRank = freezed,Object? detailsCheckedAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? appId = null,Object? name = null,Object? type = null,Object? isFree = null,Object? headerImageUrl = freezed,Object? shortDescription = null,Object? developers = null,Object? publishers = null,Object? genres = null,Object? releaseDate = freezed,Object? reviews = freezed,Object? players = null,Object? price = freezed,Object? storeLow = freezed,Object? topRank = freezed,Object? detailsCheckedAt = freezed,}) {
   return _then(GameDetails(
 appId: null == appId ? _self.appId : appId // ignore: cast_nullable_to_non_nullable
 as int,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -89,7 +91,8 @@ as List<String>,releaseDate: freezed == releaseDate ? _self.releaseDate : releas
 as DateTime?,reviews: freezed == reviews ? _self.reviews : reviews // ignore: cast_nullable_to_non_nullable
 as ReviewSummary?,players: null == players ? _self.players : players // ignore: cast_nullable_to_non_nullable
 as PlayerStats,price: freezed == price ? _self.price : price // ignore: cast_nullable_to_non_nullable
-as GamePrice?,topRank: freezed == topRank ? _self.topRank : topRank // ignore: cast_nullable_to_non_nullable
+as GamePrice?,storeLow: freezed == storeLow ? _self.storeLow : storeLow // ignore: cast_nullable_to_non_nullable
+as StoreLow?,topRank: freezed == topRank ? _self.topRank : topRank // ignore: cast_nullable_to_non_nullable
 as int?,detailsCheckedAt: freezed == detailsCheckedAt ? _self.detailsCheckedAt : detailsCheckedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,
   ));
@@ -126,6 +129,18 @@ $GamePriceCopyWith<$Res>? get price {
 
   return $GamePriceCopyWith<$Res>(_self.price!, (value) {
     return _then(_self.copyWith(price: value));
+  });
+}/// Create a copy of GameDetails
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$StoreLowCopyWith<$Res>? get storeLow {
+    if (_self.storeLow == null) {
+    return null;
+  }
+
+  return $StoreLowCopyWith<$Res>(_self.storeLow!, (value) {
+    return _then(_self.copyWith(storeLow: value));
   });
 }
 }
@@ -209,10 +224,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int appId,  String name, @JsonKey(unknownEnumValue: GameType.unknown)  GameType type,  bool isFree,  String? headerImageUrl,  Map<String, String> shortDescription,  List<String> developers,  List<String> publishers,  List<String> genres, @DateOnlyConverter()  DateTime? releaseDate,  ReviewSummary? reviews,  PlayerStats players,  GamePrice? price,  int? topRank,  DateTime? detailsCheckedAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int appId,  String name, @JsonKey(unknownEnumValue: GameType.unknown)  GameType type,  bool isFree,  String? headerImageUrl,  Map<String, String> shortDescription,  List<String> developers,  List<String> publishers,  List<String> genres, @DateOnlyConverter()  DateTime? releaseDate,  ReviewSummary? reviews,  PlayerStats players,  GamePrice? price,  StoreLow? storeLow,  int? topRank,  DateTime? detailsCheckedAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _GameDetails() when $default != null:
-return $default(_that.appId,_that.name,_that.type,_that.isFree,_that.headerImageUrl,_that.shortDescription,_that.developers,_that.publishers,_that.genres,_that.releaseDate,_that.reviews,_that.players,_that.price,_that.topRank,_that.detailsCheckedAt);case _:
+return $default(_that.appId,_that.name,_that.type,_that.isFree,_that.headerImageUrl,_that.shortDescription,_that.developers,_that.publishers,_that.genres,_that.releaseDate,_that.reviews,_that.players,_that.price,_that.storeLow,_that.topRank,_that.detailsCheckedAt);case _:
   return orElse();
 
 }
@@ -230,10 +245,10 @@ return $default(_that.appId,_that.name,_that.type,_that.isFree,_that.headerImage
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int appId,  String name, @JsonKey(unknownEnumValue: GameType.unknown)  GameType type,  bool isFree,  String? headerImageUrl,  Map<String, String> shortDescription,  List<String> developers,  List<String> publishers,  List<String> genres, @DateOnlyConverter()  DateTime? releaseDate,  ReviewSummary? reviews,  PlayerStats players,  GamePrice? price,  int? topRank,  DateTime? detailsCheckedAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int appId,  String name, @JsonKey(unknownEnumValue: GameType.unknown)  GameType type,  bool isFree,  String? headerImageUrl,  Map<String, String> shortDescription,  List<String> developers,  List<String> publishers,  List<String> genres, @DateOnlyConverter()  DateTime? releaseDate,  ReviewSummary? reviews,  PlayerStats players,  GamePrice? price,  StoreLow? storeLow,  int? topRank,  DateTime? detailsCheckedAt)  $default,) {final _that = this;
 switch (_that) {
 case _GameDetails():
-return $default(_that.appId,_that.name,_that.type,_that.isFree,_that.headerImageUrl,_that.shortDescription,_that.developers,_that.publishers,_that.genres,_that.releaseDate,_that.reviews,_that.players,_that.price,_that.topRank,_that.detailsCheckedAt);case _:
+return $default(_that.appId,_that.name,_that.type,_that.isFree,_that.headerImageUrl,_that.shortDescription,_that.developers,_that.publishers,_that.genres,_that.releaseDate,_that.reviews,_that.players,_that.price,_that.storeLow,_that.topRank,_that.detailsCheckedAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -250,10 +265,10 @@ return $default(_that.appId,_that.name,_that.type,_that.isFree,_that.headerImage
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int appId,  String name, @JsonKey(unknownEnumValue: GameType.unknown)  GameType type,  bool isFree,  String? headerImageUrl,  Map<String, String> shortDescription,  List<String> developers,  List<String> publishers,  List<String> genres, @DateOnlyConverter()  DateTime? releaseDate,  ReviewSummary? reviews,  PlayerStats players,  GamePrice? price,  int? topRank,  DateTime? detailsCheckedAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int appId,  String name, @JsonKey(unknownEnumValue: GameType.unknown)  GameType type,  bool isFree,  String? headerImageUrl,  Map<String, String> shortDescription,  List<String> developers,  List<String> publishers,  List<String> genres, @DateOnlyConverter()  DateTime? releaseDate,  ReviewSummary? reviews,  PlayerStats players,  GamePrice? price,  StoreLow? storeLow,  int? topRank,  DateTime? detailsCheckedAt)?  $default,) {final _that = this;
 switch (_that) {
 case _GameDetails() when $default != null:
-return $default(_that.appId,_that.name,_that.type,_that.isFree,_that.headerImageUrl,_that.shortDescription,_that.developers,_that.publishers,_that.genres,_that.releaseDate,_that.reviews,_that.players,_that.price,_that.topRank,_that.detailsCheckedAt);case _:
+return $default(_that.appId,_that.name,_that.type,_that.isFree,_that.headerImageUrl,_that.shortDescription,_that.developers,_that.publishers,_that.genres,_that.releaseDate,_that.reviews,_that.players,_that.price,_that.storeLow,_that.topRank,_that.detailsCheckedAt);case _:
   return null;
 
 }
@@ -265,7 +280,7 @@ return $default(_that.appId,_that.name,_that.type,_that.isFree,_that.headerImage
 @JsonSerializable()
 
 class _GameDetails extends GameDetails {
-  const _GameDetails({required this.appId, required this.name, @JsonKey(unknownEnumValue: GameType.unknown) this.type = GameType.unknown, this.isFree = false, this.headerImageUrl,  Map<String, String> shortDescription = const <String, String>{},  List<String> developers = const <String>[],  List<String> publishers = const <String>[],  List<String> genres = const <String>[], @DateOnlyConverter() this.releaseDate, this.reviews, this.players = const PlayerStats(), this.price, this.topRank, this.detailsCheckedAt}): _shortDescription = shortDescription,_developers = developers,_publishers = publishers,_genres = genres,super._();
+  const _GameDetails({required this.appId, required this.name, @JsonKey(unknownEnumValue: GameType.unknown) this.type = GameType.unknown, this.isFree = false, this.headerImageUrl,  Map<String, String> shortDescription = const <String, String>{},  List<String> developers = const <String>[],  List<String> publishers = const <String>[],  List<String> genres = const <String>[], @DateOnlyConverter() this.releaseDate, this.reviews, this.players = const PlayerStats(), this.price, this.storeLow, this.topRank, this.detailsCheckedAt}): _shortDescription = shortDescription,_developers = developers,_publishers = publishers,_genres = genres,super._();
   factory _GameDetails.fromJson(Map<String, dynamic> json) => _$GameDetailsFromJson(json);
 
 @override final  int appId;
@@ -308,6 +323,9 @@ class _GameDetails extends GameDetails {
 @override@JsonKey() final  PlayerStats players;
 /// Цена в регионе запроса; null — цена ещё не загружалась.
 @override final  GamePrice? price;
+/// Исторический минимум в Steam в регионе запроса (IsThereAnyDeal);
+/// null — неизвестен (нет ключа API, игры нет в ITAD или не загружен).
+@override final  StoreLow? storeLow;
 @override final  int? topRank;
 /// Когда worker последний раз обновлял описание.
 @override final  DateTime? detailsCheckedAt;
@@ -325,18 +343,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _GameDetails&&(identical(other.appId, appId) || other.appId == appId)&&(identical(other.name, name) || other.name == name)&&(identical(other.type, type) || other.type == type)&&(identical(other.isFree, isFree) || other.isFree == isFree)&&(identical(other.headerImageUrl, headerImageUrl) || other.headerImageUrl == headerImageUrl)&&const DeepCollectionEquality().equals(other.shortDescription, _shortDescription)&&const DeepCollectionEquality().equals(other.developers, _developers)&&const DeepCollectionEquality().equals(other.publishers, _publishers)&&const DeepCollectionEquality().equals(other.genres, _genres)&&(identical(other.releaseDate, releaseDate) || other.releaseDate == releaseDate)&&(identical(other.reviews, reviews) || other.reviews == reviews)&&(identical(other.players, players) || other.players == players)&&(identical(other.price, price) || other.price == price)&&(identical(other.topRank, topRank) || other.topRank == topRank)&&(identical(other.detailsCheckedAt, detailsCheckedAt) || other.detailsCheckedAt == detailsCheckedAt));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _GameDetails&&(identical(other.appId, appId) || other.appId == appId)&&(identical(other.name, name) || other.name == name)&&(identical(other.type, type) || other.type == type)&&(identical(other.isFree, isFree) || other.isFree == isFree)&&(identical(other.headerImageUrl, headerImageUrl) || other.headerImageUrl == headerImageUrl)&&const DeepCollectionEquality().equals(other.shortDescription, _shortDescription)&&const DeepCollectionEquality().equals(other.developers, _developers)&&const DeepCollectionEquality().equals(other.publishers, _publishers)&&const DeepCollectionEquality().equals(other.genres, _genres)&&(identical(other.releaseDate, releaseDate) || other.releaseDate == releaseDate)&&(identical(other.reviews, reviews) || other.reviews == reviews)&&(identical(other.players, players) || other.players == players)&&(identical(other.price, price) || other.price == price)&&(identical(other.storeLow, storeLow) || other.storeLow == storeLow)&&(identical(other.topRank, topRank) || other.topRank == topRank)&&(identical(other.detailsCheckedAt, detailsCheckedAt) || other.detailsCheckedAt == detailsCheckedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
-    return Object.hash(runtimeType,appId,name,type,isFree,headerImageUrl,const DeepCollectionEquality().hash(_shortDescription),const DeepCollectionEquality().hash(_developers),const DeepCollectionEquality().hash(_publishers),const DeepCollectionEquality().hash(_genres),releaseDate,reviews,players,price,topRank,detailsCheckedAt);
+    return Object.hash(runtimeType,appId,name,type,isFree,headerImageUrl,const DeepCollectionEquality().hash(_shortDescription),const DeepCollectionEquality().hash(_developers),const DeepCollectionEquality().hash(_publishers),const DeepCollectionEquality().hash(_genres),releaseDate,reviews,players,price,storeLow,topRank,detailsCheckedAt);
 }
 
 @override
 String toString() {
-    return 'GameDetails(appId: $appId, name: $name, type: $type, isFree: $isFree, headerImageUrl: $headerImageUrl, shortDescription: $shortDescription, developers: $developers, publishers: $publishers, genres: $genres, releaseDate: $releaseDate, reviews: $reviews, players: $players, price: $price, topRank: $topRank, detailsCheckedAt: $detailsCheckedAt)';
+    return 'GameDetails(appId: $appId, name: $name, type: $type, isFree: $isFree, headerImageUrl: $headerImageUrl, shortDescription: $shortDescription, developers: $developers, publishers: $publishers, genres: $genres, releaseDate: $releaseDate, reviews: $reviews, players: $players, price: $price, storeLow: $storeLow, topRank: $topRank, detailsCheckedAt: $detailsCheckedAt)';
 }
 
 
@@ -347,11 +365,11 @@ abstract mixin class _$GameDetailsCopyWith<$Res> implements $GameDetailsCopyWith
   factory _$GameDetailsCopyWith(_GameDetails value, $Res Function(_GameDetails) _then) = __$GameDetailsCopyWithImpl;
 @override @useResult
 $Res call({
- int appId, String name,@JsonKey(unknownEnumValue: GameType.unknown) GameType type, bool isFree, String? headerImageUrl, Map<String, String> shortDescription, List<String> developers, List<String> publishers, List<String> genres,@DateOnlyConverter() DateTime? releaseDate, ReviewSummary? reviews, PlayerStats players, GamePrice? price, int? topRank, DateTime? detailsCheckedAt
+ int appId, String name,@JsonKey(unknownEnumValue: GameType.unknown) GameType type, bool isFree, String? headerImageUrl, Map<String, String> shortDescription, List<String> developers, List<String> publishers, List<String> genres,@DateOnlyConverter() DateTime? releaseDate, ReviewSummary? reviews, PlayerStats players, GamePrice? price, StoreLow? storeLow, int? topRank, DateTime? detailsCheckedAt
 });
 
 
-@override $ReviewSummaryCopyWith<$Res>? get reviews;@override $PlayerStatsCopyWith<$Res> get players;@override $GamePriceCopyWith<$Res>? get price;
+@override $ReviewSummaryCopyWith<$Res>? get reviews;@override $PlayerStatsCopyWith<$Res> get players;@override $GamePriceCopyWith<$Res>? get price;@override $StoreLowCopyWith<$Res>? get storeLow;
 
 }
 /// @nodoc
@@ -364,7 +382,7 @@ class __$GameDetailsCopyWithImpl<$Res>
 
 /// Create a copy of GameDetails
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? appId = null,Object? name = null,Object? type = null,Object? isFree = null,Object? headerImageUrl = freezed,Object? shortDescription = null,Object? developers = null,Object? publishers = null,Object? genres = null,Object? releaseDate = freezed,Object? reviews = freezed,Object? players = null,Object? price = freezed,Object? topRank = freezed,Object? detailsCheckedAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? appId = null,Object? name = null,Object? type = null,Object? isFree = null,Object? headerImageUrl = freezed,Object? shortDescription = null,Object? developers = null,Object? publishers = null,Object? genres = null,Object? releaseDate = freezed,Object? reviews = freezed,Object? players = null,Object? price = freezed,Object? storeLow = freezed,Object? topRank = freezed,Object? detailsCheckedAt = freezed,}) {
   return _then(_GameDetails(
 appId: null == appId ? _self.appId : appId // ignore: cast_nullable_to_non_nullable
 as int,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -379,7 +397,8 @@ as List<String>,releaseDate: freezed == releaseDate ? _self.releaseDate : releas
 as DateTime?,reviews: freezed == reviews ? _self.reviews : reviews // ignore: cast_nullable_to_non_nullable
 as ReviewSummary?,players: null == players ? _self.players : players // ignore: cast_nullable_to_non_nullable
 as PlayerStats,price: freezed == price ? _self.price : price // ignore: cast_nullable_to_non_nullable
-as GamePrice?,topRank: freezed == topRank ? _self.topRank : topRank // ignore: cast_nullable_to_non_nullable
+as GamePrice?,storeLow: freezed == storeLow ? _self.storeLow : storeLow // ignore: cast_nullable_to_non_nullable
+as StoreLow?,topRank: freezed == topRank ? _self.topRank : topRank // ignore: cast_nullable_to_non_nullable
 as int?,detailsCheckedAt: freezed == detailsCheckedAt ? _self.detailsCheckedAt : detailsCheckedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,
   ));
@@ -417,6 +436,18 @@ $GamePriceCopyWith<$Res>? get price {
 
   return $GamePriceCopyWith<$Res>(_self.price!, (value) {
     return _then(_self.copyWith(price: value));
+  });
+}/// Create a copy of GameDetails
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$StoreLowCopyWith<$Res>? get storeLow {
+    if (_self.storeLow == null) {
+    return null;
+  }
+
+  return $StoreLowCopyWith<$Res>(_self.storeLow!, (value) {
+    return _then(_self.copyWith(storeLow: value));
   });
 }
 }

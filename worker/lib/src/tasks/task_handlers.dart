@@ -5,6 +5,8 @@ import '../clock.dart';
 import '../config.dart';
 import '../db/games_repository.dart';
 import '../db/steam_links_repository.dart';
+import '../db/store_lows_repository.dart';
+import '../itad/itad_client.dart';
 import '../notifications/notification_service.dart';
 import '../queue/markers.dart';
 import '../queue/task_queue.dart';
@@ -30,6 +32,8 @@ final class TaskHandlers {
     required this._markers,
     required this._config,
     required this._steamLinks,
+    this._itad,
+    this._storeLows,
     this._clock = const SystemClock(),
   });
 
@@ -41,6 +45,10 @@ final class TaskHandlers {
   final Markers _markers;
   final WorkerConfig _config;
   final SteamLinksRepository _steamLinks;
+
+  /// Есть, только если задан ITAD_API_KEY.
+  final ItadClient? _itad;
+  final StoreLowsRepository? _storeLows;
   final Clock _clock;
 
   /// Свежесть замеров онлайна для места в топе.
@@ -55,6 +63,7 @@ final class TaskHandlers {
     TaskKind.topChart => _topChart(),
     TaskKind.image => _image(task),
     TaskKind.wishlist => _wishlist(task),
+    TaskKind.storeLows => _storeLowsTask(task),
     TaskKind.notify => _notifications.evaluateOne(
       task.payload['user_id']! as String,
       task.payload['app_id']! as int,
@@ -113,6 +122,38 @@ final class TaskHandlers {
 
   /// Импорт списка желаемого: ник → SteamID, открытость профиля, список.
   /// Все запросы — через очередь и лимит worker'а (правило 2).
+  /// Исторические минимумы в Steam (IsThereAnyDeal) для пакета игр:
+  /// ID неизвестных игр ищутся одним запросом, минимумы — вторым.
+  Future<void> _storeLowsTask(QueueTask task) async {
+    final itad = _itad;
+    final repo = _storeLows;
+    if (itad == null || repo == null) return; // Ключ убрали после планирования.
+    final region = task.payload['region']! as String;
+    final appIds = (task.payload['app_ids']! as List).cast<int>();
+
+    final ids = {...await repo.knownItadIds(appIds)};
+    final missing = [
+      for (final id in appIds)
+        if (!ids.containsKey(id)) id,
+    ];
+    if (missing.isNotEmpty) ids.addAll(await itad.lookupSteamApps(missing));
+
+    final byUuid = {
+      for (final MapEntry(:key, :value) in ids.entries) ?value: key,
+    };
+    final lows = byUuid.isEmpty
+        ? const <String, ItadLow>{}
+        : await itad.steamLows(byUuid.keys.toList(), region);
+    await repo.save(region, {
+      for (final appId in appIds)
+        appId: (
+          itadId: ids[appId],
+          low: ids[appId] == null ? null : lows[ids[appId]],
+        ),
+    });
+    _log.fine('ITAD: ${appIds.length} игр, минимумов ${lows.length}');
+  }
+
   Future<void> _wishlist(QueueTask task) async {
     final job = await _steamLinks.job(task.payload['user_id']! as String);
     if (job == null) return; // Привязку уже удалили.

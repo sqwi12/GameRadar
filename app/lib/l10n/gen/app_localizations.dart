@@ -1051,6 +1051,30 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Максимум за сутки · {count, plural, one{{count} день} few{{count} дня} other{{count} дней}}'**
   String playersDailyPeaks(int count);
+
+  /// No description provided for @allTimeLowSource.
+  ///
+  /// In ru, this message translates to:
+  /// **'Минимум за всё время — {date} · IsThereAnyDeal'**
+  String allTimeLowSource(String date);
+
+  /// No description provided for @allTimeLowShort.
+  ///
+  /// In ru, this message translates to:
+  /// **'минимум'**
+  String get allTimeLowShort;
+
+  /// No description provided for @allTimeLowLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Мин. всё время, {discount}'**
+  String allTimeLowLabel(String discount);
+
+  /// No description provided for @priceNowAtLow.
+  ///
+  /// In ru, this message translates to:
+  /// **'Сейчас — минимум'**
+  String get priceNowAtLow;
 }
 
 class _AppLocalizationsDelegate

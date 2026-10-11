@@ -92,10 +92,18 @@ class PriceHistorySummary {
 
 /// Ступенчатый график цены: цена держится до следующего изменения.
 class PriceChart extends StatelessWidget {
-  const PriceChart({required this.summary, required this.currency, super.key});
+  const PriceChart({
+    required this.summary,
+    required this.currency,
+    this.allTimeLow,
+    super.key,
+  });
 
   final PriceHistorySummary summary;
   final String currency;
+
+  /// Исторический минимум (IsThereAnyDeal) — пунктирная линия на графике.
+  final int? allTimeLow;
 
   @override
   Widget build(BuildContext context) {
@@ -115,7 +123,9 @@ class PriceChart extends StatelessWidget {
               ),
     ];
     final prices = points.whereType<PricePoint>().map((p) => p.price);
-    final low = prices.reduce((a, b) => a < b ? a : b) / minorUnitsPerMajor;
+    final low =
+        [...prices, ?allTimeLow].reduce((a, b) => a < b ? a : b) /
+        minorUnitsPerMajor;
     final high =
         [...prices, ?summary.regular].reduce((a, b) => a > b ? a : b) /
         minorUnitsPerMajor;
@@ -206,6 +216,27 @@ class PriceChart extends StatelessWidget {
                       )
                     else
                       null,
+                ],
+              ),
+              extraLinesData: ExtraLinesData(
+                horizontalLines: [
+                  if (allTimeLow case final low?)
+                    HorizontalLine(
+                      y: low / minorUnitsPerMajor,
+                      color: discount.withValues(alpha: 0.8),
+                      strokeWidth: 1.2,
+                      dashArray: const [5, 4],
+                      label: HorizontalLineLabel(
+                        show: true,
+                        alignment: Alignment.topRight,
+                        padding: const EdgeInsets.only(right: 2, bottom: 2),
+                        style: muted.copyWith(
+                          color: discount,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        labelResolver: (_) => l10n.allTimeLowShort,
+                      ),
+                    ),
                 ],
               ),
               lineBarsData: [

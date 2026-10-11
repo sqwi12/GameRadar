@@ -158,5 +158,9 @@
   "playersPeakPeriod": "Period peak",
   "playersAverage": "Average",
   "playersReadings": "{count, plural, one{{count} reading} other{{count} readings}} in this period",
-  "playersDailyPeaks": "Daily peak · {count, plural, one{{count} day} other{{count} days}}"
+  "playersDailyPeaks": "Daily peak · {count, plural, one{{count} day} other{{count} days}}",
+  "allTimeLowSource": "All-time low on {date} · IsThereAnyDeal",
+  "allTimeLowShort": "all-time low",
+  "allTimeLowLabel": "All-time low, {discount}",
+  "priceNowAtLow": "Now — all-time low"
 }

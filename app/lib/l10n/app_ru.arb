@@ -312,5 +312,23 @@
         "type": "int"
       }
     }
+  },
+  "allTimeLowSource": "Минимум за всё время — {date} · IsThereAnyDeal",
+  "allTimeLowShort": "минимум",
+  "@allTimeLowSource": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "allTimeLowLabel": "Мин. всё время, {discount}",
+  "priceNowAtLow": "Сейчас — минимум",
+  "@allTimeLowLabel": {
+    "placeholders": {
+      "discount": {
+        "type": "String"
+      }
+    }
   }
 }

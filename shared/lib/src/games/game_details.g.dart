@@ -49,6 +49,9 @@ _GameDetails _$GameDetailsFromJson(Map<String, dynamic> json) => _GameDetails(
   price: json['price'] == null
       ? null
       : GamePrice.fromJson(json['price'] as Map<String, dynamic>),
+  storeLow: json['store_low'] == null
+      ? null
+      : StoreLow.fromJson(json['store_low'] as Map<String, dynamic>),
   topRank: (json['top_rank'] as num?)?.toInt(),
   detailsCheckedAt: json['details_checked_at'] == null
       ? null
@@ -73,6 +76,7 @@ Map<String, dynamic> _$GameDetailsToJson(_GameDetails instance) =>
       'reviews': ?instance.reviews?.toJson(),
       'players': instance.players.toJson(),
       'price': ?instance.price?.toJson(),
+      'store_low': ?instance.storeLow?.toJson(),
       'top_rank': ?instance.topRank,
       'details_checked_at': ?instance.detailsCheckedAt?.toIso8601String(),
     };

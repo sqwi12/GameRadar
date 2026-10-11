@@ -4,6 +4,7 @@ import '../common/date_only.dart';
 import 'game_price.dart';
 import 'player_stats.dart';
 import 'review_summary.dart';
+import 'store_low.dart';
 
 part 'game_details.freezed.dart';
 part 'game_details.g.dart';
@@ -37,6 +38,10 @@ abstract class GameDetails with _$GameDetails {
 
     /// Цена в регионе запроса; null — цена ещё не загружалась.
     GamePrice? price,
+
+    /// Исторический минимум в Steam в регионе запроса (IsThereAnyDeal);
+    /// null — неизвестен (нет ключа API, игры нет в ITAD или не загружен).
+    StoreLow? storeLow,
     int? topRank,
 
     /// Когда worker последний раз обновлял описание.

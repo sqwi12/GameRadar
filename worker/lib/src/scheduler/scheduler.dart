@@ -6,6 +6,8 @@ import '../clock.dart';
 import '../config.dart';
 import '../db/games_repository.dart';
 import '../db/steam_links_repository.dart';
+import '../db/store_lows_repository.dart';
+import '../itad/itad_client.dart';
 import '../queue/markers.dart';
 import '../queue/task_queue.dart';
 import '../steam/steam_client.dart';
@@ -41,6 +43,7 @@ final class Scheduler {
     required this._markers,
     required this._config,
     required this._steamLinks,
+    this._storeLows,
     this._clock = const SystemClock(),
     this.tick = const Duration(minutes: 1),
   });
@@ -52,6 +55,9 @@ final class Scheduler {
   final Markers _markers;
   final WorkerConfig _config;
   final SteamLinksRepository _steamLinks;
+
+  /// Есть, только если задан ITAD_API_KEY.
+  final StoreLowsRepository? _storeLows;
   final Clock _clock;
   final Duration tick;
 
@@ -98,6 +104,34 @@ final class Scheduler {
     );
     await _planImages(now);
     await _planWishlists(now);
+    await _planStoreLows(now);
+  }
+
+  /// Исторические минимумы (IsThereAnyDeal) раз в сутки, пакетами по 200.
+  /// Лимит ITAD — 1000 запросов за 5 минут, у нас ~10 запросов в сутки.
+  Future<void> _planStoreLows(DateTime now) async {
+    final repo = _storeLows;
+    if (repo == null) return;
+    if (await _queue.countKind(TaskKind.storeLows) > 0) return;
+    final due = await repo.due(
+      region: _config.region,
+      limit: ItadClient.maxBatch * 10,
+    );
+    for (var i = 0; i < due.length; i += ItadClient.maxBatch) {
+      final batch = due.sublist(
+        i,
+        math.min(i + ItadClient.maxBatch, due.length),
+      )..sort();
+      await _queue.enqueue(
+        QueueTask(
+          id: '${TaskKind.storeLows}:${_config.region}:${_batchKey(batch)}',
+          kind: TaskKind.storeLows,
+          lane: Lane.itad,
+          priority: now.millisecondsSinceEpoch,
+          payload: {'region': _config.region, 'app_ids': batch},
+        ),
+      );
+    }
   }
 
   Future<void> _planPrices(DateTime now) async {

@@ -158,7 +158,8 @@ class _PlayersView extends ConsumerWidget {
   }
 }
 
-/// Цена: сейчас, лучшая за период, без скидки, ступенчатый график.
+/// Цена: сейчас, лучшая за период и минимум за всё время (IsThereAnyDeal;
+/// без него — цена без скидки), ступенчатый график.
 class _PriceView extends ConsumerWidget {
   const _PriceView({required this.game, required this.period, super.key});
 
@@ -187,7 +188,14 @@ class _PriceView extends ConsumerWidget {
         'KZT';
     final best = summary.best;
     final discounted = best != null && best.discountPct > 0;
+    // Исторический минимум показываем, только если он в той же валюте.
+    final storeLow = game.storeLow?.currency == currency ? game.storeLow : null;
     final dateFormat = DateFormat.MMMd(locale);
+    final discountColor = AppColors.discount.resolveFrom(context);
+    final nowPrice = current?.isAvailable == true ? current!.finalPrice : null;
+    // Сейчас цена не выше исторического минимума — выделяем.
+    final atLow =
+        storeLow != null && nowPrice != null && nowPrice <= storeLow.price;
     String price(int? v) => v == null ? '—' : formatPrice(v, currency, locale);
 
     return Column(
@@ -196,10 +204,9 @@ class _PriceView extends ConsumerWidget {
         _Figures(
           children: [
             _Figure(
-              label: l10n.priceNowLabel,
-              value: current?.isAvailable == true
-                  ? price(current!.finalPrice)
-                  : '—',
+              label: atLow ? l10n.priceNowAtLow : l10n.priceNowLabel,
+              value: price(nowPrice),
+              color: atLow ? discountColor : null,
             ),
             _Figure(
               label: discounted
@@ -208,14 +215,21 @@ class _PriceView extends ConsumerWidget {
                     )
                   : l10n.priceBestLabel,
               value: price(best?.price),
-              color: discounted
-                  ? AppColors.discount.resolveFrom(context)
-                  : null,
+              color: discounted ? discountColor : null,
             ),
-            _Figure(
-              label: l10n.priceRegularLabel,
-              value: price(summary.regular ?? current?.initialPrice),
-            ),
+            // Цена без скидки видна зачёркнутой в карточке выше, поэтому
+            // при известном минимуме за всё время показываем его.
+            if (storeLow != null)
+              _Figure(
+                label: l10n.allTimeLowLabel(l10n.discountBadge(storeLow.cut)),
+                value: price(storeLow.price),
+                color: discountColor,
+              )
+            else
+              _Figure(
+                label: l10n.priceRegularLabel,
+                value: price(summary.regular ?? current?.initialPrice),
+              ),
           ],
         ),
         const SizedBox(height: 14),
@@ -225,6 +239,9 @@ class _PriceView extends ConsumerWidget {
             _ when summary.canDraw => PriceChart(
               summary: summary,
               currency: currency,
+              // Линия минимума — только на «Всё»: на коротких периодах
+              // она сжимала бы график в полоску.
+              allTimeLow: period == HistoryPeriod.all ? storeLow?.price : null,
             ),
             _ when history.isInitialLoading => const LoadingView(),
             _ => _ChartMessage(
@@ -235,12 +252,16 @@ class _PriceView extends ConsumerWidget {
           },
         ),
         _ChartFootnote(
-          [
-            if (summary.since case final since?)
-              l10n.priceTrackedSince(dateFormat.format(since.toLocal())),
-            if (best != null)
-              l10n.priceBestOn(dateFormat.format(best.at.toLocal())),
-          ].join(' · '),
+          storeLow != null
+              ? l10n.allTimeLowSource(
+                  DateFormat.yMMMd(locale).format(storeLow.at.toLocal()),
+                )
+              : [
+                  if (summary.since case final since?)
+                    l10n.priceTrackedSince(dateFormat.format(since.toLocal())),
+                  if (best != null)
+                    l10n.priceBestOn(dateFormat.format(best.at.toLocal())),
+                ].join(' · '),
         ),
       ],
     );
