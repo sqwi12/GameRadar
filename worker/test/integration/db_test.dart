@@ -424,6 +424,9 @@ void main() {
               ],
             },
           },
+          final p when p.contains('GetWishlistItemCount') => {
+            'response': {'count': wishlist.length},
+          },
           _ => {
             'response': {
               'items': [
@@ -582,6 +585,42 @@ void main() {
         'not_found',
       );
       expect(await links.dueUserIds(limit: 50), isNot(contains(user)));
+    });
+
+    test('открытый профиль со скрытым списком: игры не удаляются', () async {
+      steamAnswer = (uri) => publicProfile(uri, [730]);
+      await runImport();
+      expect(await rows(), [
+        [730, 'wishlist', 50],
+      ]);
+
+      // Список скрыли: Steam отвечает пусто и без count.
+      await db.execute(
+        "UPDATE steam_links SET status = 'pending' WHERE user_id = '$user'",
+      );
+      steamAnswer = (uri) => uri.path.contains('Wishlist')
+          ? {'response': <String, Object?>{}}
+          : publicProfile(uri, const []);
+      await runImport();
+      expect(
+        await scalar("SELECT status FROM steam_links WHERE user_id = '$user'"),
+        'private_profile',
+      );
+      expect(await rows(), [
+        [730, 'wishlist', 50],
+      ]);
+
+      // Открытый, но пустой список — синхронизация убирает импортированное.
+      await db.execute(
+        "UPDATE steam_links SET status = 'pending' WHERE user_id = '$user'",
+      );
+      steamAnswer = (uri) => publicProfile(uri, const []);
+      await runImport();
+      expect(
+        await scalar("SELECT status FROM steam_links WHERE user_id = '$user'"),
+        'ok',
+      );
+      expect(await rows(), isEmpty);
     });
   });
 

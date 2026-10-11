@@ -114,10 +114,10 @@
   "settingsSaveFailed": "Couldn’t save settings",
   "steamSection": "Steam",
   "steamImportTitle": "Wishlist import",
-  "steamSectionFooter": "Games from your Steam wishlist are added to your watchlist automatically and refreshed once a day. No Steam sign-in is needed, but your profile and wishlist must be public.",
+  "steamSectionFooter": "Games from your Steam wishlist are added to your watchlist automatically and refreshed once a day. No Steam sign-in is needed, but your profile and wishlist must be visible to everyone.",
   "steamNotLinked": "Not connected — tap to set up",
   "steamPending": "Importing… usually under a minute",
-  "steamPrivate": "Profile or wishlist is private",
+  "steamPrivate": "Steam doesn't show the profile or wishlist",
   "steamNotFound": "Profile not found",
   "steamImported": "{name} · {imported} of {total} imported",
   "steamSheetIntro": "Paste a link to your Steam profile or its custom URL name. Games from your wishlist will appear in your watchlist.",
@@ -134,10 +134,10 @@
   "steamUnlinkConfirm": "Disconnect",
   "steamUnlinked": "Profile disconnected",
   "steamPendingHint": "Loading your wishlist. You can leave settings — the games will show up in your watchlist.",
-  "steamPrivateHint": "In Steam open Profile → Edit Profile → Privacy Settings and make “My profile” and “Wishlist” public. Then tap “Sync now”.",
+  "steamPrivateHint": "Steam hides your wishlist from others. In Steam: Profile → Edit Profile → Privacy Settings — set “My profile” and “Game details” to Public. To check, open your wishlist in a browser while signed out of Steam. Changes apply with a delay — tap “Sync now” in a few minutes.",
   "steamNotFoundHint": "Check the link: open your profile in Steam and copy the page address.",
   "steamOkHint": "The list refreshes daily: new games are added, games removed from your wishlist are removed.",
   "wishlistBadge": "From your Steam wishlist",
   "watchWishlistHint": "Imported from your Steam wishlist. After you save thresholds it stops syncing from there.",
-  "steamEmptyHint": "The wishlist is empty or private. If it has games, make “Wishlist” public in Steam privacy settings and tap “Sync now”."
+  "steamEmptyHint": "Your wishlist is public but empty. Add games in Steam — they'll appear here on the next sync."
 }

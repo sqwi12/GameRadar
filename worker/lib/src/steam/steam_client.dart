@@ -198,6 +198,15 @@ final class SteamClient {
     ),
   );
 
+  /// Число игр в списке желаемого; null — список скрыт.
+  Future<int?> wishlistCount(String steamId) async => parseWishlistCount(
+    await _getJson(
+      Uri.https(apiHost, '/IWishlistService/GetWishlistItemCount/v1/', {
+        'steamid': steamId,
+      }),
+    ),
+  );
+
   /// Топ-100 по текущему онлайну от самого Steam.
   Future<List<SteamChartEntry>> fetchConcurrentChart() async {
     final json = await _getJson(

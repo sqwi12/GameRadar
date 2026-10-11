@@ -254,7 +254,8 @@ SteamPlayerSummary? parsePlayerSummary(Object? json) {
 /// `GET api.steampowered.com/IWishlistService/GetWishlist/v1/?steamid=...`
 ///
 /// `{"response": {"items": [{"appid": 1091500, "priority": 1, "date_added": ...}]}}`.
-/// Скрытый или пустой список — `{"response": {}}` → пустой список.
+/// Скрытый список и (иногда) пустой — `{"response": {}}` → пустой список;
+/// различить их помогает [parseWishlistCount].
 /// Порядок — как в списке желаемого пользователя (по priority).
 List<int> parseWishlist(Object? json) {
   final root = _asMap(json, 'GetWishlist');
@@ -270,6 +271,16 @@ List<int> parseWishlist(Object? json) {
         (appId: appId, priority: _asInt(item['priority']) ?? 1 << 30),
   ]..sort((a, b) => a.priority.compareTo(b.priority));
   return [for (final r in rows) r.appId];
+}
+
+/// `GET api.steampowered.com/IWishlistService/GetWishlistItemCount/v1/?steamid=...`
+///
+/// Открытый список — `{"response": {"count": 6}}` (пустой — `count: 0`),
+/// скрытый — `{"response": {}}` → null.
+int? parseWishlistCount(Object? json) {
+  final root = _asMap(json, 'GetWishlistItemCount');
+  final response = _asMap(root['response'], 'GetWishlistItemCount.response');
+  return _asInt(response['count']);
 }
 
 /// `GET api.steampowered.com/ISteamChartsService/GetGamesByConcurrentPlayers/v1/`

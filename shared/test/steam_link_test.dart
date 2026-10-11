@@ -117,6 +117,22 @@ void main() {
       expect(parseWishlist({'response': <String, Object?>{}}), isEmpty);
       expect(() => parseWishlist(null), throwsA(isA<SteamFormatException>()));
     });
+
+    test('GetWishlistItemCount: скрытый список отличается от пустого', () {
+      expect(
+        parseWishlistCount({
+          'response': {'count': 6},
+        }),
+        6,
+      );
+      expect(
+        parseWishlistCount({
+          'response': {'count': 0},
+        }),
+        0,
+      );
+      expect(parseWishlistCount({'response': <String, Object?>{}}), isNull);
+    });
   });
 
   test('WatchlistItem.source по умолчанию manual (старые ответы сервера)', () {

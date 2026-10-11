@@ -385,7 +385,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get steamSectionFooter =>
-      'Игры из списка желаемого Steam сами попадают в отслеживаемые и обновляются раз в сутки. Вход в Steam не нужен, но профиль и список желаемого должны быть открытыми.';
+      'Игры из списка желаемого Steam сами попадают в отслеживаемые и обновляются раз в сутки. Вход в Steam не нужен, но профиль и список желаемого должны быть видны всем.';
 
   @override
   String get steamNotLinked => 'Не подключён — нажмите, чтобы подключить';
@@ -394,7 +394,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get steamPending => 'Импорт… обычно меньше минуты';
 
   @override
-  String get steamPrivate => 'Профиль или список желаемого скрыт';
+  String get steamPrivate => 'Steam не показывает профиль или список желаемого';
 
   @override
   String get steamNotFound => 'Профиль не найден';
@@ -453,7 +453,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get steamPrivateHint =>
-      'В Steam откройте Профиль → Редактировать профиль → Приватность и сделайте «Мой профиль» и «Список желаемого» открытыми. Затем нажмите «Синхронизировать сейчас».';
+      'Steam скрывает ваш список желаемого от посторонних. В Steam: Профиль → Редактировать профиль → Приватность — сделайте «Мой профиль» и «Сведения об играх» открытыми. Проверить можно так: откройте свой список желаемого в браузере, не входя в Steam. Изменения применяются не сразу — через несколько минут нажмите «Синхронизировать сейчас».';
 
   @override
   String get steamNotFoundHint =>
@@ -472,5 +472,5 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get steamEmptyHint =>
-      'Список желаемого пуст или скрыт. Если в нём есть игры — в настройках приватности Steam сделайте «Список желаемого» открытым и нажмите «Синхронизировать сейчас».';
+      'Список желаемого открыт, но пуст. Добавьте игры в Steam — они появятся здесь при следующей синхронизации.';
 }

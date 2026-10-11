@@ -387,7 +387,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get steamSectionFooter =>
-      'Games from your Steam wishlist are added to your watchlist automatically and refreshed once a day. No Steam sign-in is needed, but your profile and wishlist must be public.';
+      'Games from your Steam wishlist are added to your watchlist automatically and refreshed once a day. No Steam sign-in is needed, but your profile and wishlist must be visible to everyone.';
 
   @override
   String get steamNotLinked => 'Not connected — tap to set up';
@@ -396,7 +396,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get steamPending => 'Importing… usually under a minute';
 
   @override
-  String get steamPrivate => 'Profile or wishlist is private';
+  String get steamPrivate => 'Steam doesn\'t show the profile or wishlist';
 
   @override
   String get steamNotFound => 'Profile not found';
@@ -455,7 +455,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get steamPrivateHint =>
-      'In Steam open Profile → Edit Profile → Privacy Settings and make “My profile” and “Wishlist” public. Then tap “Sync now”.';
+      'Steam hides your wishlist from others. In Steam: Profile → Edit Profile → Privacy Settings — set “My profile” and “Game details” to Public. To check, open your wishlist in a browser while signed out of Steam. Changes apply with a delay — tap “Sync now” in a few minutes.';
 
   @override
   String get steamNotFoundHint =>
@@ -474,5 +474,5 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get steamEmptyHint =>
-      'The wishlist is empty or private. If it has games, make “Wishlist” public in Steam privacy settings and tap “Sync now”.';
+      'Your wishlist is public but empty. Add games in Steam — they\'ll appear here on the next sync.';
 }

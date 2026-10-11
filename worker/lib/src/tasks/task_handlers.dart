@@ -145,6 +145,17 @@ final class TaskHandlers {
       return;
     }
     final appIds = await _steam.wishlist(steamId);
+    // Скрытый список Steam отдаёт так же, как пустой. Принять его за пустой
+    // нельзя: синхронизация удалила бы уже импортированные игры.
+    if (appIds.isEmpty && await _steam.wishlistCount(steamId) == null) {
+      await _steamLinks.markStatus(
+        job.userId,
+        'private_profile',
+        steamId: steamId,
+        personaName: profile.personaName,
+      );
+      return;
+    }
     final imported = await _steamLinks.importWishlist(
       job,
       steamId,

@@ -308,7 +308,7 @@ class _StatusCard extends StatelessWidget {
       SteamLinkStatus.privateProfile => l10n.steamPrivateHint,
       SteamLinkStatus.notFound => l10n.steamNotFoundHint,
       SteamLinkStatus.pending => l10n.steamPendingHint,
-      // Скрытый список желаемого Steam отдаёт так же, как пустой.
+      // Скрытый список worker отличает от пустого и ставит private_profile.
       SteamLinkStatus.ok when (link.wishlistCount ?? 0) == 0 =>
         l10n.steamEmptyHint,
       SteamLinkStatus.ok => l10n.steamOkHint,
