@@ -184,6 +184,71 @@ void main() {
     });
   });
 
+  group('обложки', () {
+    final jpeg = [0xFF, 0xD8, 0xFF, 0xE0];
+
+    test('скачивает картинку с CDN Steam через лимит хоста', () async {
+      final steam = client(
+        (_) => http.Response.bytes(
+          jpeg,
+          200,
+          headers: {'content-type': 'image/jpeg'},
+        ),
+      );
+      final url = Uri.parse(
+        'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/730/header.jpg?t=1',
+      );
+      final image = await steam.fetchImage(url);
+      expect(image.bytes, jpeg);
+      expect(image.contentType, 'image/jpeg');
+      await steam.fetchImage(url);
+      expect(clock.sleeps, [const Duration(milliseconds: 1500)]);
+    });
+
+    test('чужие домены и http отклоняются без запроса', () async {
+      final steam = client((_) => http.Response.bytes(jpeg, 200));
+      for (final bad in [
+        'https://evil.example.com/a.jpg',
+        'https://steamstatic.com.evil.net/a.jpg',
+        'http://shared.akamai.steamstatic.com/a.jpg',
+        'https://localhost/a.jpg',
+      ]) {
+        await expectLater(
+          steam.fetchImage(Uri.parse(bad)),
+          throwsA(isA<SteamPermanentException>()),
+          reason: bad,
+        );
+      }
+      expect(requests, isEmpty);
+    });
+
+    test('не картинка или слишком большая — постоянная ошибка', () async {
+      final url = Uri.parse('https://cdn.akamai.steamstatic.com/a.jpg');
+      final html = client(
+        (_) => http.Response(
+          '<html>',
+          200,
+          headers: {'content-type': 'text/html'},
+        ),
+      );
+      await expectLater(
+        html.fetchImage(url),
+        throwsA(isA<SteamPermanentException>()),
+      );
+      final huge = client(
+        (_) => http.Response.bytes(
+          List.filled(SteamClient.maxImageBytes + 1, 0),
+          200,
+          headers: {'content-type': 'image/png'},
+        ),
+      );
+      await expectLater(
+        huge.fetchImage(url),
+        throwsA(isA<SteamPermanentException>()),
+      );
+    });
+  });
+
   group('прочие ошибки', () {
     test('5xx — временная ошибка', () {
       final steam = client((_) => http.Response('', 502));

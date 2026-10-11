@@ -179,7 +179,59 @@ final class SteamClient {
     return parseConcurrentPlayersChart(json);
   }
 
+  /// Хосты CDN Steam, с которых разрешено скачивать обложки. Адрес обложки
+  /// приходит в данных Steam, но проверяем его, чтобы worker не пошёл
+  /// по произвольной ссылке.
+  static final imageHostPattern = RegExp(
+    r'^([a-z0-9-]+\.)*(steamstatic\.com|akamaihd\.net|steampowered\.com)$',
+  );
+
+  /// Максимальный размер обложки (header 460×215 весит десятки КБ).
+  static const maxImageBytes = 1024 * 1024;
+
+  static const _imageTypes = {'image/jpeg', 'image/png', 'image/webp'};
+
+  /// Обложка игры с CDN Steam — через тот же лимит запросов на хост.
+  Future<({List<int> bytes, String contentType})> fetchImage(Uri uri) async {
+    if (uri.scheme != 'https' || !imageHostPattern.hasMatch(uri.host)) {
+      throw SteamPermanentException('недопустимый адрес обложки: ${uri.host}');
+    }
+    final response = await _send(uri, accept: 'image/*');
+    final type = (response.headers['content-type'] ?? '')
+        .split(';')
+        .first
+        .trim()
+        .toLowerCase();
+    if (!_imageTypes.contains(type)) {
+      throw SteamPermanentException('обложка не картинка ($type): $uri');
+    }
+    final bytes = response.bodyBytes;
+    if (bytes.isEmpty || bytes.length > maxImageBytes) {
+      throw SteamPermanentException('обложка ${bytes.length} байт: $uri');
+    }
+    return (bytes: bytes, contentType: type);
+  }
+
   Future<Object?> _getJson(Uri uri, {bool jsonOn404 = false}) async {
+    final response = await _send(
+      uri,
+      accept: 'application/json',
+      allow404: jsonOn404,
+    );
+    try {
+      return jsonDecode(utf8.decode(response.bodyBytes));
+    } on FormatException {
+      throw SteamFormatException('не JSON от ${_redact(uri)}');
+    }
+  }
+
+  /// Запрос к Steam: слот ограничителя хоста, пауза на 429/403,
+  /// классификация ошибок. Все запросы worker'а проходят здесь.
+  Future<http.Response> _send(
+    Uri uri, {
+    required String accept,
+    bool allow404 = false,
+  }) async {
     final host = uri.host;
     final safeUri = _redact(uri);
 
@@ -189,13 +241,7 @@ final class SteamClient {
     final http.Response response;
     try {
       response = await _http
-          .get(
-            uri,
-            headers: const {
-              'Accept': 'application/json',
-              'User-Agent': 'GameRadar/0.1',
-            },
-          )
+          .get(uri, headers: {'Accept': accept, 'User-Agent': 'GameRadar/0.1'})
           .timeout(_timeout);
     } on TimeoutException {
       throw SteamTransientException('таймаут $safeUri');
@@ -219,18 +265,13 @@ final class SteamClient {
     await _limiter.registerSuccess(host);
 
     if (status >= 500) throw SteamTransientException('HTTP $status: $safeUri');
-    if (status == 404 && !jsonOn404) {
+    if (status == 404 && !allow404) {
       throw SteamPermanentException('HTTP 404: $safeUri');
     }
     if (status >= 400 && status != 404) {
       throw SteamPermanentException('HTTP $status: $safeUri');
     }
-
-    try {
-      return jsonDecode(utf8.decode(response.bodyBytes));
-    } on FormatException {
-      throw SteamFormatException('не JSON от $safeUri');
-    }
+    return response;
   }
 
   /// URL для логов: ключ API в логи не попадает (правило 9).

@@ -134,6 +134,30 @@ Future<Response> gameDetails(
   return jsonResponse(details.toJson());
 }
 
+/// GET /games/{appId}/header?v=... — обложка игры, сохранённая worker'ом.
+/// Адрес содержит версию (etag), поэтому ответ кэшируется надолго.
+Future<Response> gameHeader(
+  Request request,
+  Services services,
+  String rawId,
+) async {
+  final appId = parseAppId(rawId);
+  final image = await services.games.image(appId);
+  if (image == null) throw ApiException.notFound('Обложки нет');
+  final etag = '"${image.etag}"';
+  final headers = {
+    HttpHeaders.cacheControlHeader: 'public, max-age=31536000, immutable',
+    HttpHeaders.etagHeader: etag,
+  };
+  if (request.headers[HttpHeaders.ifNoneMatchHeader] == etag) {
+    return Response(statusCode: HttpStatus.notModified, headers: headers);
+  }
+  return Response.bytes(
+    body: image.bytes,
+    headers: {...headers, HttpHeaders.contentTypeHeader: image.contentType},
+  );
+}
+
 /// GET /games/{appId}/players?period=24h|7d|30d
 Future<Response> playerHistory(
   Request request,

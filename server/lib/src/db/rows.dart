@@ -8,9 +8,18 @@ const priceColumns = '''
   p.region::text, p.is_available, p.currency::text, p.initial_price,
   p.final_price, p.discount_pct, p.checked_at, p.changed_at''';
 
-/// Колонки краткой карточки (`g` — games) + цена. Порядок важен для [readSummary].
+/// Обложка: только сохранённая worker'ом копия (`gi` — game_images).
+/// Адрес обложки в Steam приложению не отдаётся никогда (правило 1).
+const imageJoin = 'LEFT JOIN game_images gi ON gi.app_id = g.app_id';
+
+/// Наш адрес обложки (относительно API) с версией для кэша приложения.
+String? imagePath(int appId, String? etag) =>
+    etag == null ? null : '/games/$appId/header?v=$etag';
+
+/// Колонки краткой карточки (`g` — games, `gi` — [imageJoin]) + цена.
+/// Порядок важен для [readSummary].
 const summaryColumns = '''
-  g.app_id, g.name, g.header_image_url, g.current_players, g.peak_24h, g.top_rank,
+  g.app_id, g.name, gi.etag, g.current_players, g.peak_24h, g.top_rank,
   g.is_free,
 $priceColumns''';
 
@@ -37,7 +46,7 @@ GamePrice? readPrice(ResultRow row, int at) {
 GameSummary readSummary(ResultRow row, [int at = 0]) => GameSummary(
   appId: row[at]! as int,
   name: row[at + 1]! as String,
-  headerImageUrl: row[at + 2] as String?,
+  headerImageUrl: imagePath(row[at]! as int, row[at + 2] as String?),
   currentPlayers: row[at + 3] as int?,
   peak24h: row[at + 4] as int?,
   topRank: row[at + 5] as int?,

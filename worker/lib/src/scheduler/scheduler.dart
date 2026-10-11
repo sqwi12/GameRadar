@@ -93,6 +93,7 @@ final class Scheduler {
       Lane.store,
       _config.schedule.reviews,
     );
+    await _planImages(now);
   }
 
   Future<void> _planPrices(DateTime now) async {
@@ -208,6 +209,23 @@ final class Scheduler {
             watchers: g.watchers,
           ),
           payload: {'app_id': g.appId},
+        ),
+      );
+    }
+  }
+
+  /// Обложки: скачиваются один раз и заново — только при смене адреса.
+  Future<void> _planImages(DateTime now) async {
+    for (final g in await _games.dueImages(limit: 200)) {
+      await _queue.enqueue(
+        QueueTask(
+          id: '${TaskKind.image}:${g.appId}',
+          kind: TaskKind.image,
+          lane: Lane.cdn,
+          priority:
+              now.millisecondsSinceEpoch -
+              watcherBonus(g.watchers).inMilliseconds,
+          payload: {'app_id': g.appId, 'url': g.url},
         ),
       );
     }

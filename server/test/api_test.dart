@@ -3,6 +3,7 @@ library;
 
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:dart_frog/dart_frog.dart';
 import 'package:gameradar_server/gameradar_server.dart';
@@ -452,6 +453,92 @@ void main() {
         (j) => PriceHistoryEntry.fromJson(j as Map<String, Object?>),
       );
       expect(entries.single.finalPrice, 399900);
+    });
+  });
+
+  group('обложки (правило 1: приложение не ходит к Steam)', () {
+    setUpAll(() async {
+      await db.execute(
+        "UPDATE games SET header_image_url = 'https://shared.akamai.steamstatic.com/730/header.jpg' "
+        'WHERE app_id IN (730, 570)',
+      );
+      await db.execute(
+        Sql.named('''
+          INSERT INTO game_images (app_id, source_url, content_type, content, etag)
+          VALUES (730, 'https://shared.akamai.steamstatic.com/730/header.jpg',
+                  'image/jpeg', @bytes:bytea, 'abc123')
+        '''),
+        parameters: {
+          'bytes': Uint8List.fromList([0xFF, 0xD8, 0xFF, 1, 2, 3]),
+        },
+      );
+    });
+
+    test(
+      'адрес обложки — наш, с версией; без сохранённой копии — null',
+      () async {
+        final (_, body) = await call(
+          () => topGames(Request.get(uri('/games/top')), services),
+        );
+        final items = (obj(body)['items']! as List)
+            .cast<Map<String, Object?>>();
+        final byId = {for (final i in items) i['app_id']: i};
+        expect(byId[730]!['header_image_url'], '/games/730/header?v=abc123');
+        expect(byId[570]!.containsKey('header_image_url'), isFalse);
+      },
+    );
+
+    test('ни один ответ API не содержит адресов Steam', () async {
+      final responses = [
+        await call(() => topGames(Request.get(uri('/games/top')), services)),
+        await call(
+          () => searchGames(
+            Request.get(uri('/games/search?q=counter')),
+            services,
+          ),
+        ),
+        await call(
+          () => gameDetails(Request.get(uri('/games/730')), services, '730'),
+        ),
+      ];
+      for (final (_, body) in responses) {
+        expect(jsonEncode(body), isNot(contains('steamstatic')));
+      }
+    });
+
+    test('GET /games/{id}/header: картинка, кэш и 304', () async {
+      final response = await gameHeader(
+        Request.get(uri('/games/730/header')),
+        services,
+        '730',
+      );
+      expect(response.statusCode, 200);
+      expect(response.headers['content-type'], 'image/jpeg');
+      expect(response.headers['cache-control'], contains('immutable'));
+      expect(await response.bytes().expand((b) => b).toList(), [
+        0xFF,
+        0xD8,
+        0xFF,
+        1,
+        2,
+        3,
+      ]);
+
+      final cached = await gameHeader(
+        Request.get(
+          uri('/games/730/header'),
+          headers: {'If-None-Match': '"abc123"'},
+        ),
+        services,
+        '730',
+      );
+      expect(cached.statusCode, 304);
+
+      final (missing, _) = await call(
+        () =>
+            gameHeader(Request.get(uri('/games/570/header')), services, '570'),
+      );
+      expect(missing, 404);
     });
   });
 

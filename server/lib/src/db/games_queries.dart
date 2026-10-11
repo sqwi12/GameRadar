@@ -23,6 +23,7 @@ final class GamesQueries {
       Sql.named('''
         SELECT $summaryColumns
         FROM games g
+        $imageJoin
         LEFT JOIN game_prices p ON p.app_id = g.app_id AND p.region = @region:text
         WHERE g.name ILIKE @contains:text
         ORDER BY lower(g.name) = lower(@text:text) DESC,
@@ -58,6 +59,7 @@ final class GamesQueries {
       Sql.named('''
         SELECT $summaryColumns, count(*) OVER ()
         FROM games g
+        $imageJoin
         LEFT JOIN game_prices p ON p.app_id = g.app_id AND p.region = @region:text
         WHERE g.top_rank IS NOT NULL
           AND (NOT @only_discounted:boolean OR (p.is_available AND p.discount_pct > 0))
@@ -88,6 +90,7 @@ final class GamesQueries {
         SELECT $summaryColumns, count(*) OVER ()
         FROM game_prices p
         JOIN games g ON g.app_id = p.app_id
+        $imageJoin
         WHERE p.region = @region:text
           AND p.is_available
           AND p.discount_pct >= @min_discount:int4
@@ -120,13 +123,14 @@ final class GamesQueries {
   Future<GameDetails?> details(int appId, String region) async {
     final rows = await _db.execute(
       Sql.named('''
-        SELECT g.app_id, g.name, g.type, g.is_free, g.header_image_url,
+        SELECT g.app_id, g.name, g.type, g.is_free, gi.etag,
                g.short_description::text, g.developers, g.publishers, g.genres,
                g.release_date::text, g.reviews_positive, g.reviews_total,
                g.current_players, g.peak_24h, g.peak_7d, g.peak_30d,
                g.players_checked_at, g.top_rank, g.details_checked_at,
                $priceColumns
         FROM games g
+        $imageJoin
         LEFT JOIN game_prices p ON p.app_id = g.app_id AND p.region = @region:text
         WHERE g.app_id = @id:int4
       '''),
@@ -142,7 +146,7 @@ final class GamesQueries {
       name: r[1]! as String,
       type: GameType.values.asNameMap()[r[2]] ?? GameType.unknown,
       isFree: r[3]! as bool,
-      headerImageUrl: r[4] as String?,
+      headerImageUrl: imagePath(r[0]! as int, r[4] as String?),
       shortDescription: (jsonDecode(r[5]! as String) as Map<String, Object?>)
           .map((k, v) => MapEntry(k, '$v')),
       developers: (r[6]! as List).cast<String>(),
@@ -177,6 +181,25 @@ final class GamesQueries {
     '''),
     parameters: {'id': appId},
   );
+
+  /// Сохранённая обложка игры или null.
+  Future<({List<int> bytes, String contentType, String etag})?> image(
+    int appId,
+  ) async {
+    final rows = await _db.execute(
+      Sql.named(
+        'SELECT content, content_type, etag FROM game_images WHERE app_id = @id:int4',
+      ),
+      parameters: {'id': appId},
+    );
+    if (rows.isEmpty) return null;
+    final r = rows.first;
+    return (
+      bytes: r[0]! as List<int>,
+      contentType: r[1]! as String,
+      etag: r[2]! as String,
+    );
+  }
 
   Future<bool> exists(int appId) async {
     final rows = await _db.execute(

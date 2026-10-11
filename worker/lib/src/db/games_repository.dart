@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:gameradar_shared/steam.dart';
 import 'package:postgres/postgres.dart';
@@ -366,6 +367,69 @@ final class GamesRepository {
           'total': reviews.totalReviews,
         },
       );
+
+  // ---------------------------------------------------------- обложки
+
+  /// Игры, обложку которых нужно скачать: её ещё нет или в описании игры
+  /// сменился адрес. Только отслеживаемые, топ и недавно открытые.
+  Future<List<({int appId, String url, int watchers})>> dueImages({
+    required int limit,
+  }) async {
+    final rows = await _db.execute(
+      Sql.named('''
+        SELECT g.app_id, g.header_image_url, g.watchers_count
+        FROM games g
+        LEFT JOIN game_images i ON i.app_id = g.app_id
+        WHERE g.header_image_url IS NOT NULL
+          AND (i.app_id IS NULL OR i.source_url IS DISTINCT FROM g.header_image_url)
+          AND (g.watchers_count > 0 OR g.top_rank IS NOT NULL
+               OR g.viewed_at > now() - interval '1 day')
+        ORDER BY g.watchers_count DESC, g.top_rank ASC NULLS LAST
+        LIMIT @limit:int4
+      '''),
+      parameters: {'limit': limit},
+    );
+    return [
+      for (final r in rows)
+        (appId: r[0]! as int, url: r[1]! as String, watchers: r[2]! as int),
+    ];
+  }
+
+  /// Сохраняет обложку. ETag — начало SHA-256 содержимого.
+  Future<void> saveImage(
+    int appId,
+    String sourceUrl,
+    String contentType,
+    List<int> bytes,
+  ) => _db.execute(
+    Sql.named('''
+          INSERT INTO game_images (app_id, source_url, content_type, content, etag, fetched_at)
+          VALUES (@id:int4, @url:text, @type:text, @content:bytea,
+                  left(encode(sha256(@content:bytea), 'hex'), 16), now())
+          ON CONFLICT (app_id) DO UPDATE SET
+            source_url = EXCLUDED.source_url,
+            content_type = EXCLUDED.content_type,
+            content = EXCLUDED.content,
+            etag = EXCLUDED.etag,
+            fetched_at = EXCLUDED.fetched_at
+        '''),
+    parameters: {
+      'id': appId,
+      'url': sourceUrl,
+      'type': contentType,
+      'content': Uint8List.fromList(bytes),
+    },
+  );
+
+  /// Адрес обложки не работает (404, не картинка): убираем его, чтобы не
+  /// запрашивать снова. Новый адрес придёт с ближайшим обновлением описания.
+  Future<void> dropImageUrl(int appId, String url) => _db.execute(
+    Sql.named('''
+      UPDATE games SET header_image_url = NULL
+      WHERE app_id = @id:int4 AND header_image_url = @url:text
+    '''),
+    parameters: {'id': appId, 'url': url},
+  );
 
   // ------------------------------------------------------ список игр
 

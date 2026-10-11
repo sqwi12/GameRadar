@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:gameradar_shared/gameradar_shared.dart';
 
 import '../format/formatters.dart';
+import '../network/api_urls.dart';
 import '../theme/app_theme.dart';
 import 'l10n.dart';
 
@@ -90,16 +91,17 @@ class GameImage extends StatelessWidget {
         ),
       ),
     );
+    final resolved = resolveImageUrl(url);
     return ClipRSuperellipse(
       borderRadius: BorderRadius.circular(radius),
       child: SizedBox(
         width: width,
         child: AspectRatio(
           aspectRatio: 460 / 215,
-          child: url == null
+          child: resolved == null
               ? placeholder
               : CachedNetworkImage(
-                  imageUrl: url!,
+                  imageUrl: resolved,
                   fit: BoxFit.cover,
                   fadeInDuration: const Duration(milliseconds: 200),
                   placeholder: (_, _) => placeholder,

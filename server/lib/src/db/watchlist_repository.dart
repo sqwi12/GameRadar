@@ -17,6 +17,7 @@ final class WatchlistRepository {
            w.last_notified_price, w.last_notified_at, w.created_at
     FROM watchlist w
     JOIN games g ON g.app_id = w.app_id
+    $imageJoin
     LEFT JOIN game_prices p ON p.app_id = w.app_id AND p.region = w.region
   ''';
 

@@ -13,6 +13,9 @@ enum Lane {
   /// api.steampowered.com: онлайн, список приложений, чарт.
   api,
 
+  /// CDN Steam (*.steamstatic.com): обложки игр.
+  cdn,
+
   /// Без запросов к Steam: отложенные уведомления.
   local,
 }
@@ -26,6 +29,7 @@ abstract final class TaskKind {
   static const appList = 'app_list';
   static const topChart = 'top_chart';
   static const notify = 'notify';
+  static const image = 'image';
 }
 
 /// Задача очереди. [id] детерминирован (например, `players:730`), поэтому

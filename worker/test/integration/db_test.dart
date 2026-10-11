@@ -321,6 +321,53 @@ void main() {
     expect(await games.compactPlayerCounts(), 0);
   });
 
+  test('обложки: очередь, сохранение, смена адреса, мёртвый адрес', () async {
+    await db.execute(
+      "UPDATE games SET header_image_url = 'https://cdn.akamai.steamstatic.com/730/h.jpg?t=1' WHERE app_id = 730",
+    );
+    expect(
+      (await games.dueImages(limit: 10)).map((g) => g.appId),
+      contains(730),
+    );
+
+    await games.saveImage(
+      730,
+      'https://cdn.akamai.steamstatic.com/730/h.jpg?t=1',
+      'image/jpeg',
+      [1, 2, 3],
+    );
+    expect(
+      (await games.dueImages(limit: 10)).map((g) => g.appId),
+      isNot(contains(730)),
+    );
+    expect(
+      await scalar('SELECT length(etag) FROM game_images WHERE app_id = 730'),
+      16,
+    );
+
+    // Steam обновил обложку — адрес сменился, скачиваем заново.
+    await db.execute(
+      "UPDATE games SET header_image_url = 'https://cdn.akamai.steamstatic.com/730/h.jpg?t=2' WHERE app_id = 730",
+    );
+    expect(
+      (await games.dueImages(limit: 10)).map((g) => g.appId),
+      contains(730),
+    );
+
+    await games.dropImageUrl(
+      730,
+      'https://cdn.akamai.steamstatic.com/730/h.jpg?t=2',
+    );
+    expect(
+      await scalar('SELECT header_image_url FROM games WHERE app_id = 730'),
+      isNull,
+    );
+    expect(
+      (await games.dueImages(limit: 10)).map((g) => g.appId),
+      isNot(contains(730)),
+    );
+  });
+
   test('описание и отзывы', () async {
     await games.saveDetails(
       730,

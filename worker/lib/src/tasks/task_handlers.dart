@@ -49,6 +49,7 @@ final class TaskHandlers {
     TaskKind.reviews => _reviews(task),
     TaskKind.appList => _appList(),
     TaskKind.topChart => _topChart(),
+    TaskKind.image => _image(task),
     TaskKind.notify => _notifications.evaluateOne(
       task.payload['user_id']! as String,
       task.payload['app_id']! as int,
@@ -91,6 +92,18 @@ final class TaskHandlers {
   Future<void> _reviews(QueueTask task) async {
     final appId = task.payload['app_id']! as int;
     await _games.saveReviews(appId, await _steam.fetchReviews(appId));
+  }
+
+  Future<void> _image(QueueTask task) async {
+    final appId = task.payload['app_id']! as int;
+    final url = task.payload['url']! as String;
+    try {
+      final image = await _steam.fetchImage(Uri.parse(url));
+      await _games.saveImage(appId, url, image.contentType, image.bytes);
+    } on SteamPermanentException catch (e) {
+      _log.warning('Обложка $appId недоступна: $e');
+      await _games.dropImageUrl(appId, url);
+    }
   }
 
   Future<void> _appList() async {
