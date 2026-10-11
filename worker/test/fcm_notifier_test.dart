@@ -70,9 +70,9 @@ void main() {
     test('порог цены без скидки', () {
       expect(
         priceAlertText(alert(discount: 0)).title,
-        'Cyberpunk 2077 подешевела',
+        'Cyberpunk 2077 — цена достигла цели',
       );
-      expect(priceAlertText(alert(discount: 0)).body, 'Теперь 8 999 ₸');
+      expect(priceAlertText(alert(discount: 0)).body, 'Сейчас 8 999 ₸');
     });
 
     test('formatMoney: тысячи, копейки, неизвестная валюта', () {

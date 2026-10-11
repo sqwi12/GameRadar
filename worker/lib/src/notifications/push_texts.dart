@@ -3,7 +3,7 @@ import 'notifier.dart';
 /// Тексты push-уведомлений на языке пользователя (ru/en).
 ///
 /// Со скидкой: «Cyberpunk 2077 — скидка 50%» / «8 999 ₸ вместо 17 999 ₸».
-/// Без скидки (сработал порог цены): «Cyberpunk 2077 подешевела» / «Теперь 8 999 ₸».
+/// Без скидки (цена не выше порога): «Cyberpunk 2077 — цена достигла цели» / «Сейчас 8 999 ₸».
 ({String title, String body}) priceAlertText(PriceAlert alert) {
   final en = alert.locale == 'en';
   final price = formatMoney(alert.finalPrice, alert.currency);
@@ -24,8 +24,11 @@ import 'notifier.dart';
           );
   }
   return en
-      ? (title: '${alert.gameName} price dropped', body: 'Now $price')
-      : (title: '${alert.gameName} подешевела', body: 'Теперь $price');
+      ? (title: '${alert.gameName} hit your target price', body: 'Now $price')
+      : (
+          title: '${alert.gameName} — цена достигла цели',
+          body: 'Сейчас $price',
+        );
 }
 
 const _symbols = {

@@ -97,4 +97,4 @@ PostgreSQL в Docker слушает на хосте порт **5433**, чтоб�
 4. ✅ Сервер: эндпоинты games, top, watchlist, devices, auth/anonymous (подробности в [server/README.md](server/README.md))
 5. ✅ Приложение: навигация, тема, api-клиент, кэш drift (подробности в [app/README.md](app/README.md))
 6. ✅ Экраны поиска, игры, топа, скидок, списка отслеживания
-7. ⬜ Push-уведомления
+7. ✅ Push-уведомления (FCM HTTP v1; Android проверен на эмуляторе, для iOS нужен ключ APNs)
