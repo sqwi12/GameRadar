@@ -4,14 +4,17 @@ library;
 
 export 'src/clock.dart';
 export 'src/config.dart';
+export 'src/db/devices_repository.dart';
 export 'src/db/games_repository.dart';
 
 export 'package:gameradar_shared/dotenv.dart';
 
 export 'src/db/watchlist_repository.dart';
+export 'src/notifications/fcm_notifier.dart';
 export 'src/notifications/notification_policy.dart';
 export 'src/notifications/notification_service.dart';
 export 'src/notifications/notifier.dart';
+export 'src/notifications/push_texts.dart';
 export 'src/queue/lane_runner.dart';
 export 'src/queue/markers.dart';
 export 'src/queue/redis_task_queue.dart';

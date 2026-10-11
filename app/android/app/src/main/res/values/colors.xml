@@ -2,4 +2,6 @@
 <resources>
     <!-- Цвет экрана запуска: совпадает с верхом фона приложения. -->
     <color name="launch_background">#E6F3F7</color>
+    <!-- Акцент значка уведомления (бирюзовый «радар»). -->
+    <color name="notification_accent">#0E9FB0</color>
 </resources>

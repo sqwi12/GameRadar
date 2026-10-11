@@ -7,6 +7,7 @@ import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'app.dart';
 import 'core/database/app_database.dart';
 import 'core/providers.dart';
+import 'core/push/push_providers.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,6 +37,10 @@ Future<void> main() async {
         .validToken()
         .then((_) {}, onError: (_) {}),
   );
+
+  // Push-уведомления: регистрация устройства, если разрешение уже выдано.
+  // Без конфигурации Firebase приложение работает, просто без push.
+  unawaited(container.read(pushServiceProvider).start());
 
   runApp(
     LiquidGlassWidgets.wrap(

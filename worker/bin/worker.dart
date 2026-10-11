@@ -45,9 +45,23 @@ Future<void> main() async {
     apiKey: config.steamApiKey,
     clock: clock,
   );
+  final Notifier notifier;
+  if (config.fcmConfigured) {
+    notifier = await FcmNotifier.fromServiceAccountFile(
+      projectId: config.fcmProjectId!,
+      path: config.fcmServiceAccountFile!,
+      devices: DevicesRepository(db),
+    );
+    log.info('Уведомления: FCM, проект ${config.fcmProjectId}');
+  } else {
+    notifier = LoggingNotifier();
+    log.warning(
+      'Уведомления: FCM не настроен (FCM_PROJECT_ID, FCM_SERVICE_ACCOUNT_FILE) — только журнал',
+    );
+  }
   final notifications = NotificationService(
     watchlist: WatchlistRepository(db),
-    notifier: LoggingNotifier(),
+    notifier: notifier,
     queue: queue,
     clock: clock,
   );

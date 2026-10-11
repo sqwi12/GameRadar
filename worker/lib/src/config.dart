@@ -62,6 +62,8 @@ final class WorkerConfig {
     this.requestInterval = const Duration(milliseconds: 1500),
     this.topSize = 1000,
     this.schedule = const Schedule(),
+    this.fcmProjectId,
+    this.fcmServiceAccountFile,
   });
 
   factory WorkerConfig.fromEnvironment([Map<String, String>? env]) {
@@ -84,6 +86,8 @@ final class WorkerConfig {
       steamApiKey: required('STEAM_API_KEY'),
       region: region,
       saleMode: e['SALE_MODE'] == 'true',
+      fcmProjectId: _nonEmpty(e['FCM_PROJECT_ID']),
+      fcmServiceAccountFile: _nonEmpty(e['FCM_SERVICE_ACCOUNT_FILE']),
     );
   }
 
@@ -103,6 +107,17 @@ final class WorkerConfig {
   final Duration requestInterval;
   final int topSize;
   final Schedule schedule;
+
+  /// Проект Firebase и путь к JSON-ключу сервисного аккаунта.
+  /// Без них уведомления только пишутся в журнал (LoggingNotifier).
+  final String? fcmProjectId;
+  final String? fcmServiceAccountFile;
+
+  bool get fcmConfigured =>
+      fcmProjectId != null && fcmServiceAccountFile != null;
+
+  static String? _nonEmpty(String? v) =>
+      v == null || v.trim().isEmpty ? null : v.trim();
 
   RefreshWindow get priceWindow =>
       saleMode ? schedule.pricesDuringSale : schedule.prices;

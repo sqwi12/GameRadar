@@ -322,4 +322,58 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get loadingMore => 'Загрузка…';
+
+  @override
+  String get settingsNotifications => 'Уведомления';
+
+  @override
+  String get pushStatusTitle => 'Push-уведомления';
+
+  @override
+  String get pushReady => 'Включены на этом устройстве';
+
+  @override
+  String get pushNotAsked => 'Нажмите, чтобы разрешить';
+
+  @override
+  String get pushDenied => 'Запрещены в настройках системы';
+
+  @override
+  String get pushUnavailable => 'Не настроены в этой сборке';
+
+  @override
+  String get pushStarting => 'Проверка…';
+
+  @override
+  String get priceAlertsTitle => 'Уведомлять о ценах';
+
+  @override
+  String get priceAlertsSubtitle => 'Когда цена или скидка достигнет порога';
+
+  @override
+  String get quietHoursTitle => 'Тихие часы';
+
+  @override
+  String get quietHoursOff => 'Выключены';
+
+  @override
+  String quietHoursRange(String start, String end) {
+    return '$start–$end';
+  }
+
+  @override
+  String get quietHoursHint =>
+      'В это время уведомления не приходят — они будут доставлены после';
+
+  @override
+  String get quietHoursEnable => 'Не беспокоить ночью';
+
+  @override
+  String get quietHoursFrom => 'С';
+
+  @override
+  String get quietHoursTo => 'До';
+
+  @override
+  String get settingsSaveFailed => 'Не удалось сохранить настройки';
 }

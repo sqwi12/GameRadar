@@ -7,6 +7,7 @@ import '../../../core/format/formatters.dart';
 import '../../../core/network/app_exception.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/l10n.dart';
+import '../../../core/push/push_providers.dart';
 import 'watchlist_providers.dart';
 
 /// Открывает стеклянный лист «Уведомить, когда…» для игры.
@@ -84,10 +85,16 @@ class _WatchSheetState extends ConsumerState<WatchSheet> {
       targetPrice: parsePriceInput(_priceController.text),
       minDiscountPct: discount == 0 ? null : discount,
     );
-    return _run(
-      () => ref.read(watchlistProvider.notifier).save(widget.appId, request),
-      context.l10n.watchSaved,
-    );
+    final hasThresholds =
+        request.targetPrice != null || request.minDiscountPct != null;
+    return _run(() async {
+      await ref.read(watchlistProvider.notifier).save(widget.appId, request);
+      // Разрешение на уведомления спрашиваем в момент, когда оно нужно:
+      // пользователь только что задал порог цены.
+      if (hasThresholds) {
+        await ref.read(pushServiceProvider).requestPermission();
+      }
+    }, context.l10n.watchSaved);
   }
 
   Future<void> _remove() => _run(

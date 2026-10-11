@@ -667,6 +667,108 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Загрузка…'**
   String get loadingMore;
+
+  /// No description provided for @settingsNotifications.
+  ///
+  /// In ru, this message translates to:
+  /// **'Уведомления'**
+  String get settingsNotifications;
+
+  /// No description provided for @pushStatusTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Push-уведомления'**
+  String get pushStatusTitle;
+
+  /// No description provided for @pushReady.
+  ///
+  /// In ru, this message translates to:
+  /// **'Включены на этом устройстве'**
+  String get pushReady;
+
+  /// No description provided for @pushNotAsked.
+  ///
+  /// In ru, this message translates to:
+  /// **'Нажмите, чтобы разрешить'**
+  String get pushNotAsked;
+
+  /// No description provided for @pushDenied.
+  ///
+  /// In ru, this message translates to:
+  /// **'Запрещены в настройках системы'**
+  String get pushDenied;
+
+  /// No description provided for @pushUnavailable.
+  ///
+  /// In ru, this message translates to:
+  /// **'Не настроены в этой сборке'**
+  String get pushUnavailable;
+
+  /// No description provided for @pushStarting.
+  ///
+  /// In ru, this message translates to:
+  /// **'Проверка…'**
+  String get pushStarting;
+
+  /// No description provided for @priceAlertsTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Уведомлять о ценах'**
+  String get priceAlertsTitle;
+
+  /// No description provided for @priceAlertsSubtitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Когда цена или скидка достигнет порога'**
+  String get priceAlertsSubtitle;
+
+  /// No description provided for @quietHoursTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Тихие часы'**
+  String get quietHoursTitle;
+
+  /// No description provided for @quietHoursOff.
+  ///
+  /// In ru, this message translates to:
+  /// **'Выключены'**
+  String get quietHoursOff;
+
+  /// No description provided for @quietHoursRange.
+  ///
+  /// In ru, this message translates to:
+  /// **'{start}–{end}'**
+  String quietHoursRange(String start, String end);
+
+  /// No description provided for @quietHoursHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'В это время уведомления не приходят — они будут доставлены после'**
+  String get quietHoursHint;
+
+  /// No description provided for @quietHoursEnable.
+  ///
+  /// In ru, this message translates to:
+  /// **'Не беспокоить ночью'**
+  String get quietHoursEnable;
+
+  /// No description provided for @quietHoursFrom.
+  ///
+  /// In ru, this message translates to:
+  /// **'С'**
+  String get quietHoursFrom;
+
+  /// No description provided for @quietHoursTo.
+  ///
+  /// In ru, this message translates to:
+  /// **'До'**
+  String get quietHoursTo;
+
+  /// No description provided for @settingsSaveFailed.
+  ///
+  /// In ru, this message translates to:
+  /// **'Не удалось сохранить настройки'**
+  String get settingsSaveFailed;
 }
 
 class _AppLocalizationsDelegate

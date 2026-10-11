@@ -190,5 +190,32 @@
     }
   },
   "noThresholds": "без уведомлений",
-  "loadingMore": "Загрузка…"
+  "loadingMore": "Загрузка…",
+  "settingsNotifications": "Уведомления",
+  "pushStatusTitle": "Push-уведомления",
+  "pushReady": "Включены на этом устройстве",
+  "pushNotAsked": "Нажмите, чтобы разрешить",
+  "pushDenied": "Запрещены в настройках системы",
+  "pushUnavailable": "Не настроены в этой сборке",
+  "pushStarting": "Проверка…",
+  "priceAlertsTitle": "Уведомлять о ценах",
+  "priceAlertsSubtitle": "Когда цена или скидка достигнет порога",
+  "quietHoursTitle": "Тихие часы",
+  "quietHoursOff": "Выключены",
+  "quietHoursRange": "{start}–{end}",
+  "@quietHoursRange": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "quietHoursHint": "В это время уведомления не приходят — они будут доставлены после",
+  "quietHoursEnable": "Не беспокоить ночью",
+  "quietHoursFrom": "С",
+  "quietHoursTo": "До",
+  "settingsSaveFailed": "Не удалось сохранить настройки"
 }

@@ -8,6 +8,7 @@ import '../../../core/config/app_config.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/glass_screen.dart';
 import '../../../core/widgets/l10n.dart';
+import 'notifications_section.dart';
 import 'settings_providers.dart';
 
 /// Настройки: тема, язык, регион, аккаунт и «О приложении».
@@ -60,6 +61,8 @@ class SettingsScreen extends ConsumerWidget {
             onSelected: ref.read(appLocaleSettingProvider.notifier).set,
           ),
           const SizedBox(height: 28),
+          const NotificationsSection(),
+          const SizedBox(height: 20),
           GlassGroupedSection(
             header: Text(l10n.settingsAccount.toUpperCase()),
             children: [

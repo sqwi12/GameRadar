@@ -94,5 +94,22 @@
   "thresholdPrice": "price ≤ {price}",
   "thresholdDiscount": "discount ≥ {percent}%",
   "noThresholds": "no notifications",
-  "loadingMore": "Loading…"
+  "loadingMore": "Loading…",
+  "settingsNotifications": "Notifications",
+  "pushStatusTitle": "Push notifications",
+  "pushReady": "Enabled on this device",
+  "pushNotAsked": "Tap to allow",
+  "pushDenied": "Blocked in system settings",
+  "pushUnavailable": "Not configured in this build",
+  "pushStarting": "Checking…",
+  "priceAlertsTitle": "Price alerts",
+  "priceAlertsSubtitle": "When a price or discount hits your target",
+  "quietHoursTitle": "Quiet hours",
+  "quietHoursOff": "Off",
+  "quietHoursRange": "{start}–{end}",
+  "quietHoursHint": "No notifications during this time — they arrive afterwards",
+  "quietHoursEnable": "Don’t disturb at night",
+  "quietHoursFrom": "From",
+  "quietHoursTo": "To",
+  "settingsSaveFailed": "Couldn’t save settings"
 }

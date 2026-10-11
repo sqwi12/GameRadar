@@ -324,4 +324,58 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get loadingMore => 'Loading…';
+
+  @override
+  String get settingsNotifications => 'Notifications';
+
+  @override
+  String get pushStatusTitle => 'Push notifications';
+
+  @override
+  String get pushReady => 'Enabled on this device';
+
+  @override
+  String get pushNotAsked => 'Tap to allow';
+
+  @override
+  String get pushDenied => 'Blocked in system settings';
+
+  @override
+  String get pushUnavailable => 'Not configured in this build';
+
+  @override
+  String get pushStarting => 'Checking…';
+
+  @override
+  String get priceAlertsTitle => 'Price alerts';
+
+  @override
+  String get priceAlertsSubtitle => 'When a price or discount hits your target';
+
+  @override
+  String get quietHoursTitle => 'Quiet hours';
+
+  @override
+  String get quietHoursOff => 'Off';
+
+  @override
+  String quietHoursRange(String start, String end) {
+    return '$start–$end';
+  }
+
+  @override
+  String get quietHoursHint =>
+      'No notifications during this time — they arrive afterwards';
+
+  @override
+  String get quietHoursEnable => 'Don’t disturb at night';
+
+  @override
+  String get quietHoursFrom => 'From';
+
+  @override
+  String get quietHoursTo => 'To';
+
+  @override
+  String get settingsSaveFailed => 'Couldn’t save settings';
 }
