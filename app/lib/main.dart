@@ -1,7 +1,8 @@
 import 'dart:async';
 
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:material_ui/material_ui.dart';
+import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 import 'app.dart';
 import 'core/database/app_database.dart';
@@ -10,10 +11,15 @@ import 'core/providers.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Шейдеры Liquid Glass загружаются заранее (только чтение с диска, без
+  // работы GPU), чтобы стекло не «мигало» на первом кадре.
+  final glass = LiquidGlassWidgets.initialize(enablePerformanceMonitor: false);
+
   // Локальные настройки читаем до первого кадра, чтобы тема и язык
   // сразу были правильными.
   final db = AppDatabase();
   final preferences = await db.readPreferences();
+  await glass;
 
   final container = ProviderContainer(
     overrides: [
@@ -32,9 +38,13 @@ Future<void> main() async {
   );
 
   runApp(
-    UncontrolledProviderScope(
-      container: container,
-      child: const GameRadarApp(),
+    LiquidGlassWidgets.wrap(
+      // Качество стекла подстраивается под производительность устройства.
+      adaptiveQuality: true,
+      child: UncontrolledProviderScope(
+        container: container,
+        child: const GameRadarApp(),
+      ),
     ),
   );
 }

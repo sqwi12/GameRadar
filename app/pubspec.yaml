@@ -9,6 +9,7 @@ environment:
 resolution: workspace
 
 dependencies:
+  cupertino_icons: ^2.0.0
   dio: ^5.11.1
   drift: ^2.35.2
   drift_flutter: ^0.3.1
@@ -23,7 +24,7 @@ dependencies:
     path: ../shared
   go_router: ^18.0.2
   intl: ^0.20.3
-  material_ui: ^1.6.0
+  liquid_glass_widgets: 1.8.1
   path_provider: ^2.1.6
   riverpod_annotation: ^4.0.7
   uuid: ^4.6.0

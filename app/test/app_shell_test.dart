@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gameradar_app/app.dart';
@@ -6,7 +7,6 @@ import 'package:gameradar_app/core/providers.dart';
 import 'package:gameradar_app/core/storage/preferences_store.dart';
 import 'package:gameradar_app/features/settings/presentation/settings_providers.dart';
 import 'package:gameradar_shared/gameradar_shared.dart';
-import 'package:material_ui/material_ui.dart';
 
 void main() {
   // Без drift: нативный SQLite внутри виджет-тестов изредка роняет
@@ -14,6 +14,15 @@ void main() {
   late MemoryPreferencesStore preferencesStore;
 
   setUp(() => preferencesStore = MemoryPreferencesStore());
+
+  // Стеклянные виджеты анимируются пружинами и могут не «успокоиться»
+  // полностью, поэтому вместо pumpAndSettle — фиксированные кадры
+  // (переходы между экранами занимают около 0,5 с).
+  Future<void> settle(WidgetTester tester) async {
+    for (var i = 0; i < 12; i++) {
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+  }
 
   Future<void> pumpApp(
     WidgetTester tester, {
@@ -33,30 +42,45 @@ void main() {
         child: const GameRadarApp(),
       ),
     );
-    await tester.pumpAndSettle();
+    await settle(tester);
   }
+
+  Future<void> openSettings(WidgetTester tester) async {
+    await tester.tap(find.byIcon(CupertinoIcons.gear_alt).first);
+    await settle(tester);
+  }
+
+  Brightness? appBrightness(WidgetTester tester) =>
+      tester.widget<CupertinoApp>(find.byType(CupertinoApp)).theme?.brightness;
 
   testWidgets('вкладки переключаются, у каждой свой экран', (tester) async {
     await pumpApp(tester);
     expect(find.text('Топ по онлайну'), findsOneWidget);
 
-    await tester.tap(find.text('Скидки'));
-    await tester.pumpAndSettle();
+    await tester.tap(find.text('Скидки').first);
+    await settle(tester);
     expect(find.text('Скидки сейчас'), findsOneWidget);
 
-    await tester.tap(find.text('Отслеживаю'));
-    await tester.pumpAndSettle();
+    await tester.tap(find.text('Отслеживаю').first);
+    await settle(tester);
     expect(find.text('Отслеживаемые'), findsOneWidget);
   });
 
   testWidgets('настройки: пометка о Valve и статус аккаунта', (tester) async {
     await pumpApp(tester);
-    await tester.tap(find.byTooltip('Настройки'));
-    await tester.pumpAndSettle();
+    await openSettings(tester);
+
+    // Сервер недоступен — статус показывает ошибку и действие «Повторить».
+    await tester.scrollUntilVisible(find.text('Анонимный аккаунт'), 100);
+    expect(
+      find.text('Нет связи с сервером. Проверьте интернет.'),
+      findsOneWidget,
+    );
+    expect(find.byIcon(CupertinoIcons.arrow_clockwise), findsOneWidget);
 
     await tester.scrollUntilVisible(
       find.textContaining('Valve Corporation'),
-      200,
+      100,
     );
     expect(
       find.text(
@@ -64,24 +88,20 @@ void main() {
       ),
       findsOneWidget,
     );
-    // Сервер недоступен — статус показывает ошибку и кнопку повтора.
-    await tester.scrollUntilVisible(find.text('Анонимный аккаунт'), -200);
-    expect(
-      find.text('Нет связи с сервером. Проверьте интернет.'),
-      findsOneWidget,
-    );
-    expect(find.byTooltip('Повторить'), findsOneWidget);
   });
 
   testWidgets('смена темы применяется и сохраняется', (tester) async {
     await pumpApp(tester);
-    await tester.tap(find.byTooltip('Настройки'));
-    await tester.pumpAndSettle();
+    expect(
+      appBrightness(tester),
+      isNull,
+      reason: 'по умолчанию — как в системе',
+    );
+    await openSettings(tester);
 
-    await tester.tap(find.text('Тёмная'));
-    await tester.pumpAndSettle();
-    final app = tester.widget<MaterialApp>(find.byType(MaterialApp));
-    expect(app.themeMode, ThemeMode.dark);
+    await tester.tap(find.text('Тёмная').first);
+    await settle(tester);
+    expect(appBrightness(tester), Brightness.dark);
     expect(preferencesStore.values['theme_mode'], 'dark');
   });
 
@@ -94,12 +114,11 @@ void main() {
         createdAt: DateTime.utc(2026),
       ),
     );
-    await tester.tap(find.byTooltip('Настройки'));
-    await tester.pumpAndSettle();
+    await openSettings(tester);
     expect(find.text('Подключено к серверу'), findsOneWidget);
 
-    await tester.tap(find.text('English'));
-    await tester.pumpAndSettle();
+    await tester.tap(find.text('English').first);
+    await settle(tester);
     expect(find.text('Settings'), findsOneWidget);
     expect(preferencesStore.values['locale'], 'en');
   });
@@ -111,8 +130,7 @@ void main() {
       tester,
       preferences: const {'theme_mode': 'dark', 'locale': 'en'},
     );
-    final app = tester.widget<MaterialApp>(find.byType(MaterialApp));
-    expect(app.themeMode, ThemeMode.dark);
+    expect(appBrightness(tester), Brightness.dark);
     expect(find.text('Most played'), findsOneWidget);
   });
 }

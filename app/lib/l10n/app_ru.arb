@@ -72,5 +72,7 @@
     }
   },
   "refreshTooOften": "Обновлять можно не чаще раза в минуту",
-  "showingCachedData": "Показаны сохранённые данные"
+  "showingCachedData": "Показаны сохранённые данные",
+  "back": "Назад",
+  "aboutDataSourceTitle": "Источник данных"
 }

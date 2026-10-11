@@ -355,6 +355,18 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Показаны сохранённые данные'**
   String get showingCachedData;
+
+  /// No description provided for @back.
+  ///
+  /// In ru, this message translates to:
+  /// **'Назад'**
+  String get back;
+
+  /// No description provided for @aboutDataSourceTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Источник данных'**
+  String get aboutDataSourceTitle;
 }
 
 class _AppLocalizationsDelegate

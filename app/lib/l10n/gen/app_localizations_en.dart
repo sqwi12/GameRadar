@@ -146,4 +146,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get showingCachedData => 'Showing saved data';
+
+  @override
+  String get back => 'Back';
+
+  @override
+  String get aboutDataSourceTitle => 'Data source';
 }

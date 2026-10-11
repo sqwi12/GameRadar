@@ -2,10 +2,10 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:gameradar_shared/gameradar_shared.dart';
-import 'package:material_ui/material_ui.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../core/providers.dart';
+import '../../../core/theme/app_theme.dart';
 import '../data/settings_repository.dart';
 
 part 'settings_providers.g.dart';
@@ -24,20 +24,20 @@ SettingsRepository settingsRepository(Ref ref) =>
 @Riverpod(keepAlive: true)
 class AppThemeMode extends _$AppThemeMode {
   @override
-  ThemeMode build() {
+  ThemePreference build() {
     final saved = ref.read(
       initialPreferencesProvider,
     )[PreferenceKeys.themeMode];
-    return ThemeMode.values.asNameMap()[saved] ?? ThemeMode.system;
+    return ThemePreference.values.asNameMap()[saved] ?? ThemePreference.system;
   }
 
-  Future<void> set(ThemeMode mode) async {
+  Future<void> set(ThemePreference mode) async {
     state = mode;
     await ref
         .read(preferencesStoreProvider)
         .write(
           PreferenceKeys.themeMode,
-          mode == ThemeMode.system ? null : mode.name,
+          mode == ThemePreference.system ? null : mode.name,
         );
   }
 }
@@ -81,7 +81,12 @@ AppLocale deviceAppLocale() =>
     ? AppLocale.ru
     : AppLocale.en;
 
+/// Без автоповтора: ошибку связи пользователь видит сразу и повторяет сам.
+/// (По умолчанию Riverpod 3 повторяет упавший запрос до 10 раз, и всё это
+/// время экран показывал бы «Подключение…».)
+Duration? noRetry(int retryCount, Object error) => null;
+
 /// Профиль с сервера: заодно показывает, что вход и связь с API работают.
-@riverpod
+@Riverpod(retry: noRetry)
 Future<UserProfile> currentProfile(Ref ref) =>
     ref.watch(settingsRepositoryProvider).fetchProfile();

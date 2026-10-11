@@ -1,5 +1,6 @@
-import 'package:material_ui/material_ui.dart';
+import 'package:flutter/cupertino.dart';
 
+import '../../../core/widgets/glass_screen.dart';
 import '../../../core/widgets/l10n.dart';
 import '../../../core/widgets/settings_button.dart';
 import '../../../core/widgets/state_views.dart';
@@ -9,13 +10,11 @@ class DiscountsScreen extends StatelessWidget {
   const DiscountsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      title: Text(context.l10n.discountsTitle),
-      actions: const [SettingsButton()],
-    ),
+  Widget build(BuildContext context) => GlassScreen(
+    title: context.l10n.discountsTitle,
+    actions: const [SettingsButton()],
     body: MessageView(
-      icon: Icons.local_offer_outlined,
+      icon: CupertinoIcons.tag_fill,
       message: context.l10n.comingSoon,
     ),
   );

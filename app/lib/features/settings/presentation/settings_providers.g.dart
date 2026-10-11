@@ -64,7 +64,7 @@ final appThemeModeProvider = AppThemeModeProvider._();
 
 /// Тема: системная, светлая или тёмная. Хранится на устройстве.
 final class AppThemeModeProvider
-    extends $NotifierProvider<AppThemeMode, ThemeMode> {
+    extends $NotifierProvider<AppThemeMode, ThemePreference> {
   /// Тема: системная, светлая или тёмная. Хранится на устройстве.
   AppThemeModeProvider._()
     : super(
@@ -85,29 +85,29 @@ final class AppThemeModeProvider
   AppThemeMode create() => AppThemeMode();
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(ThemeMode value) {
+  Override overrideWithValue(ThemePreference value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<ThemeMode>(value),
+      providerOverride: $SyncValueProvider<ThemePreference>(value),
     );
   }
 }
 
-String _$appThemeModeHash() => r'a330e2618032dd76e9358326d2267e0d9be02a9a';
+String _$appThemeModeHash() => r'cff999666a7f7d7835094863e314bbc1993d9ca2';
 
 /// Тема: системная, светлая или тёмная. Хранится на устройстве.
 
-abstract class _$AppThemeMode extends $Notifier<ThemeMode> {
-  ThemeMode build();
+abstract class _$AppThemeMode extends $Notifier<ThemePreference> {
+  ThemePreference build();
   @$mustCallSuper
   @override
   WhenComplete runBuild() {
-    final ref = this.ref as $Ref<ThemeMode, ThemeMode>;
+    final ref = this.ref as $Ref<ThemePreference, ThemePreference>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<ThemeMode, ThemeMode>,
-              ThemeMode,
+              AnyNotifier<ThemePreference, ThemePreference>,
+              ThemePreference,
               Object?,
               Object?
             >;
@@ -193,7 +193,7 @@ final class CurrentProfileProvider
     : super(
         from: null,
         argument: null,
-        retry: null,
+        retry: noRetry,
         name: r'currentProfileProvider',
         isAutoDispose: true,
         dependencies: null,
@@ -215,4 +215,4 @@ final class CurrentProfileProvider
   }
 }
 
-String _$currentProfileHash() => r'7e0f797d755fe139baf7074d2e746336cc6753b2';
+String _$currentProfileHash() => r'd9c858f3ff88ceba306bc20dbb650ce33fede0db';

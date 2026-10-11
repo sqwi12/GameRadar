@@ -42,5 +42,7 @@
   "updatedMinutesAgo": "Updated {minutes} min ago",
   "updatedAt": "Updated {time}",
   "refreshTooOften": "You can refresh at most once a minute",
-  "showingCachedData": "Showing saved data"
+  "showingCachedData": "Showing saved data",
+  "back": "Back",
+  "aboutDataSourceTitle": "Data source"
 }

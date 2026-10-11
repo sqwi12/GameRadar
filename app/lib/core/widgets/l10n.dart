@@ -1,5 +1,5 @@
 import 'package:gameradar_shared/gameradar_shared.dart';
-import 'package:material_ui/material_ui.dart';
+import 'package:flutter/widgets.dart';
 
 import '../../l10n/gen/app_localizations.dart';
 import '../network/app_exception.dart';

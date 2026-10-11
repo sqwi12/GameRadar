@@ -145,4 +145,10 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get showingCachedData => 'Показаны сохранённые данные';
+
+  @override
+  String get back => 'Назад';
+
+  @override
+  String get aboutDataSourceTitle => 'Источник данных';
 }

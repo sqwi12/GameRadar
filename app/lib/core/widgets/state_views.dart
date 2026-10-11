@@ -1,9 +1,11 @@
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
-import 'package:material_ui/material_ui.dart';
+import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 import '../network/app_exception.dart';
+import '../theme/app_theme.dart';
 import 'l10n.dart';
 
 /// Состояние загрузки.
@@ -12,7 +14,7 @@ class LoadingView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) =>
-      const Center(child: CircularProgressIndicator());
+      const Center(child: CupertinoActivityIndicator(radius: 14));
 }
 
 /// Ошибка с кнопкой «Повторить».
@@ -25,34 +27,32 @@ class ErrorView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final offline = AppException.from(error) is NetworkException;
-    return _CenteredMessage(
-      icon: offline ? Icons.cloud_off_rounded : Icons.error_outline_rounded,
+    return MessageView(
+      icon: offline
+          ? CupertinoIcons.wifi_slash
+          : CupertinoIcons.exclamationmark_triangle,
       message: describeError(context.l10n, error),
-      action: FilledButton.tonal(
-        onPressed: onRetry,
-        child: Text(context.l10n.retry),
+      action: GlassButton.custom(
+        onTap: onRetry,
+        height: 44,
+        label: context.l10n.retry,
+        shape: const LiquidRoundedSuperellipse(borderRadius: 22),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 22),
+          child: Text(context.l10n.retry, style: AppText.title(context)),
+        ),
       ),
     );
   }
 }
 
-/// Пустое состояние или заглушка.
+/// Пустое состояние или заглушка: иконка в стеклянном круге и текст.
 class MessageView extends StatelessWidget {
-  const MessageView({required this.icon, required this.message, super.key});
-
-  final IconData icon;
-  final String message;
-
-  @override
-  Widget build(BuildContext context) =>
-      _CenteredMessage(icon: icon, message: message);
-}
-
-class _CenteredMessage extends StatelessWidget {
-  const _CenteredMessage({
+  const MessageView({
     required this.icon,
     required this.message,
     this.action,
+    super.key,
   });
 
   final IconData icon;
@@ -60,29 +60,32 @@ class _CenteredMessage extends StatelessWidget {
   final Widget? action;
 
   @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 56, color: theme.colorScheme.outline),
-            const SizedBox(height: 16),
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodyLarge?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
+  Widget build(BuildContext context) => Center(
+    child: Padding(
+      padding: const EdgeInsets.all(32),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          GlassCard(
+            shape: const LiquidOval(),
+            padding: const EdgeInsets.all(24),
+            child: Icon(
+              icon,
+              size: 40,
+              color: AppColors.accent.resolveFrom(context),
             ),
-            if (action != null) ...[const SizedBox(height: 20), action!],
-          ],
-        ),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            message,
+            textAlign: TextAlign.center,
+            style: AppText.secondary(context).copyWith(fontSize: 16),
+          ),
+          if (action != null) ...[const SizedBox(height: 24), action!],
+        ],
       ),
-    );
-  }
+    ),
+  );
 }
 
 /// «Обновлено N мин назад» — время последнего обновления (правило 10).
@@ -124,12 +127,6 @@ class _LastUpdatedLabelState extends State<LastUpdatedLabel> {
             .format(widget.fetchedAt.toLocal()),
       ),
     };
-    final theme = Theme.of(context);
-    return Text(
-      text,
-      style: theme.textTheme.labelSmall?.copyWith(
-        color: theme.colorScheme.outline,
-      ),
-    );
+    return Text(text, style: AppText.secondary(context).copyWith(fontSize: 12));
   }
 }
