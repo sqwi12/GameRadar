@@ -33,6 +33,58 @@ void main() {
   tearDown(() => db.close());
 
   group('ResourceBinding', () {
+    test('без сети — сам повторяет запрос, пока не получится', () async {
+      var calls = 0;
+      final holder = Holder(const ResourceView<int>());
+      final binding = ResourceBinding(
+        CachedResource<int>(
+          db: db,
+          key: 'retry',
+          fetch: () async {
+            calls++;
+            if (calls < 3) throw const NetworkException();
+            return 7;
+          },
+          decode: (j) => j! as int,
+          encode: (v) => v,
+          now: () => now,
+        ),
+        read: holder.read,
+        write: holder.write,
+        retryDelays: const [Duration(milliseconds: 5)],
+      )..start();
+      await Future<void>.delayed(const Duration(milliseconds: 200));
+      expect(calls, 3);
+      expect(holder.value.data, 7);
+      expect(holder.value.error, isNull);
+      binding.dispose();
+    });
+
+    test('ошибку сервера автоматически не повторяет', () async {
+      var calls = 0;
+      final holder = Holder(const ResourceView<int>());
+      final binding = ResourceBinding(
+        CachedResource<int>(
+          db: db,
+          key: 'no-retry',
+          fetch: () async {
+            calls++;
+            throw const ApiFailure(404, null);
+          },
+          decode: (j) => j! as int,
+          encode: (v) => v,
+          now: () => now,
+        ),
+        read: holder.read,
+        write: holder.write,
+        retryDelays: const [Duration(milliseconds: 5)],
+      )..start();
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+      expect(calls, 1);
+      expect(holder.value.error, isA<ApiFailure>());
+      binding.dispose();
+    });
+
     test('загрузка → данные; повторный вход сразу показывает кэш', () async {
       CachedResource<int> resource(Future<int> Function() fetch) =>
           CachedResource<int>(

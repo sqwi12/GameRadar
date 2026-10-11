@@ -1,9 +1,41 @@
 import 'dart:async';
 
 import 'package:gameradar_shared/gameradar_shared.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 
+import '../network/app_exception.dart';
 import 'cached_resource.dart';
+
+/// Автоповтор после ошибки сети: экраны, которые не смогли обновиться без
+/// сети, повторяют запрос сами — по нарастающей паузе и сразу, когда
+/// приложение возвращается на экран (часто сеть появляется именно тогда).
+abstract final class NetworkRecovery {
+  static final _waiting = <VoidCallback>{};
+  static AppLifecycleListener? _listener;
+
+  /// Паузы между повторами; последняя повторяется дальше.
+  static const delays = [
+    Duration(seconds: 3),
+    Duration(seconds: 6),
+    Duration(seconds: 12),
+    Duration(seconds: 30),
+    Duration(seconds: 60),
+  ];
+
+  /// Подписка на возврат приложения на экран. Вызывается при запуске.
+  static void init() => _listener ??= AppLifecycleListener(onResume: retryNow);
+
+  /// Повторить все ждущие запросы сейчас.
+  static void retryNow() {
+    for (final retry in [..._waiting]) {
+      retry();
+    }
+  }
+
+  static void _add(VoidCallback retry) => _waiting.add(retry);
+
+  static void _remove(VoidCallback retry) => _waiting.remove(retry);
+}
 
 /// Состояние экрана с кэшем (правило 10): что показано, когда получено,
 /// идёт ли обновление и чем закончилось последнее.
@@ -49,13 +81,23 @@ class ResourceView<T> {
 /// Связка CachedResource ↔ состояние Notifier'а. Notifier хранит её у себя
 /// и отдаёт ей чтение и запись своего state.
 class ResourceBinding<T> {
-  ResourceBinding(this.resource, {required this._read, required this._write});
+  ResourceBinding(
+    this.resource, {
+    required this._read,
+    required this._write,
+    this.retryDelays = NetworkRecovery.delays,
+  });
 
   final CachedResource<T> resource;
   final ResourceView<T> Function() _read;
   final void Function(ResourceView<T>) _write;
+
+  /// Паузы автоповтора после ошибки сети.
+  final List<Duration> retryDelays;
   StreamSubscription<Cached<T>?>? _sub;
   bool _disposed = false;
+  Timer? _retryTimer;
+  int _retryAttempt = 0;
 
   void _update(ResourceView<T> Function(ResourceView<T> s) change) {
     if (!_disposed) _write(change(_read()));
@@ -78,6 +120,8 @@ class ResourceBinding<T> {
 
   void dispose() {
     _disposed = true;
+    _retryTimer?.cancel();
+    NetworkRecovery._remove(_retryNow);
     unawaited(_sub?.cancel());
   }
 
@@ -99,9 +143,30 @@ class ResourceBinding<T> {
     try {
       await body();
       _update((s) => s.copyWith(refreshing: false, clearError: true));
+      _retryAttempt = 0;
+      NetworkRecovery._remove(_retryNow);
     } on Object catch (e) {
       _update((s) => s.copyWith(refreshing: false, error: e));
+      _scheduleRetry(e);
     }
+  }
+
+  // Отрывок метода (tear-off) равен сам себе, поэтому его можно
+  // добавлять в множество ждущих и удалять оттуда.
+  void _retryNow() {
+    _retryTimer?.cancel();
+    unawaited(_run(resource.refreshIfStale));
+  }
+
+  /// Без сети — повтор по нарастающей паузе. Ошибки сервера (404, 400…)
+  /// сами не пройдут, их не повторяем.
+  void _scheduleRetry(Object error) {
+    if (_disposed || AppException.from(error) is! NetworkException) return;
+    final delay = retryDelays[_retryAttempt.clamp(0, retryDelays.length - 1)];
+    _retryAttempt++;
+    _retryTimer?.cancel();
+    _retryTimer = Timer(delay, _retryNow);
+    NetworkRecovery._add(_retryNow);
   }
 }
 
