@@ -11,7 +11,7 @@ abstract final class AppConfig {
 
   static const appVersion = String.fromEnvironment(
     'APP_VERSION',
-    defaultValue: '0.1.1',
+    defaultValue: '0.2.0',
   );
 
   /// Pull-to-refresh не чаще этого интервала (правило 10).
