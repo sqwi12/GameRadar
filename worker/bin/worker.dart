@@ -8,7 +8,7 @@ import 'package:postgres/postgres.dart';
 import 'package:timezone/data/latest.dart' as tzdata;
 
 /// Точка входа worker: читает настройки из окружения, подключается
-/// к PostgreSQL и Redis и запускает планировщик и полосы очереди.
+/// к PostgreSQL и Redis (если задан) и запускает планировщик и полосы очереди.
 Future<void> main() async {
   Logger.root.level = Level.INFO;
   Logger.root.onRecord.listen((r) {
@@ -33,30 +33,51 @@ Future<void> main() async {
   const clock = SystemClock();
 
   final db = Pool<void>.withUrl(config.databaseUrl);
-  final redis = await RedisClient.connect(config.redisUrl);
+  final redisUrl = config.redisUrl;
+  final redis = redisUrl == null ? null : await RedisClient.connect(redisUrl);
   final httpClient = http.Client();
 
-  final queue = RedisTaskQueue(redis);
-  final markers = RedisMarkers(redis);
+  // Без Redis (одна копия worker'а на хостинге): очередь и лимит запросов —
+  // в памяти, отметки периодических работ — в PostgreSQL.
+  final TaskQueue queue = redis == null
+      ? InMemoryTaskQueue(clock)
+      : RedisTaskQueue(redis);
+  final Markers markers = redis == null
+      ? PostgresMarkers(db)
+      : RedisMarkers(redis);
+  RateLimiter limiter(Duration interval) => redis == null
+      ? InMemoryRateLimiter(interval: interval, clock: clock)
+      : RedisRateLimiter(redis, interval: interval);
+  log.info(
+    redis == null ? 'Очередь: в памяти (REDIS_URL не задан)' : 'Очередь: Redis',
+  );
   final games = GamesRepository(db);
   final steam = SteamClient(
     httpClient: httpClient,
-    rateLimiter: RedisRateLimiter(redis, interval: config.requestInterval),
+    rateLimiter: limiter(config.requestInterval),
     apiKey: config.steamApiKey,
     clock: clock,
   );
   final Notifier notifier;
   if (config.fcmConfigured) {
-    notifier = await FcmNotifier.fromServiceAccountFile(
-      projectId: config.fcmProjectId!,
-      path: config.fcmServiceAccountFile!,
-      devices: DevicesRepository(db),
-    );
+    final json = config.fcmServiceAccountJson;
+    notifier = json != null
+        ? await FcmNotifier.fromServiceAccountJson(
+            projectId: config.fcmProjectId!,
+            json: json,
+            devices: DevicesRepository(db),
+          )
+        : await FcmNotifier.fromServiceAccountFile(
+            projectId: config.fcmProjectId!,
+            path: config.fcmServiceAccountFile!,
+            devices: DevicesRepository(db),
+          );
     log.info('Уведомления: FCM, проект ${config.fcmProjectId}');
   } else {
     notifier = LoggingNotifier();
     log.warning(
-      'Уведомления: FCM не настроен (FCM_PROJECT_ID, FCM_SERVICE_ACCOUNT_FILE) — только журнал',
+      'Уведомления: FCM не настроен (FCM_PROJECT_ID и FCM_SERVICE_ACCOUNT_FILE '
+      'или FCM_SERVICE_ACCOUNT_JSON) — только журнал',
     );
   }
   final notifications = NotificationService(
@@ -73,10 +94,7 @@ Future<void> main() async {
       : ItadClient(
           httpClient: httpClient,
           // Лимит ключа ITAD — 100 запросов за 5 минут: не чаще раза в 3,5 с.
-          rateLimiter: RedisRateLimiter(
-            redis,
-            interval: const Duration(milliseconds: 3500),
-          ),
+          rateLimiter: limiter(const Duration(milliseconds: 3500)),
           apiKey: itadKey,
           clock: clock,
         );
@@ -99,10 +117,7 @@ Future<void> main() async {
         ? null
         : FxClient(
             httpClient: httpClient,
-            rateLimiter: RedisRateLimiter(
-              redis,
-              interval: config.requestInterval,
-            ),
+            rateLimiter: limiter(config.requestInterval),
             clock: clock,
           ),
   );
@@ -144,7 +159,7 @@ Future<void> main() async {
   await Future.wait([for (final lane in lanes) lane.run()]);
 
   httpClient.close();
-  await redis.close();
+  await redis?.close();
   await db.close();
   log.info('Worker остановлен');
   exit(0);

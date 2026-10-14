@@ -1,0 +1,64 @@
+# Проверка образа для хостинга (Dockerfile в корне): собирается, применяет
+# миграции к чистой базе, сервер отвечает на /health, worker запускается.
+# Образ никуда не публикуется: Render собирает его сам из репозитория.
+name: Docker
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - Dockerfile
+      - .dockerignore
+      - deploy/**
+      - migrations/**
+      - shared/**
+      - server/**
+      - worker/**
+      - pubspec.yaml
+      - pubspec.lock
+      - .github/workflows/docker.yml
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: gameradar
+          POSTGRES_USER: gameradar
+          POSTGRES_PASSWORD: ci-only-password
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U gameradar" --health-interval 5s
+          --health-timeout 3s --health-retries 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Сборка образа
+        run: docker build -t gameradar .
+
+      - name: Запуск контейнера
+        run: |
+          docker run -d --name gameradar --network host \
+            -e PORT=8080 \
+            -e DATABASE_URL='postgres://gameradar:ci-only-password@localhost:5432/gameradar?sslmode=disable' \
+            -e JWT_SECRET=ci-only-secret-0123456789abcdef0123456789 \
+            -e STEAM_API_KEY=ci-dummy-key \
+            -e COMPARE_REGIONS= \
+            gameradar
+
+      - name: Сервер отвечает, worker запущен
+        run: |
+          for i in $(seq 1 30); do
+            curl -sf localhost:8080/health && break
+            sleep 2
+          done
+          curl -sf localhost:8080/health
+          sleep 5
+          docker logs gameradar 2>&1 | tee container.log
+          grep -q 'Готово: ' container.log
+          grep -q 'Очередь: в памяти' container.log
+          grep -q 'Worker запущен' container.log
+          test "$(docker inspect -f '{{.State.Running}}' gameradar)" = true

@@ -315,10 +315,12 @@ final class GamesRepository {
     return result.affectedRows;
   }
 
-  /// Сжимает старые точки онлайна до максимума за час (правило 7).
+  /// Сжимает старые точки онлайна до максимума за час (правило 7),
+  /// а совсем старые (старше 60 дней) — до максимума за сутки.
   Future<int> compactPlayerCounts() async {
-    final rows = await _db.execute('SELECT compact_player_counts()');
-    return rows.first[0]! as int;
+    final hourly = await _db.execute('SELECT compact_player_counts()');
+    final daily = await _db.execute('SELECT compact_player_counts_daily()');
+    return (hourly.first[0]! as int) + (daily.first[0]! as int);
   }
 
   // ------------------------------------------------- описания и отзывы

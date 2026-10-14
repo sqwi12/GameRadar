@@ -1,0 +1,41 @@
+# Render Blueprint: один бесплатный веб-сервис (сервер + worker в одном
+# контейнере, см. Dockerfile). База — внешняя (Supabase), Redis не нужен.
+# Секреты (sync: false) вводятся в панели Render при создании, в git их нет.
+services:
+  - type: web
+    name: gameradar
+    runtime: docker
+    plan: free
+    region: frankfurt
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    autoDeploy: true
+    # Пересобирать только при изменениях серверной части, не приложения.
+    buildFilter:
+      paths:
+        - Dockerfile
+        - deploy/**
+        - migrations/**
+        - shared/**
+        - server/**
+        - worker/**
+        - pubspec.yaml
+        - pubspec.lock
+    envVars:
+      # Строка подключения Supabase: Session pooler, с ?sslmode=require.
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: STEAM_API_KEY
+        sync: false
+      - key: ITAD_API_KEY
+        sync: false
+      - key: FCM_PROJECT_ID
+        sync: false
+      # Содержимое JSON-ключа сервисного аккаунта Firebase целиком.
+      - key: FCM_SERVICE_ACCOUNT_JSON
+        sync: false
+      - key: DEFAULT_REGION
+        value: kz

@@ -1,3 +1,5 @@
+import 'package:postgres/postgres.dart';
+
 import '../redis/redis_client.dart';
 
 /// Время последнего успешного запуска периодических работ
@@ -16,6 +18,32 @@ final class InMemoryMarkers implements Markers {
 
   @override
   Future<void> setLastRun(String name, DateTime at) async => _values[name] = at;
+}
+
+/// Отметки в PostgreSQL (таблица worker_markers): для запуска без Redis,
+/// например на хостинге без постоянного диска.
+final class PostgresMarkers implements Markers {
+  PostgresMarkers(this._db);
+
+  final Session _db;
+
+  @override
+  Future<DateTime?> lastRun(String name) async {
+    final rows = await _db.execute(
+      Sql.named('SELECT last_run FROM worker_markers WHERE name = @name:text'),
+      parameters: {'name': name},
+    );
+    return rows.isEmpty ? null : (rows.first[0]! as DateTime).toUtc();
+  }
+
+  @override
+  Future<void> setLastRun(String name, DateTime at) => _db.execute(
+    Sql.named('''
+      INSERT INTO worker_markers (name, last_run) VALUES (@name:text, @at:timestamptz)
+      ON CONFLICT (name) DO UPDATE SET last_run = EXCLUDED.last_run
+    '''),
+    parameters: {'name': name, 'at': at.toUtc()},
+  );
 }
 
 final class RedisMarkers implements Markers {

@@ -5,6 +5,7 @@
 // Запуск из папки worker (DATABASE_URL берётся из окружения или .env):
 //   dart run tool/migrate.dart          # применить новые миграции
 //   dart run tool/migrate.dart status   # показать состояние
+// Папка миграций — ../migrations или MIGRATIONS_DIR.
 import 'dart:io';
 
 import 'package:gameradar_worker/gameradar_worker.dart';
@@ -16,13 +17,15 @@ Future<void> main(List<String> args) async {
     stderr.writeln('Использование: dart run tool/migrate.dart [up|status]');
     exit(64);
   }
-  final url = loadEnvironment()['DATABASE_URL'];
+  final env = loadEnvironment();
+  final url = env['DATABASE_URL'];
   if (url == null || url.isEmpty) {
     stderr.writeln('Не задан DATABASE_URL (в окружении или в .env)');
     exit(64);
   }
 
-  final dir = Directory('../migrations');
+  // В контейнере миграции лежат рядом с бинарником: MIGRATIONS_DIR.
+  final dir = Directory(env['MIGRATIONS_DIR'] ?? '../migrations');
   final files =
       dir
           .listSync()

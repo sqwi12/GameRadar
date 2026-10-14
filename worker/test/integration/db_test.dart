@@ -493,6 +493,41 @@ void main() {
     expect(await games.compactPlayerCounts(), 0);
   });
 
+  test('сжатие онлайна: старше 60 дней — максимум за сутки (UTC)', () async {
+    await db.execute('''
+      INSERT INTO player_counts (app_id, recorded_at, players) VALUES
+        (730, date_trunc('day', now() - interval '70 days', 'UTC') + interval '3 hours', 100),
+        (730, date_trunc('day', now() - interval '70 days', 'UTC') + interval '15 hours', 300),
+        (730, date_trunc('day', now() - interval '70 days', 'UTC') + interval '21 hours', 200),
+        (730, date_trunc('day', now() - interval '40 days', 'UTC') + interval '5 hours', 50)
+    ''');
+    // Три точки 70-дневной давности сворачиваются в одну суточную,
+    // точка 40-дневной давности остаётся часовой.
+    expect(await games.compactPlayerCounts(), 3);
+    final rows = await db.execute('''
+      SELECT players, recorded_at = date_trunc('day', recorded_at, 'UTC')
+      FROM player_counts
+      WHERE app_id = 730 AND recorded_at < now() - interval '30 days'
+      ORDER BY recorded_at
+    ''');
+    expect([for (final r in rows) (r[0], r[1])], [(300, true), (50, false)]);
+    expect(await games.compactPlayerCounts(), 0);
+    await db.execute(
+      "DELETE FROM player_counts WHERE recorded_at < now() - interval '30 days'",
+    );
+  });
+
+  test('отметки периодических работ в PostgreSQL', () async {
+    final markers = PostgresMarkers(db);
+    expect(await markers.lastRun('test_marker'), isNull);
+    final first = DateTime.utc(2026, 10, 14, 8, 30);
+    await markers.setLastRun('test_marker', first);
+    expect(await markers.lastRun('test_marker'), first);
+    final second = first.add(const Duration(hours: 1));
+    await markers.setLastRun('test_marker', second);
+    expect(await markers.lastRun('test_marker'), second);
+  });
+
   test('обложки: очередь, сохранение, смена адреса, мёртвый адрес', () async {
     await db.execute(
       "UPDATE games SET header_image_url = 'https://cdn.akamai.steamstatic.com/730/h.jpg?t=1' WHERE app_id = 730",

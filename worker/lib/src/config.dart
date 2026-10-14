@@ -55,8 +55,8 @@ final class Schedule {
 final class WorkerConfig {
   const WorkerConfig({
     required this.databaseUrl,
-    required this.redisUrl,
     required this.steamApiKey,
+    this.redisUrl,
     this.region = Regions.defaultRegion,
     this.saleMode = false,
     this.requestInterval = const Duration(milliseconds: 1500),
@@ -64,6 +64,7 @@ final class WorkerConfig {
     this.schedule = const Schedule(),
     this.fcmProjectId,
     this.fcmServiceAccountFile,
+    this.fcmServiceAccountJson,
     this.itadApiKey,
     this.compareRegions = defaultCompareRegions,
   });
@@ -88,19 +89,24 @@ final class WorkerConfig {
     }
     return WorkerConfig(
       databaseUrl: required('DATABASE_URL'),
-      redisUrl: required('REDIS_URL'),
+      redisUrl: _nonEmpty(e['REDIS_URL']),
       steamApiKey: required('STEAM_API_KEY'),
       region: region,
       saleMode: e['SALE_MODE'] == 'true',
       fcmProjectId: _nonEmpty(e['FCM_PROJECT_ID']),
       fcmServiceAccountFile: _nonEmpty(e['FCM_SERVICE_ACCOUNT_FILE']),
+      fcmServiceAccountJson: _nonEmpty(e['FCM_SERVICE_ACCOUNT_JSON']),
       itadApiKey: _nonEmpty(e['ITAD_API_KEY']),
       compareRegions: _regions(e['COMPARE_REGIONS']) ?? defaultCompareRegions,
     );
   }
 
   final String databaseUrl;
-  final String redisUrl;
+
+  /// Redis для очереди, лимита запросов и отметок. Без него (хостинг
+  /// с одним процессом worker'а) очередь и лимит живут в памяти, а отметки —
+  /// в PostgreSQL; после перезапуска планировщик заново наполняет очередь.
+  final String? redisUrl;
 
   /// Ключ Steam Web API. Только из окружения, никогда не логируется.
   final String steamApiKey;
@@ -116,10 +122,12 @@ final class WorkerConfig {
   final int topSize;
   final Schedule schedule;
 
-  /// Проект Firebase и путь к JSON-ключу сервисного аккаунта.
-  /// Без них уведомления только пишутся в журнал (LoggingNotifier).
+  /// Проект Firebase и JSON-ключ сервисного аккаунта: путь к файлу или
+  /// само содержимое (FCM_SERVICE_ACCOUNT_JSON — для хостингов, где удобнее
+  /// переменная окружения). Без них уведомления только пишутся в журнал.
   final String? fcmProjectId;
   final String? fcmServiceAccountFile;
+  final String? fcmServiceAccountJson;
 
   /// Ключ IsThereAnyDeal API для исторических минимумов цен. Без него
   /// минимумы не загружаются. Только из окружения, не логируется.
@@ -129,7 +137,8 @@ final class WorkerConfig {
   final List<String> compareRegions;
 
   bool get fcmConfigured =>
-      fcmProjectId != null && fcmServiceAccountFile != null;
+      fcmProjectId != null &&
+      (fcmServiceAccountFile != null || fcmServiceAccountJson != null);
 
   static List<String>? _regions(String? v) {
     if (v == null) return null;

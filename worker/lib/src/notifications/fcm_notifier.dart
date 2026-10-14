@@ -27,10 +27,19 @@ final class FcmNotifier implements Notifier {
     required String projectId,
     required String path,
     required DeviceTokens devices,
+  }) async => fromServiceAccountJson(
+    projectId: projectId,
+    json: await File(path).readAsString(),
+    devices: devices,
+  );
+
+  /// Создаёт отправитель по содержимому JSON-ключа сервисного аккаунта.
+  static Future<FcmNotifier> fromServiceAccountJson({
+    required String projectId,
+    required String json,
+    required DeviceTokens devices,
   }) async {
-    final credentials = ServiceAccountCredentials.fromJson(
-      jsonDecode(await File(path).readAsString()),
-    );
+    final credentials = ServiceAccountCredentials.fromJson(jsonDecode(json));
     final client = await clientViaServiceAccount(credentials, const [
       'https://www.googleapis.com/auth/firebase.messaging',
     ]);
